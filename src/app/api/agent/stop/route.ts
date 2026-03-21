@@ -74,7 +74,8 @@ export async function POST(request: Request) {
         updatedAt: new Date(),
       })
       .where(eq(meetings.id, meetingId));
-  } catch {
+  } catch (error) {
+    console.error("Post-processing failed:", error);
     // Still complete on failure, just without summary
     await db
       .update(meetings)
