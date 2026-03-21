@@ -93,9 +93,7 @@ export class VoiceSession {
       let output: string;
       try {
         const args = JSON.parse(event.arguments) as { query: string };
-        const results = await getRAGContext(args.query, {
-          meetingId: this.config.meetingId,
-        });
+        const results = await getRAGContext(args.query);
         output =
           formatContextForPrompt(results) || "No relevant context found.";
       } catch {
