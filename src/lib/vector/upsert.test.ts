@@ -55,8 +55,8 @@ describe("upsertTranscriptChunk", () => {
   it("propagates embedding errors", async () => {
     mockCreateEmbedding.mockRejectedValueOnce(new Error("OpenAI down"));
 
-    await expect(
-      upsertTranscriptChunk("meeting_abc", payload)
-    ).rejects.toThrow("OpenAI down");
+    await expect(upsertTranscriptChunk("meeting_abc", payload)).rejects.toThrow(
+      "OpenAI down"
+    );
   });
 });

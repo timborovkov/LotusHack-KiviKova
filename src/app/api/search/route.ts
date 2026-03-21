@@ -40,10 +40,7 @@ export async function GET(request: Request) {
       .where(eq(meetings.id, meetingId));
 
     if (!meeting) {
-      return NextResponse.json(
-        { error: "Meeting not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Meeting not found" }, { status: 404 });
     }
 
     collectionsToSearch = [
@@ -99,12 +96,24 @@ export async function GET(request: Request) {
     }
   }
 
-  const allResults: { text: string; speaker: string; timestamp_ms: number; score: number; meetingId: string }[] = [];
+  const allResults: {
+    text: string;
+    speaker: string;
+    timestamp_ms: number;
+    score: number;
+    meetingId: string;
+  }[] = [];
 
-  for (let i = 0; i < collectionsToSearch.length; i += MAX_CONCURRENT_SEARCHES) {
+  for (
+    let i = 0;
+    i < collectionsToSearch.length;
+    i += MAX_CONCURRENT_SEARCHES
+  ) {
     const batch = collectionsToSearch.slice(i, i + MAX_CONCURRENT_SEARCHES);
     const nested = await Promise.all(
-      batch.map(({ collectionName, meetingId: mId }) => searchCollection(collectionName, mId))
+      batch.map(({ collectionName, meetingId: mId }) =>
+        searchCollection(collectionName, mId)
+      )
     );
     allResults.push(...nested.flat());
   }

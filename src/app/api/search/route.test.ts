@@ -19,9 +19,7 @@ const { mockDb, mockQdrantClient, mockCreateEmbedding } = vi.hoisted(() => {
     mockQdrantClient: {
       search: vi.fn().mockResolvedValue([]),
     },
-    mockCreateEmbedding: vi
-      .fn()
-      .mockResolvedValue(new Array(1536).fill(0.1)),
+    mockCreateEmbedding: vi.fn().mockResolvedValue(new Array(1536).fill(0.1)),
   };
 });
 
@@ -58,9 +56,7 @@ describe("GET /api/search", () => {
 
     const { status } = await parseJsonResponse(
       await GET(
-        searchRequest(
-          "?q=test&meetingId=a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
-        )
+        searchRequest("?q=test&meetingId=a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11")
       )
     );
     expect(status).toBe(404);
@@ -85,11 +81,7 @@ describe("GET /api/search", () => {
     ]);
 
     const { status, data } = await parseJsonResponse(
-      await GET(
-        searchRequest(
-          `?q=hello&meetingId=${meeting.id}`
-        )
-      )
+      await GET(searchRequest(`?q=hello&meetingId=${meeting.id}`))
     );
 
     expect(status).toBe(200);
@@ -116,10 +108,18 @@ describe("GET /api/search", () => {
     mockDb.where.mockResolvedValueOnce([m1, m2]);
     mockQdrantClient.search
       .mockResolvedValueOnce([
-        { id: "p1", score: 0.8, payload: { text: "A", speaker: "X", timestamp_ms: 100 } },
+        {
+          id: "p1",
+          score: 0.8,
+          payload: { text: "A", speaker: "X", timestamp_ms: 100 },
+        },
       ])
       .mockResolvedValueOnce([
-        { id: "p2", score: 0.9, payload: { text: "B", speaker: "Y", timestamp_ms: 200 } },
+        {
+          id: "p2",
+          score: 0.9,
+          payload: { text: "B", speaker: "Y", timestamp_ms: 200 },
+        },
       ]);
 
     const { data } = await parseJsonResponse(
@@ -142,10 +142,18 @@ describe("GET /api/search", () => {
     mockDb.where.mockResolvedValueOnce([m1, m2]);
     mockQdrantClient.search
       .mockResolvedValueOnce([
-        { id: "p1", score: 0.7, payload: { text: "Low", speaker: "A", timestamp_ms: 100 } },
+        {
+          id: "p1",
+          score: 0.7,
+          payload: { text: "Low", speaker: "A", timestamp_ms: 100 },
+        },
       ])
       .mockResolvedValueOnce([
-        { id: "p2", score: 0.95, payload: { text: "High", speaker: "B", timestamp_ms: 200 } },
+        {
+          id: "p2",
+          score: 0.95,
+          payload: { text: "High", speaker: "B", timestamp_ms: 200 },
+        },
       ]);
 
     const { data } = await parseJsonResponse(
