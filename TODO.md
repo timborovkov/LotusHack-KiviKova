@@ -29,5 +29,5 @@
 
 - **Authentication** — Add auth (e.g. NextAuth / Clerk) to protect dashboard and API routes
 - **Rate limiting** — Protect webhook and public API endpoints
-- **Structured logging** — Replace `console.log` with a proper logger
 - **Env validation** — Validate required env vars at startup with Zod
+
