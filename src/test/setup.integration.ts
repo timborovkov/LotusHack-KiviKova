@@ -1,9 +1,13 @@
 import { afterAll, beforeAll } from "vitest";
 import pg from "pg";
 
-const ADMIN_URL = "postgres://kivikova:kivikova_dev@localhost:5432/kivikova";
+const ADMIN_URL =
+  process.env.DATABASE_URL ??
+  "postgres://kivikova:kivikova_dev@localhost:5432/kivikova";
 const TEST_DB = `kivikova_test_${Date.now()}`;
-const TEST_URL = `postgres://kivikova:kivikova_dev@localhost:5432/${TEST_DB}`;
+const parsed = new URL(ADMIN_URL);
+parsed.pathname = `/${TEST_DB}`;
+const TEST_URL = parsed.toString();
 
 let adminPool: pg.Pool;
 

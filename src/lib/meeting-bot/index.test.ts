@@ -1,17 +1,24 @@
-import { MockProvider } from "./mock";
-import { RecallProvider } from "./recall";
-
 describe("getMeetingBotProvider", () => {
+  beforeEach(() => {
+    vi.resetModules();
+  });
+
   it("returns MockProvider when env is 'mock'", async () => {
     vi.stubEnv("MEETING_BOT_PROVIDER", "mock");
-    const { getMeetingBotProvider } = await import("./index");
+    const [{ getMeetingBotProvider }, { MockProvider }] = await Promise.all([
+      import("./index"),
+      import("./mock"),
+    ]);
     const provider = getMeetingBotProvider();
     expect(provider).toBeInstanceOf(MockProvider);
   });
 
   it("returns RecallProvider when env is 'recall'", async () => {
     vi.stubEnv("MEETING_BOT_PROVIDER", "recall");
-    const { getMeetingBotProvider } = await import("./index");
+    const [{ getMeetingBotProvider }, { RecallProvider }] = await Promise.all([
+      import("./index"),
+      import("./recall"),
+    ]);
     const provider = getMeetingBotProvider();
     expect(provider).toBeInstanceOf(RecallProvider);
   });
