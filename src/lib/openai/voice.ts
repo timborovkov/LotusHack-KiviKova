@@ -88,6 +88,8 @@ export class VoiceSession {
     });
 
     this.rt.on("response.function_call_arguments.done", async (event) => {
+      const originRt = this.rt;
+
       let output: string;
       try {
         const args = JSON.parse(event.arguments) as { query: string };
@@ -100,7 +102,8 @@ export class VoiceSession {
         output = "Error searching meeting context.";
       }
 
-      if (!this.rt) return;
+      // Drop response if connection changed or closed during await
+      if (this.rt !== originRt) return;
 
       this.rt.send({
         type: "conversation.item.create",
