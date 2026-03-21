@@ -4,35 +4,44 @@ import {
   fakeMeeting,
 } from "@/test/helpers";
 
-const { mockDb, mockProvider } = vi.hoisted(() => {
-  const db: Record<string, ReturnType<typeof vi.fn>> = {};
-  for (const m of [
-    "select",
-    "from",
-    "where",
-    "orderBy",
-    "insert",
-    "values",
-    "returning",
-    "update",
-    "set",
-    "delete",
-  ]) {
-    db[m] = vi.fn().mockImplementation(() => db);
-  }
-  return {
-    mockDb: db,
-    mockProvider: {
-      joinMeeting: vi.fn(),
-      leaveMeeting: vi.fn().mockResolvedValue(undefined),
-      onTranscript: vi.fn(),
-    },
-  };
-});
+const { mockDb, mockProvider, mockScrollTranscript, mockGenerateSummary } =
+  vi.hoisted(() => {
+    const db: Record<string, ReturnType<typeof vi.fn>> = {};
+    for (const m of [
+      "select",
+      "from",
+      "where",
+      "orderBy",
+      "insert",
+      "values",
+      "returning",
+      "update",
+      "set",
+      "delete",
+    ]) {
+      db[m] = vi.fn().mockImplementation(() => db);
+    }
+    return {
+      mockDb: db,
+      mockProvider: {
+        joinMeeting: vi.fn(),
+        leaveMeeting: vi.fn().mockResolvedValue(undefined),
+        onTranscript: vi.fn(),
+      },
+      mockScrollTranscript: vi.fn().mockResolvedValue([]),
+      mockGenerateSummary: vi.fn().mockResolvedValue("Test summary"),
+    };
+  });
 
 vi.mock("@/lib/db", () => ({ db: mockDb }));
 vi.mock("@/lib/meeting-bot", () => ({
   getMeetingBotProvider: () => mockProvider,
+}));
+vi.mock("@/lib/vector/scroll", () => ({
+  scrollTranscript: mockScrollTranscript,
+}));
+vi.mock("@/lib/summary/generate", () => ({
+  generateMeetingSummary: mockGenerateSummary,
 }));
 
 import { POST } from "./route";
