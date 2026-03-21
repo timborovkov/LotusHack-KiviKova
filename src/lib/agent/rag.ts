@@ -150,8 +150,10 @@ export async function getRAGContext(
   return allHits
     .filter((h) => h.score >= scoreThreshold)
     .sort((a, b) => {
-      const aScore = boostId && a.meetingId === boostId ? a.score * boostFactor : a.score;
-      const bScore = boostId && b.meetingId === boostId ? b.score * boostFactor : b.score;
+      const aScore =
+        boostId && a.meetingId === boostId ? a.score * boostFactor : a.score;
+      const bScore =
+        boostId && b.meetingId === boostId ? b.score * boostFactor : b.score;
       return bScore - aScore;
     })
     .slice(0, limit);
