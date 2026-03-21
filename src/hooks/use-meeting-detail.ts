@@ -22,11 +22,14 @@ export function useMeetingDetail(meetingId: string) {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchMeeting = useCallback(async () => {
     const res = await fetch(`/api/meetings/${meetingId}`);
     if (res.ok) {
       setMeeting(await res.json());
+    } else {
+      setError("Failed to load meeting");
     }
   }, [meetingId]);
 
@@ -76,6 +79,7 @@ export function useMeetingDetail(meetingId: string) {
     searchResults,
     loading,
     searching,
+    error,
     search,
     clearSearch,
   };
