@@ -56,11 +56,8 @@ export class RecallProvider implements MeetingBotProvider {
     }
   }
 
-  onTranscript(
-    _botId: string,
-    _callback: (text: string, speaker: string, timestampMs: number) => void
-  ): void {
-    // Recall.ai sends transcripts via webhook to /api/webhooks/recall/transcript
-    // This method is a no-op for webhook-based providers
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onTranscript(botId: string, callback: (text: string, speaker: string, timestampMs: number) => void): void {
+    // Recall.ai sends transcripts via webhook — this is a no-op
   }
 }
