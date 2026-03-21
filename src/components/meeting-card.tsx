@@ -10,6 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Meeting } from "@/lib/db/schema";
+import Link from "next/link";
 import { Play, Square, Trash2 } from "lucide-react";
 
 interface MeetingCardProps {
@@ -43,7 +44,14 @@ export function MeetingCard({
   return (
     <Card>
       <CardHeader className="flex flex-row items-start justify-between space-y-0">
-        <CardTitle className="text-lg">{meeting.title}</CardTitle>
+        <CardTitle className="text-lg">
+          <Link
+            href={`/dashboard/${meeting.id}`}
+            className="hover:underline"
+          >
+            {meeting.title}
+          </Link>
+        </CardTitle>
         <Badge variant={statusVariant[meeting.status] ?? "outline"}>
           {meeting.status}
         </Badge>
