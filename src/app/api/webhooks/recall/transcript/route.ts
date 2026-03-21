@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod/v4";
 import { db } from "@/lib/db";
 import { meetings } from "@/lib/db/schema";
-import { sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { upsertTranscriptChunk } from "@/lib/vector/upsert";
 
 const recallTranscriptSchema = z.object({
@@ -74,6 +74,18 @@ export async function POST(request: Request) {
       speaker: transcript.speaker,
       timestampMs,
     });
+
+    // Add speaker to participants if not already present
+    const currentParticipants = (meeting.participants as string[]) ?? [];
+    if (!currentParticipants.includes(transcript.speaker)) {
+      await db
+        .update(meetings)
+        .set({
+          participants: [...currentParticipants, transcript.speaker],
+          updatedAt: new Date(),
+        })
+        .where(eq(meetings.id, meeting.id));
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
