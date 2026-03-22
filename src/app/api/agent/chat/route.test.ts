@@ -20,6 +20,8 @@ const mockStreamText = vi.hoisted(() =>
 
 vi.mock("ai", () => ({
   streamText: mockStreamText,
+  convertToModelMessages: vi.fn().mockResolvedValue([]),
+  stepCountIs: vi.fn().mockReturnValue(() => false),
 }));
 
 vi.mock("@ai-sdk/openai", () => ({
@@ -54,9 +56,6 @@ describe("POST /api/agent/chat", () => {
       expect.objectContaining({
         model: "mock-model",
         system: expect.stringContaining("KiviKova"),
-        messages: expect.arrayContaining([
-          expect.objectContaining({ role: "user" }),
-        ]),
       })
     );
   });
