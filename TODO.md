@@ -49,13 +49,13 @@
 - ~~**Source citations** — Expandable source list with speaker, timestamp, and relevance score~~
 - ~~**Tool call visualization** — "Searching meeting context..." indicator during RAG lookup~~
 
-## P7 — Knowledge Base (file uploads + RAG)
+## P7 — Knowledge Base (file uploads + RAG) ~~DONE~~
 
-- **File upload API** — `POST /api/knowledge` accepts PDF, DOCX, TXT, MD files
-- **Object storage** — Minio / S3 for file persistence
-- **Document chunking** — Split uploaded files into chunks, embed, store in a per-org Qdrant collection
-- **Unified RAG** — Extend `getRAGContext` to search both meeting transcripts and uploaded documents
-- **Knowledge base UI** — Upload page, file list, delete files
+- ~~**File upload API** — `POST /api/knowledge` accepts PDF, DOCX, TXT, MD files (multipart form-data, 10MB limit)~~
+- ~~**Object storage** — Minio locally, S3-compatible in prod; `src/lib/storage/` with upload, delete, presigned URL~~
+- ~~**Document chunking** — `src/lib/knowledge/chunk.ts` with sentence-boundary-aware splitting (1000 chars, 200 overlap)~~
+- ~~**Unified RAG** — `getRAGContext` now searches per-user knowledge collection alongside meeting transcripts; `RAGResult` has `source: "transcript" | "document"`~~
+- ~~**Knowledge base UI** — `/dashboard/knowledge` page with upload dialog, document list, status badges, delete~~
 
 ## P8 — Meeting Context & Agenda
 
