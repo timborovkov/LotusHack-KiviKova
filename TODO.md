@@ -27,11 +27,11 @@
 - ~~**Button loading states** — Disable buttons and show loading text during async operations~~
 - ~~**SEO metadata** — Updated title and description in layout~~
 
-## P4 — Production Readiness
+## P4 — Chat with Meeting Notes
 
-- **Authentication** — Add auth (e.g. NextAuth / Clerk) to protect dashboard and API routes
-- **Rate limiting** — Protect webhook and public API endpoints
-- **Env validation** — Validate required env vars at startup with Zod
+- **Chat UI** — Add a chat panel on the meeting detail page (`/dashboard/[id]`) to ask questions about the meeting
+- **Conversational RAG** — Use the existing `/api/agent/respond` endpoint with multi-turn message history
+- **Citation highlights** — Link chat responses back to specific transcript segments
 
 ## P5 — Live Voice Agent
 
@@ -47,24 +47,24 @@
 - **Unified RAG** — Extend `getRAGContext` to search both meeting transcripts and uploaded documents
 - **Knowledge base UI** — Upload page, file list, delete files
 
-## P7 — Chat with Meeting Notes
-
-- **Chat UI** — Add a chat panel on the meeting detail page (`/dashboard/[id]`) to ask questions about the meeting
-- **Conversational RAG** — Use the existing `/api/agent/respond` endpoint with multi-turn message history
-- **Citation highlights** — Link chat responses back to specific transcript segments
-
-## P8 — Action Items & Tasks
+## P7 — Action Items & Tasks
 
 - **Auto-extract action items** — Post-meeting LLM pass to identify action items, decisions, and follow-ups from transcript
 - **Task storage** — New `tasks` table linked to meetings (title, assignee, status, due date)
 - **Tasks UI** — Display action items on meeting detail page, allow marking complete
 - **Cross-meeting task view** — Dashboard widget showing all open tasks across meetings
 
-## P9 — MCP & Integrations
+## P8 — MCP & Integrations
 
 - **MCP server** — Expose meeting data (transcripts, summaries, action items) as MCP tools for Claude Desktop and other AI assistants
 - **Calendar integration** — Auto-create meetings from Google Calendar / Outlook events
 - **Data connectors** — Let agent access external tools (Slack, Linear, Notion) for richer context during calls
+
+## P9 — Production Readiness
+
+- **Authentication** — Add auth (e.g. NextAuth / Clerk) to protect dashboard and API routes
+- **Rate limiting** — Protect webhook and public API endpoints
+- **Env validation** — Validate required env vars at startup with Zod
 
 ## P10 — Design System
 
