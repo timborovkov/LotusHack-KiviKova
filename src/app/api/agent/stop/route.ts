@@ -33,20 +33,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Meeting not found" }, { status: 404 });
   }
 
-  if (meeting.status !== "active" && meeting.status !== "joining") {
+  const stoppable = ["active", "joining", "processing"];
+  if (!stoppable.includes(meeting.status)) {
     return NextResponse.json(
       { error: `Cannot stop meeting with status: ${meeting.status}` },
       { status: 400 }
     );
   }
 
-  const provider = getMeetingBotProvider();
-  const botId = (meeting.metadata as Record<string, unknown>)?.botId as
-    | string
-    | undefined;
+  // Only call leaveMeeting for active/joining (not for stuck processing recovery)
+  if (meeting.status !== "processing") {
+    const provider = getMeetingBotProvider();
+    const botId = (meeting.metadata as Record<string, unknown>)?.botId as
+      | string
+      | undefined;
 
-  if (botId) {
-    await provider.leaveMeeting(botId);
+    if (botId) {
+      await provider.leaveMeeting(botId);
+    }
   }
 
   // Set processing status while generating summary
@@ -54,7 +58,7 @@ export async function POST(request: Request) {
     .update(meetings)
     .set({
       status: "processing",
-      endedAt: new Date(),
+      endedAt: meeting.endedAt ?? new Date(),
       updatedAt: new Date(),
     })
     .where(eq(meetings.id, meetingId));
