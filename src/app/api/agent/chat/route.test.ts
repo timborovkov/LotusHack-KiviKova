@@ -11,9 +11,9 @@ vi.mock("@/lib/agent/rag", () => ({
 // Mock the AI SDK streamText
 const mockStreamText = vi.hoisted(() =>
   vi.fn().mockReturnValue({
-    toTextStreamResponse: () =>
-      new Response("streamed text", {
-        headers: { "Content-Type": "text/plain" },
+    toUIMessageStreamResponse: () =>
+      new Response("streamed", {
+        headers: { "Content-Type": "text/event-stream" },
       }),
   })
 );
@@ -125,6 +125,6 @@ describe("POST /api/agent/chat", () => {
     });
 
     const res = await POST(req);
-    expect(res.headers.get("Content-Type")).toBe("text/plain");
+    expect(res.headers.get("Content-Type")).toBe("text/event-stream");
   });
 });
