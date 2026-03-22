@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { meetings } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { getOpenAIClient } from "@/lib/openai/client";
 import { AGENT_SYSTEM_PROMPT } from "@/lib/agent/prompts";
 
@@ -19,10 +19,13 @@ export async function GET(request: Request) {
   const [meeting] = await db
     .select()
     .from(meetings)
-    .where(eq(meetings.id, meetingId));
+    .where(and(eq(meetings.id, meetingId), eq(meetings.status, "active")));
 
   if (!meeting) {
-    return NextResponse.json({ error: "Meeting not found" }, { status: 404 });
+    return NextResponse.json(
+      { error: "Meeting not found or not active" },
+      { status: 404 }
+    );
   }
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
