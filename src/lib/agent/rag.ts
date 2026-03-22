@@ -179,7 +179,11 @@ export async function getRAGContext(
     }
   }
 
-  if (totalSearched > 0 && totalFailed === totalSearched) {
+  if (
+    totalSearched > 0 &&
+    totalFailed === totalSearched &&
+    allHits.length === 0
+  ) {
     throw new AllSearchesFailedError();
   }
 
