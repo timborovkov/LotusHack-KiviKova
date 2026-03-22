@@ -231,7 +231,6 @@
         ws = new WebSocket(url, [
           "realtime",
           `openai-insecure-api-key.${token}`,
-          "openai-beta.realtime-v1",
         ]);
 
         ws.onopen = () => {
