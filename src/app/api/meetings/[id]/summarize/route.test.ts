@@ -94,7 +94,10 @@ describe("POST /api/meetings/[id]/summarize", () => {
     );
     expect(status).toBe(200);
     expect(data.success).toBe(true);
-    expect(mockGenerateSummary).toHaveBeenCalledWith(segments);
+    expect(mockGenerateSummary).toHaveBeenCalledWith(
+      segments,
+      expect.objectContaining({ title: "Test Meeting" })
+    );
   });
 
   it("generates summary for processing meeting", async () => {
