@@ -1,18 +1,26 @@
-const { MockPDFParse, mockMammoth } = vi.hoisted(() => {
-  class MockPDFParse {
-    getText = vi.fn().mockResolvedValue({ text: "PDF content here" });
-    static setWorker = vi.fn();
-  }
+const { mockGetDocument, mockMammoth } = vi.hoisted(() => {
+  const mockPage = {
+    getTextContent: vi.fn().mockResolvedValue({
+      items: [{ str: "PDF " }, { str: "content here" }],
+    }),
+  };
+  const mockDoc = {
+    numPages: 1,
+    getPage: vi.fn().mockResolvedValue(mockPage),
+  };
   return {
-    MockPDFParse,
+    mockGetDocument: vi.fn().mockReturnValue({
+      promise: Promise.resolve(mockDoc),
+    }),
     mockMammoth: {
       extractRawText: vi.fn().mockResolvedValue({ value: "DOCX content here" }),
     },
   };
 });
 
-vi.mock("pdf-parse", () => ({
-  PDFParse: MockPDFParse,
+vi.mock("pdfjs-dist/legacy/build/pdf.mjs", () => ({
+  getDocument: mockGetDocument,
+  GlobalWorkerOptions: { workerSrc: "" },
 }));
 
 vi.mock("mammoth", () => ({
@@ -27,7 +35,9 @@ describe("parseDocument", () => {
     const result = await parseDocument(buffer, "pdf");
 
     expect(result).toBe("PDF content here");
-    expect(result).toBe("PDF content here");
+    expect(mockGetDocument).toHaveBeenCalledWith({
+      data: expect.any(Uint8Array),
+    });
   });
 
   it("parses DOCX files", async () => {
