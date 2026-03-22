@@ -75,15 +75,15 @@ export class VoiceSession {
       this.emit({ type: "connected" });
     });
 
-    this.rt.on("response.audio.delta", (event) => {
+    this.rt.on("response.output_audio.delta", (event) => {
       this.emit({ type: "audio_delta", delta: event.delta });
     });
 
-    this.rt.on("response.text.delta", (event) => {
+    this.rt.on("response.output_text.delta", (event) => {
       this.emit({ type: "text_delta", delta: event.delta });
     });
 
-    this.rt.on("response.text.done", (event) => {
+    this.rt.on("response.output_text.done", (event) => {
       this.emit({ type: "text_done", text: event.text });
     });
 
