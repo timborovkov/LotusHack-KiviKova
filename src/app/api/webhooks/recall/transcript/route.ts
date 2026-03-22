@@ -133,12 +133,15 @@ export async function POST(request: Request) {
     );
   }
 
-  if (meeting.status !== "active") {
+  // Accept transcripts for active, processing, and completed meetings
+  // (Recall may deliver transcript data after the call ends)
+  const acceptableStatuses = ["active", "processing", "completed"];
+  if (!acceptableStatuses.includes(meeting.status)) {
     console.log(
-      `[Webhook:transcript] Meeting ${meeting.id} not active (${meeting.status})`
+      `[Webhook:transcript] Meeting ${meeting.id} status ${meeting.status} not acceptable`
     );
     return NextResponse.json(
-      { error: `Meeting is not active, current status: ${meeting.status}` },
+      { error: `Meeting status ${meeting.status} does not accept transcripts` },
       { status: 400 }
     );
   }
