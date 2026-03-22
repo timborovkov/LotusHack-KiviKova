@@ -190,6 +190,9 @@ export async function getRAGContext(
   const boostId = options.boostMeetingId;
   const boostFactor = options.boostFactor ?? 1.15;
 
+  // Sort by score, boosting the current meeting's transcripts.
+  // Knowledge base results (source: "document") compete at raw score — this is
+  // intentional so highly relevant docs still surface alongside boosted transcripts.
   return allHits
     .filter((h) => h.score >= scoreThreshold)
     .sort((a, b) => {
