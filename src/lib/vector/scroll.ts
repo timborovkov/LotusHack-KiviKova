@@ -11,7 +11,7 @@ export async function scrollTranscript(
 ): Promise<TranscriptPoint[]> {
   const client = getQdrantClient();
   const points: TranscriptPoint[] = [];
-  let offset: string | number | undefined = undefined;
+  let offset: string | number | Record<string, unknown> | undefined = undefined;
 
   do {
     const result = await client.scroll(collectionName, {
