@@ -255,7 +255,7 @@ describe("POST /api/webhooks/recall/transcript", () => {
     });
   });
 
-  it("uses fallback speaker name when participant name is null", async () => {
+  it("uses 'KiviKova Agent' when participant name is null", async () => {
     const meeting = fakeMeeting({ status: "active" });
     mockDb.where
       .mockResolvedValueOnce([meeting])
@@ -282,7 +282,7 @@ describe("POST /api/webhooks/recall/transcript", () => {
     expect(status).toBe(200);
     expect(mockUpsert).toHaveBeenCalledWith(
       expect.any(String),
-      expect.objectContaining({ speaker: "Speaker 42" })
+      expect.objectContaining({ speaker: "KiviKova Agent" })
     );
   });
 
