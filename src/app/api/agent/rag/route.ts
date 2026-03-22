@@ -12,6 +12,7 @@ import {
 
 const ragSchema = z.object({
   meetingId: z.uuid(),
+  botSecret: z.string().min(1, "Bot secret is required"),
   query: z.string().min(1, "Query is required"),
 });
 
@@ -31,16 +32,21 @@ export async function POST(request: Request) {
     );
   }
 
-  const { meetingId, query } = parsed.data;
+  const { meetingId, botSecret, query } = parsed.data;
 
-  // Look up meeting owner for userId scoping
+  // Look up meeting and verify bot secret
   const [meeting] = await db
-    .select({ userId: meetings.userId })
+    .select({ userId: meetings.userId, metadata: meetings.metadata })
     .from(meetings)
     .where(eq(meetings.id, meetingId));
 
   if (!meeting) {
     return NextResponse.json({ context: "Meeting not found." });
+  }
+
+  const storedBotId = (meeting.metadata as Record<string, unknown>)?.botId;
+  if (!storedBotId || storedBotId !== botSecret) {
+    return NextResponse.json({ error: "Invalid bot secret" }, { status: 403 });
   }
 
   try {
