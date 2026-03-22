@@ -35,11 +35,11 @@
 - ~~**Data scoping** — All meeting queries filtered by userId, ownership checks on all endpoints~~
 - ~~**Sign in / Sign up pages** — Login, register pages with auto-redirect~~
 
-## P5 — Live Voice Agent
+## P5 — Live Voice Agent ~~DONE~~
 
-- **Audio bridging** — Connect Recall.ai bot audio stream to OpenAI Realtime API bidirectionally
-- **In-call RAG** — Agent listens, gets asked questions, searches transcript context, and responds via voice
-- **Turn detection** — Handle when to inject agent responses vs. let humans talk
+- ~~**Audio bridging** — Recall Output Media renders voice-agent.html which bridges getUserMedia audio ↔ OpenAI Realtime API~~
+- ~~**In-call RAG** — Agent uses search_meeting_context tool via `/api/agent/rag` endpoint~~
+- ~~**Turn detection** — Semantic VAD with low eagerness; agent only responds when addressed as KiviKova/Agent/Assistant~~
 
 ## P6 — Chat with Meeting Notes
 
