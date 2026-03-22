@@ -88,4 +88,3 @@
 - **Dark mode** — Theme toggle with proper CSS variable support
 - **Responsive polish** — Mobile-optimized dashboard and meeting detail views
 - **Loading skeletons** — Replace "Loading..." text with shimmer placeholders
-
