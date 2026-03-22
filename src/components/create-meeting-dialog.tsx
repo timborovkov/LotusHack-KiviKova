@@ -73,6 +73,10 @@ export function CreateMeetingDialog({ onCreate }: CreateMeetingDialogProps) {
               required
             />
           </div>
+          <p className="text-muted-foreground text-xs">
+            The AI agent will join and respond when called by name (KiviKova,
+            Agent, or Assistant).
+          </p>
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Creating..." : "Create Meeting"}
           </Button>
