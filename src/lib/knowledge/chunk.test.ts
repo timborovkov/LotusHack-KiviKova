@@ -57,6 +57,18 @@ describe("chunkText", () => {
     }
   });
 
+  it("breaks at the last sentence boundary, not the first", () => {
+    // 3 sentences: ~40 + ~40 + ~40 chars. With chunkSize=100, the chunk
+    // should include the first two sentences (breaking after the second period),
+    // not just the first sentence.
+    const text =
+      "First sentence is here. Second sentence is here. Third sentence is here. Fourth sentence too.";
+    const chunks = chunkText(text, { chunkSize: 70, overlap: 10 });
+
+    // First chunk should end after "here." at position ~49, not after "here." at ~23
+    expect(chunks[0].text).toContain("Second sentence");
+  });
+
   it("uses default options when none provided", () => {
     const text = "A".repeat(2000);
     const chunks = chunkText(text);
