@@ -9,9 +9,11 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const meetingId = searchParams.get("meetingId");
 
-  if (!meetingId) {
+  const botSecret = searchParams.get("botSecret");
+
+  if (!meetingId || !botSecret) {
     return NextResponse.json(
-      { error: "meetingId is required" },
+      { error: "meetingId and botSecret are required" },
       { status: 400 }
     );
   }
@@ -26,6 +28,12 @@ export async function GET(request: Request) {
       { error: "Meeting not found or not active" },
       { status: 404 }
     );
+  }
+
+  // Verify the bot secret matches the stored botId
+  const storedBotId = (meeting.metadata as Record<string, unknown>)?.botId;
+  if (!storedBotId || storedBotId !== botSecret) {
+    return NextResponse.json({ error: "Invalid bot secret" }, { status: 403 });
   }
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
