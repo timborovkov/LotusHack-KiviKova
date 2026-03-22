@@ -69,9 +69,9 @@ Configured per-bot in code when creating a bot via `POST /api/agent/join`. Recal
 Go to **Recall Dashboard → Webhooks → Add Endpoint** and configure:
 
 - **URL:** `https://your-app.up.railway.app/api/webhooks/recall/status`
-- **Events:** `bot.call_ended`
+- **Events:** `bot.call_ended`, `transcript.done`
 
-This auto-updates meeting status and triggers summary generation when the bot leaves a call, so users don't need to manually click "Stop".
+`bot.call_ended` sets the meeting to "processing" status. `transcript.done` triggers summary generation after all transcript data has been delivered.
 
 ## Scripts
 
