@@ -119,7 +119,14 @@
 - **Account linking** — Allow users to link multiple auth providers to one account
 - **Profile API** — `PATCH /api/user/profile` endpoint for updating user details
 
-## P17 — Billing with Polar
+## P17 — Vision-Based Document Parsing (low priority)
+
+- **OpenAI Vision for PDFs** — Current PDF parsing (pdfjs-dist) extracts raw text only — images, charts, tables, and scanned pages are invisible. Use GPT-4o vision to process PDF pages as images for richer extraction
+- **Image/diagram uploads** — Accept PNG, JPG, SVG uploads in knowledge base, extract descriptions via vision API
+- **Hybrid parsing** — Try text extraction first; if a page has low text density, fall back to vision-based extraction
+- **Cost management** — Vision API is expensive per page; add per-user limits or make it a premium feature
+
+## P18 — Billing with Polar
 
 - **Polar integration** — Connect Polar.sh for subscription management
 - **Pricing tiers** — Free (limited meetings/month), Pro (unlimited), Enterprise (team features)
