@@ -103,7 +103,7 @@ export class VoiceSession {
       }
 
       // Drop response if connection changed or closed during await
-      if (this.rt !== originRt) return;
+      if (!this.rt || this.rt !== originRt) return;
 
       this.rt.send({
         type: "conversation.item.create",
