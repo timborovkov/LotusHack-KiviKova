@@ -7,7 +7,13 @@ import { CreateMeetingDialog } from "@/components/create-meeting-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const STATUS_FILTERS = ["all", "active", "completed", "failed"] as const;
+const STATUS_FILTERS = [
+  "all",
+  "pending",
+  "active",
+  "completed",
+  "failed",
+] as const;
 
 export default function DashboardPage() {
   const {
