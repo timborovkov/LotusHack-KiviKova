@@ -27,13 +27,13 @@
 - ~~**Button loading states** — Disable buttons and show loading text during async operations~~
 - ~~**SEO metadata** — Updated title and description in layout~~
 
-## P4 — Authentication
+## P4 — Authentication ~~DONE~~
 
-- **NextAuth setup** — Email/password or OAuth (Google) sign in/sign up
-- **User table** — Add `users` table, link meetings to `userId`
-- **Session middleware** — Protect dashboard and API routes, redirect unauthenticated users to login
-- **Data scoping** — Users only see their own meetings, transcripts, and summaries
-- **Sign in / Sign up pages** — Simple auth UI
+- ~~**NextAuth setup** — Credentials provider (email/password) with JWT sessions~~
+- ~~**User table** — `users` table with email, name, passwordHash; `userId` FK on meetings~~
+- ~~**Session middleware** — Protects dashboard and API routes, webhooks remain public~~
+- ~~**Data scoping** — All meeting queries filtered by userId, ownership checks on all endpoints~~
+- ~~**Sign in / Sign up pages** — Login, register pages with auto-redirect~~
 
 ## P5 — Chat with Meeting Notes
 
