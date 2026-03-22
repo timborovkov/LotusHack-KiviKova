@@ -52,7 +52,6 @@ export async function POST(request: Request) {
 
   try {
     const results = await getRAGContext(query, {
-      meetingId,
       userId: meeting.userId,
       boostMeetingId: meetingId,
     });
