@@ -24,6 +24,14 @@ export class RecallProvider implements MeetingBotProvider {
       body: JSON.stringify({
         meeting_url: joinLink,
         bot_name: "KiviKova Agent",
+        output_media: {
+          camera: {
+            kind: "webpage",
+            config: {
+              url: `${appUrl}/voice-agent.html?meetingId=${meetingId}&appUrl=${encodeURIComponent(appUrl)}`,
+            },
+          },
+        },
         recording_config: {
           transcript: {
             provider: { recallai_streaming: {} },
