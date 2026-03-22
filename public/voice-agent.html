@@ -294,8 +294,8 @@
 
       // --- Init ---
       async function init() {
-        if (!meetingId) {
-          setStatus("Error: no meetingId", "");
+        if (!meetingId || !botSecret) {
+          setStatus("Error: missing meetingId or botSecret", "");
           return;
         }
 
