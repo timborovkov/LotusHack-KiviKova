@@ -44,7 +44,10 @@ export function chunkText(text: string, options: ChunkOptions = {}): Chunk[] {
       chunks.push({ text: segment, index: chunks.length });
     }
 
-    // Move forward by chunk minus overlap
+    // Stop if we've reached the end of the text
+    if (end >= trimmed.length) break;
+
+    // Move forward by chunk minus overlap, but never less than 1
     const step = end - start - overlap;
     start += Math.max(step, 1);
   }
