@@ -102,8 +102,15 @@
 - **Logos** — Create proper logo set (icon, wordmark, favicon, OG image) for Vernix.AI
 - **Google Stitch** — Update design system screens and branding on Stitch
 
-## P15 — Design System
+## P15 — Design System and pages
 
+- **Copy UI from the design system** – Create all the pages and components like in the design system
+- **Build the landing page** – Build a proper landing page like in the design system
 - **Component library** — Consistent design tokens, spacing, typography across all pages
 - **Responsive polish** — Mobile-optimized dashboard and meeting detail views
 - **Loading skeletons** — Replace "Loading..." text with shimmer placeholders
+
+## P16 — Allow users to modify their own profiles (company, email, change password), allow SSO with Google, Github and X
+
+## P17 — Configure billing using Polar
+
