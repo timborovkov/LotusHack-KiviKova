@@ -25,12 +25,17 @@ export function chunkText(text: string, options: ChunkOptions = {}): Chunk[] {
   while (start < trimmed.length) {
     let end = Math.min(start + chunkSize, trimmed.length);
 
-    // Try to break at sentence boundary if not at end of text
+    // Try to break at the last sentence boundary within the segment
     if (end < trimmed.length) {
       const segment = trimmed.slice(start, end);
-      const lastSentenceEnd = segment.search(/[.!?]\s+\S[^]*$/);
-      if (lastSentenceEnd > chunkSize * 0.3) {
-        end = start + lastSentenceEnd + 1;
+      let lastBreak = -1;
+      const re = /[.!?]\s+/g;
+      let m;
+      while ((m = re.exec(segment)) !== null) {
+        lastBreak = m.index + 1; // position right after the punctuation
+      }
+      if (lastBreak > chunkSize * 0.3) {
+        end = start + lastBreak;
       }
     }
 
