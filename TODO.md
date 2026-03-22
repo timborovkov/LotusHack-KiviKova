@@ -57,21 +57,21 @@
 - ~~**Unified RAG** — `getRAGContext` now searches per-user knowledge collection alongside meeting transcripts; `RAGResult` has `source: "transcript" | "document"`~~
 - ~~**Knowledge base UI** — `/dashboard/knowledge` page with upload dialog, document list, status badges, delete~~
 
-## P8 — Meeting-Scoped Knowledge
+## P8 — Meeting-Scoped Knowledge ~~DONE~~
 
-- **`meetingId` on documents** — Optional FK on `documents` table linking uploads to a specific meeting
-- **Upload during meeting creation** — Allow attaching files (agenda, specs, briefs) when creating a meeting
-- **Upload on meeting detail page** — Upload button on `/dashboard/[id]` scoped to that meeting
-- **Scoped RAG boost** — When chatting about a meeting, boost its linked documents the same way transcripts are boosted
-- **Knowledge list integration** — Global `/dashboard/knowledge` shows all docs with optional meeting link; meeting detail page shows only that meeting's docs
+- ~~**`meetingId` on documents** — Optional FK on `documents` table linking uploads to a specific meeting~~
+- ~~**Upload on meeting detail page** — Upload button on `/dashboard/[id]` scoped to that meeting, chunks go into meeting's Qdrant collection~~
+- ~~**Scoped RAG boost** — Meeting-scoped documents in the meeting collection get boosted automatically alongside transcripts~~
+- ~~**Knowledge list integration** — Meeting detail shows only that meeting's docs; global page shows all docs~~
+- ~~**Meeting DELETE cleanup** — Deleting a meeting removes its scoped documents from S3 and DB~~
 
-## P9 — Meeting Context & Agenda
+## P9 — Meeting Context & Agenda ~~DONE~~
 
-- **Agenda field** — Optional free-form text field on meetings (stored in `metadata.agenda`) for agenda, prep notes, goals, or background info
-- **UI** — Editable text area on meeting detail page and in the create meeting dialog (optional)
-- **Embed for RAG** — On save, embed the agenda text into the meeting's Qdrant collection so it surfaces in search and RAG context
-- **Agent context** — Include agenda in the system prompt for voice agent and chat agent so they know what the call is about
-- **Summary awareness** — Pass agenda to the summary generation prompt so the LLM can compare what was planned vs. what was discussed
+- ~~**Agenda field** — Optional free-form text field on meetings (stored in `metadata.agenda`)~~
+- ~~**UI** — Editable text area on meeting detail page and in the create meeting dialog~~
+- ~~**Embed for RAG** — On save, agenda text embedded into meeting's Qdrant collection with `type:"agenda"`, surfaces in RAG context~~
+- ~~**Agent context** — `getAgentSystemPrompt(agenda)` and `getVoiceAgentSystemPrompt(agenda)` inject agenda into all agent prompts~~
+- ~~**Summary awareness** — Agenda passed to summary generation; LLM compares planned vs discussed~~
 
 ## P10 — Action Items & Tasks
 
