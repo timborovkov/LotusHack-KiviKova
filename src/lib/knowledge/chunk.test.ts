@@ -69,6 +69,26 @@ describe("chunkText", () => {
     expect(chunks[0].text).toContain("Second sentence");
   });
 
+  it("does not produce duplicate tail chunks", () => {
+    // 2000 unique chars with chunkSize=1000 and overlap=200 should produce
+    // a small number of chunks, not hundreds of near-identical tail chunks
+    const text = Array.from({ length: 2000 }, (_, i) => String(i % 10)).join(
+      ""
+    );
+    const chunks = chunkText(text, { chunkSize: 1000, overlap: 200 });
+
+    expect(chunks.length).toBeLessThanOrEqual(3);
+  });
+
+  it("handles text shorter than overlap at the tail", () => {
+    // 1100 chars: first chunk takes 1000, leaving 100 chars (less than overlap=200)
+    // Should produce exactly 2 chunks, not crawl character by character
+    const text = "X".repeat(1100);
+    const chunks = chunkText(text, { chunkSize: 1000, overlap: 200 });
+
+    expect(chunks.length).toBe(2);
+  });
+
   it("uses default options when none provided", () => {
     const text = "A".repeat(2000);
     const chunks = chunkText(text);
