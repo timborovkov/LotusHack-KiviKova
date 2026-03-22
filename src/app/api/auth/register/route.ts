@@ -44,10 +44,21 @@ export async function POST(request: Request) {
 
   const passwordHash = await hash(password, 12);
 
-  const [user] = await db
-    .insert(users)
-    .values({ email, name, passwordHash })
-    .returning({ id: users.id, email: users.email, name: users.name });
+  try {
+    const [user] = await db
+      .insert(users)
+      .values({ email, name, passwordHash })
+      .returning({ id: users.id, email: users.email, name: users.name });
 
-  return NextResponse.json({ success: true, user });
+    return NextResponse.json({ success: true, user });
+  } catch (error) {
+    // Handle unique constraint violation (concurrent registration)
+    if (error instanceof Error && error.message.includes("unique")) {
+      return NextResponse.json(
+        { error: "Email already registered" },
+        { status: 409 }
+      );
+    }
+    throw error;
+  }
 }
