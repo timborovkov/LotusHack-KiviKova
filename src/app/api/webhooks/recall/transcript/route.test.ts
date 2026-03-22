@@ -255,7 +255,7 @@ describe("POST /api/webhooks/recall/transcript", () => {
     });
   });
 
-  it("uses 'KiviKova Agent' when participant name is null", async () => {
+  it("uses fallback speaker name when participant name is null", async () => {
     const meeting = fakeMeeting({ status: "active" });
     mockDb.where
       .mockResolvedValueOnce([meeting])
