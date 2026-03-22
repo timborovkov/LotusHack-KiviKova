@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import type { MeetingBotProvider } from "./types";
 
 export class RecallProvider implements MeetingBotProvider {
@@ -12,8 +13,9 @@ export class RecallProvider implements MeetingBotProvider {
   async joinMeeting(
     joinLink: string,
     meetingId: string
-  ): Promise<{ botId: string }> {
+  ): Promise<{ botId: string; voiceSecret: string }> {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    const voiceSecret = randomUUID();
 
     const response = await fetch(`${this.apiUrl}/bot`, {
       method: "POST",
@@ -28,7 +30,7 @@ export class RecallProvider implements MeetingBotProvider {
           camera: {
             kind: "webpage",
             config: {
-              url: `${appUrl}/voice-agent.html?meetingId=${meetingId}&appUrl=${encodeURIComponent(appUrl)}`,
+              url: `${appUrl}/voice-agent.html?meetingId=${meetingId}&botSecret=${voiceSecret}&appUrl=${encodeURIComponent(appUrl)}`,
             },
           },
         },
