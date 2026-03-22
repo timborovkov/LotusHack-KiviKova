@@ -57,7 +57,15 @@
 - ~~**Unified RAG** — `getRAGContext` now searches per-user knowledge collection alongside meeting transcripts; `RAGResult` has `source: "transcript" | "document"`~~
 - ~~**Knowledge base UI** — `/dashboard/knowledge` page with upload dialog, document list, status badges, delete~~
 
-## P8 — Meeting Context & Agenda
+## P8 — Meeting-Scoped Knowledge
+
+- **`meetingId` on documents** — Optional FK on `documents` table linking uploads to a specific meeting
+- **Upload during meeting creation** — Allow attaching files (agenda, specs, briefs) when creating a meeting
+- **Upload on meeting detail page** — Upload button on `/dashboard/[id]` scoped to that meeting
+- **Scoped RAG boost** — When chatting about a meeting, boost its linked documents the same way transcripts are boosted
+- **Knowledge list integration** — Global `/dashboard/knowledge` shows all docs with optional meeting link; meeting detail page shows only that meeting's docs
+
+## P9 — Meeting Context & Agenda
 
 - **Agenda field** — Optional free-form text field on meetings (stored in `metadata.agenda`) for agenda, prep notes, goals, or background info
 - **UI** — Editable text area on meeting detail page and in the create meeting dialog (optional)
