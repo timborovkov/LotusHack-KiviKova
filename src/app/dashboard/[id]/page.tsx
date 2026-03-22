@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { statusVariant } from "@/lib/meetings/constants";
+import { ChatPanel } from "@/components/chat-panel";
 import { ArrowLeft, Search, Clock, Users } from "lucide-react";
 
 function renderMarkdown(md: string): string {
@@ -181,6 +182,11 @@ export default function MeetingDetailPage() {
             ))}
           </div>
         )}
+      </div>
+
+      {/* Chat */}
+      <div className="mt-6">
+        <ChatPanel meetingId={id} placeholder="Ask about this meeting..." />
       </div>
 
       {/* Transcript Timeline */}
