@@ -71,12 +71,27 @@ export function useKnowledge() {
     }
   };
 
+  const downloadDocument = async (id: string) => {
+    try {
+      const res = await fetch(`/api/knowledge/${id}`);
+      if (!res.ok) {
+        toast.error("Failed to get download link");
+        return;
+      }
+      const data = await res.json();
+      window.open(data.downloadUrl, "_blank");
+    } catch {
+      toast.error("Failed to get download link");
+    }
+  };
+
   return {
     documents,
     loading,
     uploading,
     uploadDocument,
     deleteDocument,
+    downloadDocument,
     refresh: fetchDocuments,
   };
 }
