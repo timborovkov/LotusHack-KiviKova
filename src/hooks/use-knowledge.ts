@@ -12,6 +12,10 @@ export function useKnowledge() {
   const fetchDocuments = useCallback(async () => {
     try {
       const res = await fetch("/api/knowledge");
+      if (!res.ok) {
+        toast.error("Failed to load documents", { id: "fetch-docs-error" });
+        return;
+      }
       const data = await res.json();
       setDocuments(data.documents);
     } catch {
