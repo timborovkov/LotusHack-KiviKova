@@ -1,6 +1,9 @@
 import { PDFParse } from "pdf-parse";
 import mammoth from "mammoth";
 
+// Disable pdfjs worker — not available in Next.js server bundles
+PDFParse.setWorker("");
+
 export type FileType = "pdf" | "docx" | "txt" | "md";
 
 export async function parseDocument(
