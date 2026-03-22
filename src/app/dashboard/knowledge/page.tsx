@@ -8,8 +8,14 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
 export default function KnowledgePage() {
-  const { documents, loading, uploading, uploadDocument, deleteDocument } =
-    useKnowledge();
+  const {
+    documents,
+    loading,
+    uploading,
+    uploadDocument,
+    deleteDocument,
+    downloadDocument,
+  } = useKnowledge();
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-8">
@@ -33,7 +39,11 @@ export default function KnowledgePage() {
           Loading documents...
         </div>
       ) : (
-        <KnowledgeList documents={documents} onDelete={deleteDocument} />
+        <KnowledgeList
+          documents={documents}
+          onDelete={deleteDocument}
+          onDownload={downloadDocument}
+        />
       )}
     </div>
   );
