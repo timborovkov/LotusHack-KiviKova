@@ -267,6 +267,10 @@
               break;
 
             case "input_audio_buffer.speech_started":
+              // Stop any playing audio (barge-in)
+              audioQueue.length = 0;
+              isPlaying = false;
+              audioDone = true;
               setStatus("Hearing speech...", "listening");
               break;
 
