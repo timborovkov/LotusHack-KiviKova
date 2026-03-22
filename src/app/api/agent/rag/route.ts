@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod/v4";
+import { db } from "@/lib/db";
+import { meetings } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 import {
   getRAGContext,
   formatContextForPrompt,
@@ -30,8 +33,20 @@ export async function POST(request: Request) {
 
   const { meetingId, query } = parsed.data;
 
+  // Look up meeting owner for userId scoping
+  const [meeting] = await db
+    .select({ userId: meetings.userId })
+    .from(meetings)
+    .where(eq(meetings.id, meetingId));
+
+  if (!meeting) {
+    return NextResponse.json({ context: "Meeting not found." });
+  }
+
   try {
     const results = await getRAGContext(query, {
+      meetingId,
+      userId: meeting.userId,
       boostMeetingId: meetingId,
     });
     const context =
