@@ -35,9 +35,15 @@ export async function PATCH(
   const { id } = await params;
   const body = await request.json();
 
+  // Only allow updating safe fields
+  const { title, joinLink } = body as Record<string, unknown>;
+  const updates: Record<string, unknown> = { updatedAt: new Date() };
+  if (typeof title === "string") updates.title = title;
+  if (typeof joinLink === "string") updates.joinLink = joinLink;
+
   const [updated] = await db
     .update(meetings)
-    .set({ ...body, updatedAt: new Date() })
+    .set(updates)
     .where(and(eq(meetings.id, id), eq(meetings.userId, user.id)))
     .returning();
 
