@@ -15,9 +15,10 @@ export function renderMarkdown(md: string): string {
   const blocks = escaped.split(/\n{2,}/);
 
   return blocks
+    .filter((block) => block.trim().length > 0)
     .map((block) => {
       const lines = block.trim().split("\n");
-      if (lines.every((l) => l.startsWith("- "))) {
+      if (lines.length > 0 && lines.every((l) => l.startsWith("- "))) {
         const items = lines.map((l) => `<li>${l.slice(2)}</li>`).join("");
         return `<ul>${items}</ul>`;
       }
