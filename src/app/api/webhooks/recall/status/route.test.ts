@@ -133,7 +133,10 @@ describe("POST /api/webhooks/recall/status", () => {
     const { status } = await parseJsonResponse(await POST(req));
 
     expect(status).toBe(200);
-    expect(mockGenerateSummary).toHaveBeenCalledWith(segments);
+    expect(mockGenerateSummary).toHaveBeenCalledWith(
+      segments,
+      expect.objectContaining({ title: "Test Meeting" })
+    );
     expect(mockDb.set).toHaveBeenCalledWith(
       expect.objectContaining({
         status: "completed",
