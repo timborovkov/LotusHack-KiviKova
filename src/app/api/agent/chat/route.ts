@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { streamText } from "ai";
+import { streamText, convertToModelMessages, stepCountIs } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 import { requireSessionUser } from "@/lib/auth/session";
@@ -12,10 +12,12 @@ export async function POST(request: Request) {
 
   const { messages, meetingId } = await request.json();
 
+  const modelMessages = await convertToModelMessages(messages);
+
   const result = streamText({
     model: openai("gpt-4o"),
     system: AGENT_SYSTEM_PROMPT,
-    messages,
+    messages: modelMessages,
     tools: {
       searchMeetingContext: {
         description:
@@ -41,6 +43,7 @@ export async function POST(request: Request) {
         },
       },
     },
+    stopWhen: stepCountIs(3),
   });
 
   return result.toUIMessageStreamResponse();
