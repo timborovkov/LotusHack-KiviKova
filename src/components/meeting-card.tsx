@@ -10,6 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Meeting } from "@/lib/db/schema";
+import { statusVariant } from "@/lib/meetings/constants";
 import Link from "next/link";
 import { Play, Square, Trash2 } from "lucide-react";
 
@@ -19,18 +20,6 @@ interface MeetingCardProps {
   onStop: (id: string) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
 }
-
-const statusVariant: Record<
-  string,
-  "default" | "secondary" | "destructive" | "outline"
-> = {
-  pending: "outline",
-  joining: "secondary",
-  active: "default",
-  processing: "secondary",
-  completed: "default",
-  failed: "destructive",
-};
 
 export function MeetingCard({
   meeting,
