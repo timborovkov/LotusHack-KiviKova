@@ -3,7 +3,7 @@
 import type { Document } from "@/lib/db/schema";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { FileText, Trash2, AlertCircle, Loader2 } from "lucide-react";
+import { FileText, Trash2, AlertCircle, Loader2, Download } from "lucide-react";
 
 const FILE_TYPE_LABELS: Record<string, string> = {
   pdf: "PDF",
@@ -24,12 +24,27 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+function formatDate(date: Date | string): string {
+  return new Date(date).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 interface KnowledgeListProps {
   documents: Document[];
   onDelete: (id: string) => void;
+  onDownload: (id: string) => void;
 }
 
-export function KnowledgeList({ documents, onDelete }: KnowledgeListProps) {
+export function KnowledgeList({
+  documents,
+  onDelete,
+  onDownload,
+}: KnowledgeListProps) {
   if (documents.length === 0) {
     return (
       <div className="text-muted-foreground py-12 text-center">
@@ -57,6 +72,7 @@ export function KnowledgeList({ documents, onDelete }: KnowledgeListProps) {
                   {FILE_TYPE_LABELS[doc.fileType] ?? doc.fileType.toUpperCase()}
                 </span>
                 <span>{formatFileSize(doc.fileSize)}</span>
+                <span>{formatDate(doc.createdAt)}</span>
                 {doc.status === "ready" && doc.chunkCount > 0 && (
                   <span>{doc.chunkCount} chunks</span>
                 )}
@@ -77,6 +93,18 @@ export function KnowledgeList({ documents, onDelete }: KnowledgeListProps) {
               <span className="max-w-48 truncate text-xs text-red-600">
                 {doc.error}
               </span>
+            )}
+
+            {doc.status === "ready" && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onDownload(doc.id)}
+                aria-label={`Download ${doc.fileName}`}
+                className="text-muted-foreground shrink-0"
+              >
+                <Download className="h-4 w-4" />
+              </Button>
             )}
 
             <Button
