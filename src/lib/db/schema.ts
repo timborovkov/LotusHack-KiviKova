@@ -33,9 +33,7 @@ export type User = typeof users.$inferSelect;
 
 export const meetings = pgTable("meetings", {
   id: uuid("id").defaultRandom().primaryKey(),
-  userId: uuid("user_id")
-    .references(() => users.id)
-    .notNull(),
+  userId: uuid("user_id").references(() => users.id),
   title: text("title").notNull(),
   joinLink: text("join_link").notNull(),
   status: meetingStatusEnum("status").default("pending").notNull(),
