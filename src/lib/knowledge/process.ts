@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { documents } from "@/lib/db/schema";
 import { getDownloadUrl } from "@/lib/storage/operations";
@@ -16,11 +16,11 @@ export async function processDocument(
   userId: string
 ): Promise<void> {
   try {
-    // 1. Get document metadata
+    // 1. Get document metadata (scoped to user for safety)
     const [doc] = await db
       .select()
       .from(documents)
-      .where(eq(documents.id, documentId));
+      .where(and(eq(documents.id, documentId), eq(documents.userId, userId)));
 
     if (!doc) throw new Error(`Document not found: ${documentId}`);
 
