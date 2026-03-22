@@ -98,17 +98,27 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
+  console.log(
+    "[Webhook:transcript] Received payload:",
+    JSON.stringify(body).slice(0, 500)
+  );
+
   const result = parsePayload(body);
 
   if (result === null) {
+    console.log("[Webhook:transcript] Payload did not match any schema");
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
 
   if (result === "skip") {
+    console.log("[Webhook:transcript] Skipped (empty/non-final)");
     return NextResponse.json({ skipped: true });
   }
 
   const { botId, speaker, text, timestampMs } = result;
+  console.log(
+    `[Webhook:transcript] Parsed: botId=${botId}, speaker=${speaker}, text="${text.slice(0, 80)}..."`
+  );
 
   const [meeting] = await db
     .select()
@@ -116,6 +126,7 @@ export async function POST(request: Request) {
     .where(sql`${meetings.metadata}->>'botId' = ${botId}`);
 
   if (!meeting) {
+    console.log(`[Webhook:transcript] No meeting found for botId=${botId}`);
     return NextResponse.json(
       { error: "Meeting not found for bot" },
       { status: 404 }
@@ -123,6 +134,9 @@ export async function POST(request: Request) {
   }
 
   if (meeting.status !== "active") {
+    console.log(
+      `[Webhook:transcript] Meeting ${meeting.id} not active (${meeting.status})`
+    );
     return NextResponse.json(
       { error: `Meeting is not active, current status: ${meeting.status}` },
       { status: 400 }
