@@ -12,17 +12,26 @@ import { statusVariant } from "@/lib/meetings/constants";
 import { ArrowLeft, Search, Clock, Users } from "lucide-react";
 
 function renderMarkdown(md: string): string {
-  return md
+  const escaped = md
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    .replace(/^- (.+)$/gm, "<li>$1</li>")
-    .replace(/(<li>.*<\/li>\n?)+/g, (match) => `<ul>${match}</ul>`)
-    .replace(/\n{2,}/g, "</p><p>")
-    .replace(/\n/g, "<br>")
-    .replace(/^/, "<p>")
-    .replace(/$/, "</p>");
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+
+  // Split into blocks by double newlines
+  const blocks = escaped.split(/\n{2,}/);
+
+  return blocks
+    .map((block) => {
+      const lines = block.trim().split("\n");
+      // Check if all lines are list items
+      if (lines.every((l) => l.startsWith("- "))) {
+        const items = lines.map((l) => `<li>${l.slice(2)}</li>`).join("");
+        return `<ul>${items}</ul>`;
+      }
+      return `<p>${lines.join("<br>")}</p>`;
+    })
+    .join("");
 }
 
 function formatTime(ms: number): string {
