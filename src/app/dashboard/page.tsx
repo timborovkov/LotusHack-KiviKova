@@ -76,6 +76,9 @@ export default function DashboardPage() {
       ) : (
         <MeetingList
           meetings={filtered}
+          emptyMessage={
+            meetings.length > 0 ? "No meetings match your filters" : undefined
+          }
           onJoin={joinAgent}
           onStop={stopAgent}
           onDelete={deleteMeeting}
