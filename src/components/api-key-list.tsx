@@ -65,7 +65,10 @@ export function ApiKeyList({ keys, onCreate, onDelete }: ApiKeyListProps) {
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <h3 className="font-semibold">API Keys</h3>
-        <Dialog open={open} onOpenChange={handleClose}>
+        <Dialog
+          open={open}
+          onOpenChange={(v) => (v ? setOpen(true) : handleClose())}
+        >
           <DialogTrigger render={<Button size="sm" />}>
             <Plus className="mr-1 h-4 w-4" />
             Generate Key
