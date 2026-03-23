@@ -1,5 +1,5 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
+import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { jsonSchema } from "ai";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
@@ -110,7 +110,7 @@ export class McpClientManager {
       headers["Authorization"] = `Bearer ${server.apiKey}`;
     }
 
-    const transport = new SSEClientTransport(new URL(server.url), {
+    const transport = new StreamableHTTPClientTransport(new URL(server.url), {
       requestInit: { headers },
     });
 
