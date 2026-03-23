@@ -58,6 +58,7 @@ All under `src/app/api/`:
 - `agent/respond/route.ts` — POST text-based RAG chat
 - `agent/voice-token/route.ts` — GET ephemeral OpenAI Realtime token (public, verified by botSecret)
 - `agent/rag/route.ts` — POST RAG search for voice agent (public, verified by botSecret)
+- `agent/mcp-tool/route.ts` — POST MCP tool execution for voice agent (public, verified by botSecret)
 - `webhooks/recall/transcript/route.ts` — Receives realtime transcript data from Recall
 - `webhooks/recall/status/route.ts` — Receives bot lifecycle events (call_ended, transcript.done)
 - `auth/[...nextauth]/route.ts` — NextAuth handlers
@@ -80,7 +81,7 @@ All under `src/app/api/`:
 ### Auth & Middleware
 
 - `src/middleware.ts` — Protects `/dashboard/*`, `/api/meetings/*`, `/api/agent/*`, `/api/search/*`, `/api/knowledge/*`, `/api/tasks/*`, `/api/settings/*`, `/api/export`
-- Public endpoints (no auth): `/api/webhooks/*`, `/api/agent/voice-token`, `/api/agent/rag` (verified by botSecret), `/api/mcp` (API key auth)
+- Public endpoints (no auth): `/api/webhooks/*`, `/api/agent/voice-token`, `/api/agent/rag`, `/api/agent/mcp-tool` (verified by botSecret), `/api/mcp` (API key auth)
 - All meeting API routes check `userId` ownership via `and(eq(meetings.id, id), eq(meetings.userId, user.id))`
 - RAG requires `userId` parameter to prevent cross-user data leakage
 
