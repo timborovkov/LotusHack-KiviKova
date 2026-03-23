@@ -57,9 +57,7 @@ export async function POST(
     // Re-extract action items
     try {
       const items = await extractActionItems(segments);
-      if (items.length > 0) {
-        await storeExtractedTasks(id, user.id, items);
-      }
+      await storeExtractedTasks(id, user.id, items);
     } catch (err) {
       console.error("Action item extraction failed:", err);
     }
