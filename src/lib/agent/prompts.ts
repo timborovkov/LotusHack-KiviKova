@@ -18,7 +18,3 @@ export function getVoiceAgentSystemPrompt(agenda?: string | null): string {
     return `${VOICE_AGENT_SYSTEM_PROMPT_BASE}\n\nMeeting Agenda:\n${agenda}`;
   return VOICE_AGENT_SYSTEM_PROMPT_BASE;
 }
-
-// Keep constants for backward compat with tests
-export const AGENT_SYSTEM_PROMPT = AGENT_SYSTEM_PROMPT_BASE;
-export const VOICE_AGENT_SYSTEM_PROMPT = VOICE_AGENT_SYSTEM_PROMPT_BASE;
