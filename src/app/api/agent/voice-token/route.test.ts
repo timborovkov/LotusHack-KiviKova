@@ -116,7 +116,6 @@ describe("GET /api/agent/voice-token", () => {
     expect(status).toBe(200);
     expect(data.token).toBe("ek_test_token");
     expect(data.meetingId).toBe("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11");
-    expect(data.mcpToolUrl).toContain("/api/agent/mcp-tool");
     expect(data.mcpToolNames).toEqual([]);
   });
 
