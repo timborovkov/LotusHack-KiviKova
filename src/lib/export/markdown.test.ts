@@ -54,6 +54,10 @@ describe("slugify", () => {
   it("trims leading/trailing hyphens", () => {
     expect(slugify("--hello--")).toBe("hello");
   });
+
+  it("returns empty string for non-Latin titles", () => {
+    expect(slugify("日本語")).toBe("");
+  });
 });
 
 describe("formatMeetingMarkdown", () => {
@@ -134,5 +138,17 @@ describe("formatMeetingMarkdown", () => {
 
     const md = formatMeetingMarkdown(data);
     expect(md).toContain("**Date:** 2026-02-14");
+  });
+
+  it("escapes pipe characters in task titles and assignees", () => {
+    const data: MeetingExportData = {
+      meeting: fakeMeeting(),
+      tasks: [fakeTask({ title: "Fix | deploy", assignee: "Alice | Bob" })],
+      transcript: [],
+    };
+
+    const md = formatMeetingMarkdown(data);
+    expect(md).toContain("Fix \\| deploy");
+    expect(md).toContain("Alice \\| Bob");
   });
 });
