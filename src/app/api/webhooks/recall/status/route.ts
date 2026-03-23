@@ -109,8 +109,8 @@ export async function POST(request: Request) {
 
       // Extract action items (non-critical)
       try {
-        const items = await extractActionItems(segments);
-        if (items.length > 0 && meeting.userId) {
+        if (meeting.userId) {
+          const items = await extractActionItems(segments);
           await storeExtractedTasks(meeting.id, meeting.userId, items);
         }
       } catch (error) {
