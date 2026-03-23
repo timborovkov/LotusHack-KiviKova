@@ -32,12 +32,12 @@ Run `pnpm validate` after every change. It formats, lints with autofix, typechec
 
 ### Key Layers
 
-- **`src/lib/db/`** — Drizzle ORM. `users`, `meetings`, and `documents` tables. `meetings` has status enum (`pending → joining → active → processing → completed | failed`). `documents` tracks knowledge base uploads with status enum (`processing → ready | failed`). Schema changes → `pnpm db:push`.
+- **`src/lib/db/`** — Drizzle ORM. `users`, `meetings`, and `documents` tables. `meetings` has status enum (`pending → joining → active → processing → completed | failed`). `documents` tracks knowledge base uploads with optional `meetingId` FK for meeting-scoped docs and status enum (`processing → ready | failed`). Agenda is stored in `meetings.metadata.agenda`. Schema changes → `pnpm db:push`.
 - **`src/lib/auth/`** — NextAuth v5 with credentials provider (email/password). `config.ts` for edge-compatible config, `index.ts` for full config with DB. `session.ts` has `requireSessionUser()` helper.
 - **`src/lib/meeting-bot/`** — Provider pattern. `MeetingBotProvider` interface with `RecallProvider` and `MockProvider`. Selected via `MEETING_BOT_PROVIDER` env var.
-- **`src/lib/vector/`** — Qdrant client singleton. Each meeting gets its own collection (1536-dim Cosine). `scroll.ts` fetches all transcript points for summary generation. `knowledge.ts` manages per-user knowledge collections for uploaded documents.
+- **`src/lib/vector/`** — Qdrant client singleton. Each meeting gets its own collection (1536-dim Cosine) containing transcripts, meeting-scoped documents (`type:"document"`), and agenda (`type:"agenda"`). `scroll.ts` fetches transcript points only (filtered by `type:"transcript"`). `knowledge.ts` manages per-user knowledge collections. `agenda.ts` upserts/clears agenda text in meeting collections.
 - **`src/lib/openai/`** — OpenAI client singleton. `embeddings.ts` for text embedding, `voice.ts` for server-side VoiceSession class (wraps OpenAI Realtime API).
-- **`src/lib/agent/`** — `rag.ts` for RAG context retrieval (cross-meeting + knowledge base search with boost). `RAGResult` has `source: "transcript" | "document"`. `prompts.ts` has separate `AGENT_SYSTEM_PROMPT` (text) and `VOICE_AGENT_SYSTEM_PROMPT` (in-call voice).
+- **`src/lib/agent/`** — `rag.ts` for RAG context retrieval (cross-meeting + knowledge base search with boost). Meeting collections can contain document and agenda types alongside transcripts. `prompts.ts` exports `getAgentSystemPrompt(agenda?)` and `getVoiceAgentSystemPrompt(agenda?)` which inject agenda context when available.
 - **`src/lib/summary/`** — `generate.ts` generates meeting summaries from transcript segments via LLM.
 - **`src/lib/knowledge/`** — `parse.ts` extracts text from PDF/DOCX/TXT/MD. `chunk.ts` splits text into overlapping chunks. `process.ts` orchestrates parse → chunk → embed → Qdrant upsert.
 - **`src/lib/storage/`** — S3-compatible client singleton (Minio locally). `operations.ts` for upload, delete, and presigned download URLs.
@@ -61,8 +61,8 @@ All under `src/app/api/`:
 - `auth/register/route.ts` — User registration
 - `agent/chat/route.ts` — POST streaming RAG chat (Vercel AI SDK, tool-based)
 - `search/route.ts` — Vector search across meetings and knowledge base
-- `knowledge/route.ts` — GET list documents, POST upload (multipart form-data)
-- `knowledge/[id]/route.ts` — GET document + download URL, DELETE document
+- `knowledge/route.ts` — GET list documents (optional `?meetingId` filter), POST upload (multipart form-data, optional `meetingId` field for meeting-scoped docs)
+- `knowledge/[id]/route.ts` — GET document + download URL, DELETE document (from correct collection based on meetingId)
 
 ### Auth & Middleware
 
