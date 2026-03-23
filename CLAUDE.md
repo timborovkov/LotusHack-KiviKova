@@ -74,10 +74,12 @@ All under `src/app/api/`:
 - `settings/api-keys/[id]/route.ts` — DELETE API key
 - `settings/mcp-servers/route.ts` — GET list, POST create MCP server configs
 - `settings/mcp-servers/[id]/route.ts` — PATCH update, DELETE MCP server config
+- `meetings/[id]/export/route.ts` — GET export meeting as Markdown or PDF (`?format=md|pdf`)
+- `export/route.ts` — GET bulk export all meetings as ZIP archive
 
 ### Auth & Middleware
 
-- `src/middleware.ts` — Protects `/dashboard/*`, `/api/meetings/*`, `/api/agent/*`, `/api/search/*`, `/api/knowledge/*`, `/api/tasks/*`, `/api/settings/*`
+- `src/middleware.ts` — Protects `/dashboard/*`, `/api/meetings/*`, `/api/agent/*`, `/api/search/*`, `/api/knowledge/*`, `/api/tasks/*`, `/api/settings/*`, `/api/export`
 - Public endpoints (no auth): `/api/webhooks/*`, `/api/agent/voice-token`, `/api/agent/rag` (verified by botSecret), `/api/mcp` (API key auth)
 - All meeting API routes check `userId` ownership via `and(eq(meetings.id, id), eq(meetings.userId, user.id))`
 - RAG requires `userId` parameter to prevent cross-user data leakage
