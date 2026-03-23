@@ -48,7 +48,7 @@ export async function POST(request: Request) {
   const modelMessages = await convertToModelMessages(messages);
 
   const result = streamText({
-    model: openai("gpt-4o"),
+    model: openai("gpt-5.4"),
     system: getAgentSystemPrompt(agenda, mcpToolDescriptions),
     messages: modelMessages,
     tools: {

@@ -69,7 +69,7 @@ export async function GET(request: Request) {
     const secret = await client.realtime.clientSecrets.create({
       session: {
         type: "realtime",
-        model: "gpt-4o-realtime-preview",
+        model: "gpt-realtime-1.5",
         instructions: getVoiceAgentSystemPrompt(agenda, mcpToolDescriptions),
         tools: [
           {
