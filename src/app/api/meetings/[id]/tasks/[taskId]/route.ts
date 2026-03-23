@@ -11,7 +11,7 @@ export async function PATCH(
   const user = await requireSessionUser();
   if (user instanceof NextResponse) return user;
 
-  const { taskId } = await params;
+  const { id: meetingId, taskId } = await params;
   const body = await request.json();
 
   // Allowlisted fields only
@@ -28,7 +28,13 @@ export async function PATCH(
   const [updated] = await db
     .update(tasks)
     .set(updates)
-    .where(and(eq(tasks.id, taskId), eq(tasks.userId, user.id)))
+    .where(
+      and(
+        eq(tasks.id, taskId),
+        eq(tasks.meetingId, meetingId),
+        eq(tasks.userId, user.id)
+      )
+    )
     .returning();
 
   if (!updated) {
@@ -45,11 +51,17 @@ export async function DELETE(
   const user = await requireSessionUser();
   if (user instanceof NextResponse) return user;
 
-  const { taskId } = await params;
+  const { id: meetingId, taskId } = await params;
 
   const [deleted] = await db
     .delete(tasks)
-    .where(and(eq(tasks.id, taskId), eq(tasks.userId, user.id)))
+    .where(
+      and(
+        eq(tasks.id, taskId),
+        eq(tasks.meetingId, meetingId),
+        eq(tasks.userId, user.id)
+      )
+    )
     .returning();
 
   if (!deleted) {
