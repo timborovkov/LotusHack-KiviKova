@@ -17,7 +17,9 @@ export async function storeExtractedTasks(
     // Clear only auto-extracted tasks, not manually created ones
     await tx
       .delete(tasks)
-      .where(and(eq(tasks.meetingId, meetingId), eq(tasks.autoExtracted, 1)));
+      .where(
+        and(eq(tasks.meetingId, meetingId), eq(tasks.autoExtracted, true))
+      );
 
     if (items.length === 0) return;
 
@@ -27,7 +29,7 @@ export async function storeExtractedTasks(
         userId,
         title: item.title,
         assignee: item.assignee,
-        autoExtracted: 1,
+        autoExtracted: true,
       }))
     );
   });
