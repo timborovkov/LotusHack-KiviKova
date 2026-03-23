@@ -85,3 +85,27 @@ export const documents = pgTable("documents", {
 
 export type Document = typeof documents.$inferSelect;
 export type NewDocument = typeof documents.$inferInsert;
+
+export const taskStatusEnum = pgEnum("task_status", ["open", "completed"]);
+
+export const tasks = pgTable("tasks", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  meetingId: uuid("meeting_id")
+    .references(() => meetings.id, { onDelete: "cascade" })
+    .notNull(),
+  userId: uuid("user_id")
+    .references(() => users.id)
+    .notNull(),
+  title: text("title").notNull(),
+  assignee: text("assignee"),
+  dueDate: timestamp("due_date", { withTimezone: true }),
+  status: taskStatusEnum("status").default("open").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+export type Task = typeof tasks.$inferSelect;

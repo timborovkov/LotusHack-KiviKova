@@ -6,6 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useMeetingDetail } from "@/hooks/use-meeting-detail";
 import { useKnowledge } from "@/hooks/use-knowledge";
+import { useMeetingTasks } from "@/hooks/use-tasks";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,8 +15,17 @@ import { statusVariant } from "@/lib/meetings/constants";
 import { ChatPanel } from "@/components/chat-panel";
 import { KnowledgeList } from "@/components/knowledge-list";
 import { UploadDocumentDialog } from "@/components/upload-document-dialog";
+import { TaskList } from "@/components/task-list";
 import { formatTime, renderMarkdown } from "@/lib/format";
-import { ArrowLeft, Search, Clock, Users, FileText, Save } from "lucide-react";
+import {
+  ArrowLeft,
+  Search,
+  Clock,
+  Users,
+  FileText,
+  Save,
+  ListChecks,
+} from "lucide-react";
 
 export default function MeetingDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -53,6 +63,14 @@ export default function MeetingDetailPage() {
   // voice agent already has its instructions and won't pick up changes.
   const isEditable =
     meeting?.status === "pending" || meeting?.status === "failed";
+
+  const {
+    tasks: meetingTasks,
+    loading: tasksLoading,
+    addTask,
+    updateTask,
+    deleteTask,
+  } = useMeetingTasks(id);
 
   const saveAgenda = async () => {
     setAgendaSaving(true);
@@ -187,6 +205,32 @@ export default function MeetingDetailPage() {
           </div>
         </div>
       )}
+
+      {/* Action Items */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <ListChecks className="h-4 w-4" />
+            Action Items
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {meeting.status === "processing" && meetingTasks.length === 0 ? (
+            <p className="text-muted-foreground italic">
+              Extracting action items...
+            </p>
+          ) : tasksLoading ? (
+            <p className="text-muted-foreground italic">Loading...</p>
+          ) : (
+            <TaskList
+              tasks={meetingTasks}
+              onToggle={(taskId, status) => updateTask(taskId, { status })}
+              onDelete={deleteTask}
+              onAdd={(title) => addTask(title)}
+            />
+          )}
+        </CardContent>
+      </Card>
 
       {/* Search */}
       <div className="mt-6">
