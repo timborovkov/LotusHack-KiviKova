@@ -2,10 +2,17 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-import type { McpServer } from "@/lib/db/schema";
+interface McpServerInfo {
+  id: string;
+  name: string;
+  url: string;
+  enabled: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export function useMcpServers() {
-  const [servers, setServers] = useState<McpServer[]>([]);
+  const [servers, setServers] = useState<McpServerInfo[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchServers = useCallback(async () => {
