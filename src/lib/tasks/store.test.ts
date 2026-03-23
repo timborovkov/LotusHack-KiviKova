@@ -14,6 +14,12 @@ const { mockDb } = vi.hoisted(() => {
   ]) {
     db[m] = vi.fn().mockImplementation(() => db);
   }
+  // transaction passes the db mock as the tx argument
+  db.transaction = vi
+    .fn()
+    .mockImplementation(async (fn: (tx: typeof db) => Promise<void>) => {
+      await fn(db);
+    });
   return { mockDb: db };
 });
 
@@ -27,12 +33,13 @@ const USER_ID = "b1ffcd00-1a2b-4ef8-bb6d-7cc0ce491b22";
 describe("storeExtractedTasks", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("deletes existing tasks and inserts new ones", async () => {
+  it("deletes auto-extracted tasks and inserts new ones in a transaction", async () => {
     await storeExtractedTasks(MEETING_ID, USER_ID, [
       { title: "Task A", assignee: "Alice" },
       { title: "Task B", assignee: null },
     ]);
 
+    expect(mockDb.transaction).toHaveBeenCalled();
     expect(mockDb.delete).toHaveBeenCalled();
     expect(mockDb.values).toHaveBeenCalledWith([
       {
@@ -55,6 +62,7 @@ describe("storeExtractedTasks", () => {
   it("only deletes when items array is empty", async () => {
     await storeExtractedTasks(MEETING_ID, USER_ID, []);
 
+    expect(mockDb.transaction).toHaveBeenCalled();
     expect(mockDb.delete).toHaveBeenCalled();
     expect(mockDb.insert).not.toHaveBeenCalled();
   });
