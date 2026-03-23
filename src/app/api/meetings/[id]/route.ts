@@ -74,6 +74,10 @@ export async function PATCH(
     .where(and(eq(meetings.id, id), eq(meetings.userId, user.id)))
     .returning();
 
+  if (!updated) {
+    return NextResponse.json({ error: "Meeting not found" }, { status: 404 });
+  }
+
   return NextResponse.json(updated);
 }
 
