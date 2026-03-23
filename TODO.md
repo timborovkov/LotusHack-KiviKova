@@ -146,7 +146,15 @@
 - **UI indicator** — Show "Silent" badge on meeting card and detail page
 - **Storage** — `metadata.silent: boolean` on the meeting row
 
-## P19 — Billing with Polar
+## P19 — Switch to TanStack Query
+
+- **Replace custom hooks** — Migrate `useMeetings`, `useMeetingDetail`, `useKnowledge`, `useTasks`, `useAllTasks`, `useApiKeys`, `useMcpServers` from manual `useState`/`useEffect`/`fetch` to TanStack Query (`@tanstack/react-query`)
+- **Query client setup** — Add `QueryClientProvider` in root layout
+- **Cache & revalidation** — Leverage built-in caching, stale-while-revalidate, and automatic refetch on focus
+- **Mutations** — Use `useMutation` for create/update/delete operations with optimistic updates and cache invalidation
+- **Remove polling** — Replace manual `setInterval` polling with TanStack Query's `refetchInterval` option
+
+## P20 — Billing with Polar
 
 - **Polar integration** — Connect Polar.sh for subscription management
 - **Pricing tiers** — Free trial for pro, Pro (x hours of meetings / month), Unlimited (not really unlimited, fair use applies)
