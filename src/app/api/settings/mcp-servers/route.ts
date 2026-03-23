@@ -17,7 +17,14 @@ export async function GET() {
   if (user instanceof NextResponse) return user;
 
   const servers = await db
-    .select()
+    .select({
+      id: mcpServers.id,
+      name: mcpServers.name,
+      url: mcpServers.url,
+      enabled: mcpServers.enabled,
+      createdAt: mcpServers.createdAt,
+      updatedAt: mcpServers.updatedAt,
+    })
     .from(mcpServers)
     .where(eq(mcpServers.userId, user.id))
     .orderBy(desc(mcpServers.createdAt));
