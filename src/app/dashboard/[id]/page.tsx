@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useMeetingDetail } from "@/hooks/use-meeting-detail";
 import { useKnowledge } from "@/hooks/use-knowledge";
@@ -40,16 +40,17 @@ export default function MeetingDetailPage() {
   } = useMeetingDetail(id);
   const [query, setQuery] = useState("");
 
-  const meetingMetadata = meeting?.metadata as Record<string, unknown>;
+  const meetingMetadata = (meeting?.metadata ?? {}) as Record<string, unknown>;
   const [agenda, setAgenda] = useState("");
   const [agendaSaving, setAgendaSaving] = useState(false);
-  const [agendaLoaded, setAgendaLoaded] = useState(false);
 
   // Sync agenda from meeting metadata on load
-  if (meeting && !agendaLoaded) {
-    setAgenda((meetingMetadata?.agenda as string) ?? "");
-    setAgendaLoaded(true);
-  }
+  useEffect(() => {
+    if (meeting) {
+      const meta = (meeting.metadata ?? {}) as Record<string, unknown>;
+      setAgenda((meta.agenda as string) ?? "");
+    }
+  }, [meeting?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const {
     documents: meetingDocs,
