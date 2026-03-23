@@ -17,16 +17,18 @@ export async function generateMeetingsZip(
     archive.on("error", reject);
 
     // Deduplicate slugs
-    const slugCounts = new Map<string, number>();
+    const usedSlugs = new Set<string>();
     const meetingSlugs: string[] = [];
     for (const item of data) {
-      let slug = slugify(item.meeting.title);
-      const count = slugCounts.get(slug) ?? 0;
-      if (count > 0) {
-        slug = `${slug}-${count}`;
+      const slug = slugify(item.meeting.title) || "meeting";
+      let candidate = slug;
+      let counter = 1;
+      while (usedSlugs.has(candidate)) {
+        candidate = `${slug}-${counter}`;
+        counter++;
       }
-      slugCounts.set(slugify(item.meeting.title), count + 1);
-      meetingSlugs.push(slug);
+      usedSlugs.add(candidate);
+      meetingSlugs.push(candidate);
     }
 
     // Add markdown files
