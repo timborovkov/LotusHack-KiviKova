@@ -215,12 +215,12 @@ export default function MeetingDetailPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {meeting.status === "processing" && meetingTasks.length === 0 ? (
+          {tasksLoading ? (
+            <p className="text-muted-foreground italic">Loading...</p>
+          ) : meeting.status === "processing" && meetingTasks.length === 0 ? (
             <p className="text-muted-foreground italic">
               Extracting action items...
             </p>
-          ) : tasksLoading ? (
-            <p className="text-muted-foreground italic">Loading...</p>
           ) : (
             <TaskList
               tasks={meetingTasks}
