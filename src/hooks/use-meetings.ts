@@ -51,7 +51,6 @@ export function useMeetings() {
       queryClient.invalidateQueries({ queryKey: queryKeys.meetings.all });
       toast.success("Meeting created");
     },
-    onError: () => toast.error("Failed to create meeting"),
   });
 
   const joinMutation = useMutation({
