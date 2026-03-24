@@ -78,12 +78,15 @@ async function flushBuffer(
   if (!buffer || buffer.chunks.length === 0) return;
 
   const chunks = [...buffer.chunks];
-  buffer.chunks = [];
-  buffer.timer = null;
+  // Remove the entry entirely — chunks are consumed and timer has already fired
+  buffers.delete(meetingId);
 
   const fullText = chunks.map((c) => `${c.speaker}: ${c.text}`).join("\n");
 
-  if (!containsMention(fullText)) return;
+  // Only check spoken text — not speaker name prefixes — to avoid false positives
+  // from participants whose display names contain "KiviKova" (e.g. "KiviKova Support")
+  const spokenText = chunks.map((c) => c.text).join("\n");
+  if (!containsMention(spokenText)) return;
 
   const rl = rateLimit(`silent-agent:${meetingId}`, {
     interval: RATE_LIMIT_INTERVAL_MS,
