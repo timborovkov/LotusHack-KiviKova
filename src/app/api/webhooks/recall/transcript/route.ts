@@ -218,15 +218,17 @@ export async function POST(request: Request) {
     metadata.silent &&
     meeting.status === "active" &&
     meeting.userId &&
+    typeof metadata.botId === "string" &&
     speaker !== "KiviKova Agent"
   ) {
     const userId = meeting.userId;
+    const botId = metadata.botId;
     import("@/lib/agent/silent")
       .then(({ handleSilentTranscript }) =>
         handleSilentTranscript(
           meeting.id,
           userId,
-          metadata.botId as string,
+          botId,
           speaker,
           text,
           timestampMs,
