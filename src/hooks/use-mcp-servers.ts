@@ -26,6 +26,7 @@ export function useMcpServers() {
   const { data: servers = [], isLoading: loading } = useQuery({
     queryKey: queryKeys.mcpServers.all,
     queryFn: fetchServers,
+    meta: { errorMessage: "Failed to load MCP servers" },
   });
 
   const addMutation = useMutation({
