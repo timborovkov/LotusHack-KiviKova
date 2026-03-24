@@ -26,6 +26,3 @@ export function getS3Bucket(): string {
   }
   return bucket;
 }
-
-/** @deprecated Use getS3Bucket() instead */
-export const S3_BUCKET = process.env.S3_BUCKET ?? "kivikova-knowledge";
