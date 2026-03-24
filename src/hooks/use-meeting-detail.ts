@@ -31,7 +31,7 @@ async function fetchTranscript(
   meetingId: string
 ): Promise<TranscriptSegment[]> {
   const res = await fetch(`/api/meetings/${meetingId}/transcript`);
-  if (!res.ok) throw new Error("Failed to load transcript");
+  if (!res.ok) return [];
   const data = await res.json();
   return data.segments;
 }
