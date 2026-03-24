@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 
 // We test the schema directly rather than the cached getEnv()
 // to avoid process.env pollution between tests
