@@ -2,9 +2,10 @@ const { mockConnectMcpClient } = vi.hoisted(() => ({
   mockConnectMcpClient: vi.fn(),
 }));
 
-vi.mock("@/lib/mcp/transport", () => ({
-  connectMcpClient: mockConnectMcpClient,
-}));
+vi.mock("@/lib/mcp/transport", async (importActual) => {
+  const actual = await importActual<typeof import("@/lib/mcp/transport")>();
+  return { ...actual, connectMcpClient: mockConnectMcpClient };
+});
 
 import { POST } from "./route";
 import { createJsonRequest, parseJsonResponse } from "@/test/helpers";
