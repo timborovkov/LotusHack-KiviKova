@@ -19,6 +19,7 @@ export function useMeetings() {
   const { data: meetings = [], isLoading: loading } = useQuery({
     queryKey: queryKeys.meetings.all,
     queryFn: fetchMeetings,
+    meta: { errorMessage: "Failed to load meetings" },
     staleTime: 10_000,
     refetchInterval: (query) => {
       const data = query.state.data;
