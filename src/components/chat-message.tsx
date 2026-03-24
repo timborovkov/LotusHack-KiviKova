@@ -4,7 +4,16 @@ import type { UIMessage } from "ai";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { formatTime, renderMarkdown } from "@/lib/format";
-import { ChevronDown, ChevronUp, Search, Clock, FileText } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  Search,
+  Clock,
+  FileText,
+  Wrench,
+  CheckCircle2,
+  Loader2,
+} from "lucide-react";
 
 interface Source {
   text: string;
@@ -13,6 +22,37 @@ interface Source {
   speaker?: string;
   timestampMs?: number;
   fileName?: string;
+}
+
+// AI SDK v6 tool invocation part shape
+interface ToolInvocationPart {
+  type: string;
+  state:
+    | "input-streaming"
+    | "input-available"
+    | "output-streaming"
+    | "output-available";
+  toolInvocation: {
+    toolCallId: string;
+    toolName: string;
+    args: Record<string, unknown>;
+    result?: unknown;
+  };
+}
+
+function isToolPart(part: { type: string }): part is ToolInvocationPart {
+  return part.type.startsWith("tool-") && "toolInvocation" in part;
+}
+
+/** Extract human-readable name from a tool name. */
+function toolDisplayName(toolName: string): string {
+  if (toolName === "searchMeetingContext") return "Search meeting context";
+  // MCP format: mcp__{serverId}__{originalToolName}
+  const parts = toolName.split("__");
+  if (parts.length >= 3 && parts[0] === "mcp") {
+    return parts.slice(2).join("__").replace(/_/g, " ");
+  }
+  return toolName.replace(/_/g, " ");
 }
 
 function SourcesList({ sources }: { sources: Source[] }) {
@@ -70,34 +110,95 @@ function SourcesList({ sources }: { sources: Source[] }) {
   );
 }
 
+function McpToolResult({
+  toolName,
+  result,
+}: {
+  toolName: string;
+  result: unknown;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const display = toolDisplayName(toolName);
+
+  return (
+    <div className="mt-1.5">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => setExpanded(!expanded)}
+        className="text-muted-foreground h-auto px-1 py-0.5 text-xs"
+      >
+        <CheckCircle2 className="mr-1 h-3 w-3 text-green-500" />
+        {display}
+        {expanded ? (
+          <ChevronUp className="ml-1 h-3 w-3" />
+        ) : (
+          <ChevronDown className="ml-1 h-3 w-3" />
+        )}
+      </Button>
+      {expanded && result != null && (
+        <pre className="bg-muted/50 mt-1 max-h-40 overflow-auto rounded px-2 py-1.5 text-xs leading-relaxed break-all whitespace-pre-wrap">
+          {typeof result === "string"
+            ? result
+            : JSON.stringify(result, null, 2)}
+        </pre>
+      )}
+    </div>
+  );
+}
+
+function ActiveToolIndicator({ toolName }: { toolName: string }) {
+  const display = toolDisplayName(toolName);
+  const isSearch = toolName === "searchMeetingContext";
+
+  return (
+    <div className="text-muted-foreground flex items-center gap-2 py-1 text-xs">
+      {isSearch ? (
+        <Search className="h-3 w-3 animate-pulse" />
+      ) : (
+        <Loader2 className="h-3 w-3 animate-spin" />
+      )}
+      {isSearch ? "Searching meeting context..." : `Using ${display}...`}
+    </div>
+  );
+}
+
 export function ChatMessage({ message }: { message: UIMessage }) {
   const isUser = message.role === "user";
 
-  // Extract text and tool states from parts
   let textContent = "";
   const sources: Source[] = [];
-  let hasActiveToolCall = false;
+  const activeTools: string[] = [];
+  const completedMcpTools: { toolName: string; result: unknown }[] = [];
 
   for (const part of message.parts) {
     if (part.type === "text") {
       textContent += part.text;
+      continue;
     }
-    // Tool parts have type "tool-{name}" in v6
-    if (part.type.startsWith("tool-") && "state" in part) {
-      const state = (part as { state: string }).state;
-      if (state === "input-streaming" || state === "input-available") {
-        hasActiveToolCall = true;
-      }
-      if (state === "output-available") {
-        const output = (part as { output?: unknown }).output;
+
+    if (!isToolPart(part)) continue;
+
+    const { toolName, result } = part.toolInvocation;
+    const { state } = part;
+
+    if (state === "input-streaming" || state === "input-available") {
+      activeTools.push(toolName);
+    }
+
+    if (state === "output-available") {
+      if (toolName === "searchMeetingContext") {
         if (
-          output &&
-          typeof output === "object" &&
-          "sources" in output &&
-          Array.isArray((output as { sources: unknown }).sources)
+          result &&
+          typeof result === "object" &&
+          "sources" in result &&
+          Array.isArray((result as { sources: unknown }).sources)
         ) {
-          sources.push(...(output as { sources: Source[] }).sources);
+          sources.push(...(result as { sources: Source[] }).sources);
         }
+      } else {
+        // MCP tool completed — show result
+        completedMcpTools.push({ toolName, result });
       }
     }
   }
@@ -109,12 +210,13 @@ export function ChatMessage({ message }: { message: UIMessage }) {
           isUser ? "bg-primary text-primary-foreground" : "bg-muted"
         }`}
       >
-        {hasActiveToolCall && (
-          <div className="text-muted-foreground flex items-center gap-2 py-1 text-xs">
-            <Search className="h-3 w-3 animate-pulse" />
-            Searching meeting context...
-          </div>
-        )}
+        {activeTools.map((toolName) => (
+          <ActiveToolIndicator key={toolName} toolName={toolName} />
+        ))}
+
+        {completedMcpTools.map(({ toolName, result }) => (
+          <McpToolResult key={toolName} toolName={toolName} result={result} />
+        ))}
 
         {textContent && (
           <div
