@@ -5,7 +5,10 @@ import { db } from "@/lib/db";
 import { mcpServers } from "@/lib/db/schema";
 import { and, eq } from "drizzle-orm";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import {
+  StreamableHTTPClientTransport,
+  StreamableHTTPError,
+} from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 
 // Accept either an existing server ID (apiKey looked up server-side)
@@ -29,18 +32,26 @@ async function probe(
 
   const client = new Client({ name: "KiviKova", version: "1.0.0" });
 
-  // Try Streamable HTTP first (MCP spec 2025-03-26+), fall back to SSE
+  // Try Streamable HTTP first (MCP spec 2025-03-26+).
+  // Fall back to SSE only on 404/405 — server doesn't support the protocol.
   try {
     const transport = new StreamableHTTPClientTransport(new URL(url), {
       requestInit: { headers },
     });
     await client.connect(transport);
-  } catch {
-    const sseTransport = new SSEClientTransport(new URL(url), {
-      requestInit: { headers },
-      eventSourceInit: { fetch: (u, init) => fetch(u, { ...init, headers }) },
-    });
-    await client.connect(sseTransport);
+  } catch (err) {
+    if (
+      err instanceof StreamableHTTPError &&
+      (err.code === 404 || err.code === 405)
+    ) {
+      const sseTransport = new SSEClientTransport(new URL(url), {
+        requestInit: { headers },
+        eventSourceInit: { fetch: (u, init) => fetch(u, { ...init, headers }) },
+      });
+      await client.connect(sseTransport);
+    } else {
+      throw err;
+    }
   }
 
   try {
