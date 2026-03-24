@@ -18,7 +18,7 @@ const testSchema = z.union([
 // link-local incl. cloud metadata endpoint (169.254.x.x), unspecified (0.0.0.0),
 // IPv6 ULA (fc00::/7), and .local mDNS hostnames.
 const PRIVATE_IP_RE =
-  /^(localhost|.*\.local|0\.0\.0\.0|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|192\.168\.\d+\.\d+|169\.254\.\d+\.\d+|127\.\d+\.\d+\.\d+|::1|fc[0-9a-f]{2}:.*|fd[0-9a-f]{2}:.*)$/i;
+  /^(localhost|.*\.local|0\.0\.0\.0|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|192\.168\.\d+\.\d+|169\.254\.\d+\.\d+|127\.\d+\.\d+\.\d+|::1?|fc[0-9a-f]{2}:.*|fd[0-9a-f]{2}:.*)$/i;
 
 /**
  * Unwrap IPv6-mapped IPv4 addresses to their dotted-decimal form so that
@@ -48,9 +48,12 @@ function unwrapMappedIpv4(hostname: string): string | null {
 function isSsrfUrl(rawUrl: string): boolean {
   try {
     const { hostname } = new URL(rawUrl);
-    if (PRIVATE_IP_RE.test(hostname)) return true;
+    // URL.hostnames for IPv6 may include brackets in some runtimes (e.g. "[::]").
+    // Normalize so PRIVATE_IP_RE and IPv6-mapped parsing work consistently.
+    const normalizedHostname = hostname.replace(/^\[|\]$/g, "");
+    if (PRIVATE_IP_RE.test(normalizedHostname)) return true;
     // Also block IPv6-mapped IPv4 private addresses (e.g. ::ffff:169.254.169.254)
-    const mapped = unwrapMappedIpv4(hostname);
+    const mapped = unwrapMappedIpv4(normalizedHostname);
     if (mapped !== null && PRIVATE_IP_RE.test(mapped)) return true;
     return false;
   } catch {
