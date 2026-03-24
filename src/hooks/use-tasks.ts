@@ -21,6 +21,10 @@ export function useMeetingTasks(meetingId: string) {
     queryFn: () => fetchTasks(meetingId),
   });
 
+  // Invalidate all task queries (prefix match covers both byMeeting and all)
+  const invalidateTasks = () =>
+    queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+
   const addMutation = useMutation({
     mutationFn: async (params: { title: string; assignee?: string }) => {
       const res = await fetch(`/api/meetings/${meetingId}/tasks`, {
@@ -31,10 +35,7 @@ export function useMeetingTasks(meetingId: string) {
       if (!res.ok) throw new Error("Failed to add task");
       return res.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: qk });
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
-    },
+    onSuccess: invalidateTasks,
     onError: () => toast.error("Failed to add task"),
   });
 
@@ -55,21 +56,33 @@ export function useMeetingTasks(meetingId: string) {
       return res.json();
     },
     onMutate: async ({ taskId, updates }) => {
-      await queryClient.cancelQueries({ queryKey: qk });
-      const previous = queryClient.getQueryData<Task[]>(qk);
+      // Cancel both per-meeting and all-tasks queries
+      await queryClient.cancelQueries({ queryKey: queryKeys.tasks.all });
+      const previousMeeting = queryClient.getQueryData<Task[]>(qk);
+      const previousAll = queryClient.getQueryData(queryKeys.tasks.all);
+
+      // Optimistic update on per-meeting tasks
       queryClient.setQueryData<Task[]>(qk, (old) =>
         old?.map((t) => (t.id === taskId ? { ...t, ...updates } : t))
       );
-      return { previous };
+      // Optimistic update on all-tasks (dashboard widget)
+      queryClient.setQueryData(queryKeys.tasks.all, (old: unknown) =>
+        Array.isArray(old)
+          ? old.map((t: Record<string, unknown>) =>
+              t.id === taskId ? { ...t, ...updates } : t
+            )
+          : old
+      );
+      return { previousMeeting, previousAll };
     },
     onError: (_err, _vars, context) => {
-      if (context?.previous) queryClient.setQueryData(qk, context.previous);
+      if (context?.previousMeeting)
+        queryClient.setQueryData(qk, context.previousMeeting);
+      if (context?.previousAll)
+        queryClient.setQueryData(queryKeys.tasks.all, context.previousAll);
       toast.error("Failed to update task");
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: qk });
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
-    },
+    onSettled: invalidateTasks,
   });
 
   const deleteMutation = useMutation({
@@ -79,10 +92,7 @@ export function useMeetingTasks(meetingId: string) {
       });
       if (!res.ok) throw new Error("Failed to delete task");
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: qk });
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
-    },
+    onSuccess: invalidateTasks,
     onError: () => toast.error("Failed to delete task"),
   });
 
