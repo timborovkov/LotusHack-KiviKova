@@ -1,8 +1,10 @@
+import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { getOpenAIClient } from "@/lib/openai/client";
 import { getRAGContext, formatContextForPrompt } from "@/lib/agent/rag";
 import { getSilentAgentSystemPrompt } from "@/lib/agent/prompts";
 import { getMeetingBotProvider } from "@/lib/meeting-bot";
 import { rateLimit, resetRateLimitKey } from "@/lib/rate-limit";
+import { McpClientManager } from "@/lib/mcp/client";
 
 const TRIGGER_KEYWORDS = ["kivikova", "kivi kova", "kivi-kova"];
 const DEBOUNCE_MS = 3000;
@@ -47,24 +49,103 @@ async function generateSilentResponse(
     );
   }
 
-  const systemPrompt = getSilentAgentSystemPrompt(agenda);
+  // Load MCP tools for the meeting owner
+  let mcpTools: Array<{
+    type: "function";
+    name: string;
+    description: string;
+    parameters: Record<string, unknown>;
+  }> = [];
+  let mcpManager: McpClientManager | null = null;
+  try {
+    mcpManager = await McpClientManager.connectForUser(userId);
+    mcpTools = mcpManager.getOpenAITools();
+  } catch (err) {
+    console.warn(
+      "[Silent Agent] MCP connection failed, proceeding without:",
+      err
+    );
+  }
+
+  const mcpToolDescriptions = mcpTools.map((t) => ({
+    name: t.name,
+    description: t.description,
+  }));
+
+  const systemPrompt = getSilentAgentSystemPrompt(agenda, mcpToolDescriptions);
 
   const userMessage = ragContext
     ? `Recent meeting transcript:\n${recentTranscript}\n\nRelevant context:\n${ragContext}`
     : `Recent meeting transcript:\n${recentTranscript}`;
 
   const openai = getOpenAIClient();
+
+  const tools =
+    mcpTools.length > 0
+      ? mcpTools.map((t) => ({
+          type: "function" as const,
+          function: {
+            name: t.name,
+            description: t.description,
+            parameters: t.parameters,
+          },
+        }))
+      : undefined;
+
+  const messages: ChatCompletionMessageParam[] = [
+    { role: "system", content: systemPrompt },
+    { role: "user", content: userMessage },
+  ];
+
+  // One round of tool calls allowed
   const completion = await openai.chat.completions.create({
     model: "gpt-5.4-mini",
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userMessage },
-    ],
+    messages,
     max_tokens: 200,
     temperature: 0.7,
+    ...(tools ? { tools, tool_choice: "auto" } : {}),
   });
 
-  const response = completion.choices[0]?.message?.content ?? "";
+  const firstChoice = completion.choices[0];
+  if (
+    firstChoice?.finish_reason === "tool_calls" &&
+    firstChoice.message.tool_calls &&
+    mcpManager
+  ) {
+    // Execute tool calls and get final response
+    messages.push(firstChoice.message);
+
+    for (const call of firstChoice.message.tool_calls) {
+      if (call.type !== "function") continue;
+      let toolResult = "";
+      try {
+        const args = JSON.parse(call.function.arguments) as Record<
+          string,
+          unknown
+        >;
+        const result = await mcpManager.callTool(call.function.name, args);
+        toolResult = JSON.stringify(result);
+      } catch (err) {
+        toolResult = `Error: ${err instanceof Error ? err.message : "Unknown error"}`;
+      }
+      messages.push({
+        role: "tool",
+        tool_call_id: call.id,
+        content: toolResult,
+      });
+    }
+
+    const followUp = await openai.chat.completions.create({
+      model: "gpt-5.4-mini",
+      messages,
+      max_tokens: 200,
+      temperature: 0.7,
+    });
+    const response = followUp.choices[0]?.message?.content ?? "";
+    return response.slice(0, MAX_RESPONSE_LENGTH);
+  }
+
+  const response = firstChoice?.message?.content ?? "";
   return response.slice(0, MAX_RESPONSE_LENGTH);
 }
 
