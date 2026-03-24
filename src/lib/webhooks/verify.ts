@@ -13,11 +13,14 @@ export async function verifyRecallSignature(
 
   const expected = createHmac("sha256", secret).update(body).digest("hex");
 
-  if (signature.length !== expected.length) {
+  const sigBuf = Buffer.from(signature, "utf8");
+  const expBuf = Buffer.from(expected, "utf8");
+
+  if (sigBuf.length !== expBuf.length) {
     return { valid: false, body };
   }
 
-  const valid = timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
+  const valid = timingSafeEqual(sigBuf, expBuf);
 
   return { valid, body };
 }
