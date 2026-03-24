@@ -77,12 +77,12 @@ Upload documents, specs, and notes to give Vernix deeper context. It indexes eve
 ## Differentiators
 
 | Feature                       | Vernix | Otter.ai | Fireflies | Grain |
-| ----------------------------- | -------- | -------- | --------- | ----- |
-| Cross-meeting semantic search | Yes      | No       | Limited   | No    |
-| Voice Q&A during meetings     | Yes      | No       | No        | No    |
-| Per-meeting vector storage    | Yes      | No       | No        | No    |
-| Knowledge base upload         | Yes      | No       | No        | No    |
-| Open architecture (self-host) | Yes      | No       | No        | No    |
+| ----------------------------- | ------ | -------- | --------- | ----- |
+| Cross-meeting semantic search | Yes    | No       | Limited   | No    |
+| Voice Q&A during meetings     | Yes    | No       | No        | No    |
+| Per-meeting vector storage    | Yes    | No       | No        | No    |
+| Knowledge base upload         | Yes    | No       | No        | No    |
+| Open architecture (self-host) | Yes    | No       | No        | No    |
 
 ---
 

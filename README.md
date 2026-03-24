@@ -60,7 +60,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the dashboard.
 | `S3_ENDPOINT`          | S3-compatible endpoint (e.g. `http://localhost:9002` for local Minio)                      |
 | `S3_ACCESS_KEY`        | S3 access key (Minio root user for local dev)                                              |
 | `S3_SECRET_KEY`        | S3 secret key (Minio root password for local dev)                                          |
-| `S3_BUCKET`            | S3 bucket name for knowledge base files (default: `vernix-knowledge`)                    |
+| `S3_BUCKET`            | S3 bucket name for knowledge base files (default: `vernix-knowledge`)                      |
 | `S3_REGION`            | S3 region (default: `us-east-1`)                                                           |
 
 ## Recall.ai Webhook Configuration
