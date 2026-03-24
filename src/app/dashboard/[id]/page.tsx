@@ -218,22 +218,25 @@ export default function MeetingDetailPage() {
                 <Save className="mr-1 h-3 w-3" />
                 {agendaSaving ? "Saving..." : "Save Agenda"}
               </Button>
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="silent-mode"
-                  checked={isSilent}
-                  onChange={toggleSilent}
-                  disabled={silentSaving}
-                  className="h-4 w-4 rounded border-gray-300"
-                />
-                <Label htmlFor="silent-mode" className="cursor-pointer">
-                  Silent Mode
-                </Label>
-                <span className="text-muted-foreground text-xs">
-                  Text-only — responds via meeting chat, no voice
-                </span>
-              </div>
+              {(meeting.status === "pending" ||
+                meeting.status === "failed") && (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="silent-mode"
+                    checked={isSilent}
+                    onChange={toggleSilent}
+                    disabled={silentSaving}
+                    className="h-4 w-4 rounded border-gray-300"
+                  />
+                  <Label htmlFor="silent-mode" className="cursor-pointer">
+                    Silent Mode
+                  </Label>
+                  <span className="text-muted-foreground text-xs">
+                    Text-only — responds via meeting chat, no voice
+                  </span>
+                </div>
+              )}
             </div>
           )}
         </CardContent>
