@@ -55,7 +55,7 @@ async function generateSilentResponse(
 
   const openai = getOpenAIClient();
   const completion = await openai.chat.completions.create({
-    model: "gpt-4.1-mini",
+    model: "gpt-5.4-mini",
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userMessage },
