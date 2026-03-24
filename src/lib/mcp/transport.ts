@@ -5,43 +5,58 @@ import {
 } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 
+const CLIENT_INFO = { name: "KiviKova", version: "1.0.0" } as const;
+
 /**
- * Connect an MCP Client to a server URL, trying Streamable HTTP first
- * (MCP spec 2025-03-26+) and falling back to SSE only when the server
- * returns 404 or 405 — indicating it doesn't speak the newer protocol.
- * Any other error (auth, network, etc.) is re-thrown immediately.
+ * Create a new MCP Client and connect it to the server at `url`.
+ *
+ * Tries Streamable HTTP first (MCP spec 2025-03-26+). Falls back to SSE only
+ * when the server returns 404 or 405 — indicating it doesn't speak the newer
+ * protocol. Any other error (auth, network, etc.) is re-thrown immediately.
+ *
+ * A fresh Client is created for each attempt so that the SSE fallback never
+ * reuses a Client whose internal transport state was dirtied by the failed
+ * Streamable HTTP connect (see MCP SDK issue #1405).
  */
 export async function connectMcpClient(
-  client: Client,
   url: string,
   headers: Record<string, string>
-): Promise<void> {
+): Promise<Client> {
+  // --- Streamable HTTP attempt ---
+  const streamableClient = new Client(CLIENT_INFO);
   try {
     const transport = new StreamableHTTPClientTransport(new URL(url), {
       requestInit: { headers },
     });
-    await client.connect(transport);
+    await streamableClient.connect(transport);
+    return streamableClient;
   } catch (err) {
     if (
-      err instanceof StreamableHTTPError &&
-      (err.code === 404 || err.code === 405)
+      !(
+        err instanceof StreamableHTTPError &&
+        (err.code === 404 || err.code === 405)
+      )
     ) {
-      const sseTransport = new SSEClientTransport(new URL(url), {
-        requestInit: { headers },
-        eventSourceInit: {
-          fetch: (u, init) =>
-            fetch(u, {
-              ...init,
-              headers: {
-                ...(init?.headers as Record<string, string>),
-                ...headers,
-              },
-            }),
-        },
-      });
-      await client.connect(sseTransport);
-    } else {
       throw err;
     }
+    // 404/405 → server doesn't support Streamable HTTP, fall through to SSE.
   }
+
+  // --- SSE fallback (fresh Client) ---
+  const sseClient = new Client(CLIENT_INFO);
+  const sseTransport = new SSEClientTransport(new URL(url), {
+    requestInit: { headers },
+    eventSourceInit: {
+      fetch: (u, init) =>
+        fetch(u, {
+          ...init,
+          headers: {
+            ...(init?.headers as Record<string, string>),
+            ...headers,
+          },
+        }),
+    },
+  });
+  await sseClient.connect(sseTransport);
+  return sseClient;
 }
