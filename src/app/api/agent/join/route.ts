@@ -70,7 +70,12 @@ export async function POST(request: Request) {
       .set({
         status: "active",
         startedAt: new Date(),
-        metadata: { ...existingMetadata, botId, voiceSecret, silent },
+        metadata: {
+          ...existingMetadata,
+          botId,
+          silent,
+          ...(voiceSecret !== undefined ? { voiceSecret } : {}),
+        },
         updatedAt: new Date(),
       })
       .where(and(eq(meetings.id, meetingId), eq(meetings.userId, user.id)));
