@@ -2,7 +2,7 @@ import { getOpenAIClient } from "@/lib/openai/client";
 import { getRAGContext, formatContextForPrompt } from "@/lib/agent/rag";
 import { getSilentAgentSystemPrompt } from "@/lib/agent/prompts";
 import { getMeetingBotProvider } from "@/lib/meeting-bot";
-import { rateLimit } from "@/lib/rate-limit";
+import { rateLimit, resetRateLimitKey } from "@/lib/rate-limit";
 
 const TRIGGER_KEYWORDS = ["kivikova", "kivi kova", "kivi-kova"];
 const DEBOUNCE_MS = 3000;
@@ -89,7 +89,11 @@ async function flushBuffer(
   const spokenText = chunks.map((c) => c.text).join("\n");
   if (!containsMention(spokenText)) return;
 
-  const rl = rateLimit(`silent-agent:${meetingId}`, {
+  // Consume the rate-limit slot optimistically to prevent concurrent flushes
+  // from both sending a response. If delivery fails, release the slot so the
+  // next mention can retry rather than being silently suppressed.
+  const rateLimitKey = `silent-agent:${meetingId}`;
+  const rl = rateLimit(rateLimitKey, {
     interval: RATE_LIMIT_INTERVAL_MS,
     limit: 1,
   });
@@ -108,8 +112,13 @@ async function flushBuffer(
     if (response) {
       await getMeetingBotProvider().sendChatMessage(botId, response);
       console.log(`[Silent Agent] Sent chat response for meeting ${meetingId}`);
+    } else {
+      // Empty response — release the slot so future mentions can be answered
+      resetRateLimitKey(rateLimitKey);
     }
   } catch (err) {
+    // Release the slot so the next mention can retry
+    resetRateLimitKey(rateLimitKey);
     console.error("[Silent Agent] Failed to generate or send response:", err);
   }
 }
