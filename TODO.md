@@ -59,7 +59,7 @@
 
 ## P8 — Meeting-Scoped Knowledge ~~DONE~~
 
-- ~~`**meetingId` on documents\*\* — Optional FK on `documents` table linking uploads to a specific meeting~~
+- ~~`**meetingId` on documents — Optional FK on `documents` table linking uploads to a specific meeting~~
 - ~~**Upload on meeting detail page** — Upload button on `/dashboard/[id]` scoped to that meeting, chunks go into meeting's Qdrant collection~~
 - ~~**Scoped RAG boost** — Meeting-scoped documents in the meeting collection get boosted automatically alongside transcripts~~
 - ~~**Knowledge list integration** — Meeting detail shows only that meeting's docs; global page shows all docs~~
@@ -102,15 +102,15 @@
 - ~~**Env validation** — `src/lib/env.ts` validates all required env vars with Zod at first access; client singletons use `getEnv()`~~
 - ~~**Webhook signature verification** — HMAC-SHA256 verification of Recall webhook payloads via `RECALL_WEBHOOK_SECRET` (optional, skip in dev)~~
 
-## P14 — Rebrand to Vernix.AI
+## P14 — Rebrand to Vernix (vernix.app)
 
 - **Rename everywhere** — Package name, repo, README, CLAUDE.md, presentation, UI text, bot name, prompts, SEO metadata
 - **Rename GitHub repository**
 - **Register the domain and social media**
-- **Domain** — Point vernix.ai to the deployment
+- **Domain** — Point vernix.app to the deployment
 - **Update Recall** — Bot name from "KiviKova Agent" to "Vernix Agent", webhook URLs
 - **Voice agent wake words** — Change from "KiviKova" to "Vernix" in system prompt and UI hints
-- **Logos** — Create proper logo set (icon, wordmark, favicon, OG image) for Vernix.AI
+- **Logos** — Create proper logo set (icon, wordmark, favicon, OG image) for Vernix
 - **Google Stitch** — Update design system screens and branding on Stitch
 
 ## P15 — Design System and pages
