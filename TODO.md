@@ -136,15 +136,15 @@
 - **Hybrid parsing** — Try text extraction first; if a page has low text density, fall back to vision-based extraction
 - **Cost management** — Vision API is expensive per page; add per-user limits or make it a premium feature
 
-## P18 — Silent Agent Mode (Text Agent)
+## P18 — Silent Agent Mode (Text Agent) ~~DONE~~
 
-- **Silent mode toggle** — Per-meeting toggle (in create dialog and meeting detail). This is a fundamentally different agent type: text agent instead of voice agent
-- **Recall without Output Media** — Omit `output_media` and `include_bot_in_recording: { audio: false }` so the bot joins as a passive listener with no voice/screen presence
-- **Text agent** — Instead of OpenAI Realtime API (audio in/out via voice-agent.html), the agent monitors the transcript stream server-side. Same RAG pipeline and tools, but no audio bridging, no WebSocket, no voice session
-- **Chat-based replies** — When addressed in the transcript (by name or direct question), use Recall's chat API (`POST /api/v1/bot/{id}/send_chat_message`) to respond as a text message in the meeting chat
-- **Transcript monitoring** — Server-side: watch incoming `transcript.data` webhooks for mentions/questions, run through LLM with RAG context, send response via chat API
-- **UI indicator** — Show "Silent" badge on meeting card and detail page
-- **Storage** — `metadata.silent: boolean` on the meeting row
+- ~~**Silent mode toggle** — Per-meeting toggle (in create dialog and meeting detail). This is a fundamentally different agent type: text agent instead of voice agent~~
+- ~~**Recall without Output Media** — Omit `output_media` and `include_bot_in_recording: { audio: false }` so the bot joins as a passive listener with no voice/screen presence~~
+- ~~**Text agent** — Instead of OpenAI Realtime API (audio in/out via voice-agent.html), the agent monitors the transcript stream server-side. Same RAG pipeline and tools, but no audio bridging, no WebSocket, no voice session~~
+- ~~**Chat-based replies** — When addressed in the transcript (by name or direct question), use Recall's chat API (`POST /api/v1/bot/{id}/send_chat_message`) to respond as a text message in the meeting chat~~
+- ~~**Transcript monitoring** — Server-side: watch incoming `transcript.data` webhooks for mentions/questions, run through LLM with RAG context, send response via chat API~~
+- ~~**UI indicator** — Show "Silent" badge on meeting card and detail page~~
+- ~~**Storage** — `metadata.silent: boolean` on the meeting row~~
 
 ## P19 — Switch to TanStack Query ~~DONE~~
 
@@ -155,7 +155,13 @@
 - ~~**Mutations** — `useMutation` with optimistic updates for task toggle and meeting delete~~
 - ~~**Remove polling** — `setInterval` replaced with TanStack Query `refetchInterval` on both meetings list and meeting detail~~
 
-## P20 — Billing with Polar
+## P20 — MCP Server Connection Testing ~~DONE~~
+
+- ~~**Test button per server** — Zap icon button on each MCP server row; shows inline result (tool count + tool names, or error message)~~
+- ~~**Test before save** — "Test Connection" button in the Add Server dialog; clears result when URL/API key changes~~
+- ~~**Test API** — `POST /api/settings/mcp-servers/test` accepts `{ id }` (DB lookup) or `{ url, apiKey? }` (pre-save); 10s timeout~~
+
+## P21 — Billing with Polar
 
 - **Polar integration** — Connect Polar.sh for subscription management
 - **Pricing tiers** — Free trial for pro, Pro (x hours of meetings / month), Unlimited (not really unlimited, fair use applies)
