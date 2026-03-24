@@ -110,11 +110,13 @@
 - **Domain** — Point vernix.app to the deployment
 - **Update Recall** — Bot name from "KiviKova Agent" to "Vernix Agent", webhook URLs
 - **Voice agent wake words** — Change from "KiviKova" to "Vernix" in system prompt and UI hints
+- **Logo set** — Create icon, wordmark, favicon, and OG image in the style of the current site
 
 ## P15 — UI Polish & Launch Prep
 
-- **Logo set** — Create icon, wordmark, favicon, and OG image in the style of the current site
+- **Implement the logo set**
 - **Design system doc** — Write `DESIGN.md` capturing current color palette, typography, spacing, and component patterns so they're codified and consistent
+- **Loading skeletons** – Structurally correct loading skeletons; general, page, and component specific loading components
 - **Landing page** — Build a clean marketing landing page matching the existing site style, with clear CTAs and value props
 - **Mobile responsiveness** — Audit and fix all pages for mobile; dashboard, meeting detail, settings, knowledge base
 - **UI cleanup** — Fix visual inconsistencies, improve empty states, sharpen CTAs, remove clutter
