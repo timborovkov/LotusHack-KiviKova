@@ -146,7 +146,14 @@ export class McpClientManager {
         const sseTransport = new SSEClientTransport(new URL(server.url), {
           requestInit: { headers },
           eventSourceInit: {
-            fetch: (url, init) => fetch(url, { ...init, headers }),
+            fetch: (url, init) =>
+              fetch(url, {
+                ...init,
+                headers: {
+                  ...(init?.headers as Record<string, string>),
+                  ...headers,
+                },
+              }),
           },
         });
         await client.connect(sseTransport);
