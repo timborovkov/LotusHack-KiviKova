@@ -13,84 +13,92 @@ import {
   Search,
   VolumeX,
   Plug,
+  Video,
 } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Vernix — AI Video Call Agent",
   description:
-    "Vernix joins your video calls, transcribes conversations, generates AI summaries, and answers questions using meeting context. Supports Zoom, Meet, Teams, and Webex.",
+    "Vernix joins your video calls, transcribes conversations, generates AI summaries, extracts action items, and answers questions live. Works with Zoom, Meet, Teams, and Webex.",
 };
 
 const FEATURES = [
   {
     icon: Mic,
-    title: "Live Transcription",
+    title: "Never miss a word",
     description:
-      "Real-time, speaker-identified transcription across Zoom, Google Meet, Microsoft Teams, and Webex.",
+      "Real-time, speaker-identified transcription. Every participant, every sentence — searchable the moment your call ends.",
   },
   {
     icon: FileText,
-    title: "AI Summaries & Action Items",
+    title: "Summaries that write themselves",
     description:
-      "Automatic post-meeting summaries with extracted action items, assignees, and key decisions.",
+      "Walk out of every meeting with a summary, key decisions, and action items — without writing a single note.",
   },
   {
     icon: MessageSquare,
-    title: "Voice Agent",
+    title: "Ask your meetings anything",
     description:
-      "An AI agent that joins your call, listens in real time, and answers questions out loud using RAG.",
+      'A voice agent that listens live and answers questions on the spot. Say "Vernix, what did we decide about pricing?" and get an answer.',
   },
   {
     icon: VolumeX,
-    title: "Silent Mode",
+    title: "Silent when you need it",
     description:
-      "A text-only agent that monitors the call and responds via meeting chat when mentioned — no audio disruption.",
+      "Prefer text? Silent mode monitors the call and responds via meeting chat. No audio, no disruption — just answers when you need them.",
   },
   {
     icon: BookOpen,
-    title: "Knowledge Base",
+    title: "Bring your own context",
     description:
-      "Upload PDFs, DOCX, or Markdown files. The agent uses them alongside transcripts to answer questions accurately.",
+      "Upload product docs, specs, or past reports. The agent uses them alongside your transcripts to give answers grounded in your actual data.",
   },
   {
     icon: Search,
-    title: "Cross-Meeting Search",
+    title: "Search across every meeting",
     description:
-      "Search across all your meetings and documents at once. Find what was said, when, and by whom.",
+      '"Who mentioned the Q3 deadline?" Find what was said, when it was said, and who said it — across all your calls at once.',
   },
   {
     icon: ListChecks,
-    title: "Task Extraction",
+    title: "Action items, tracked",
     description:
-      "Action items are automatically extracted from transcripts and tracked per meeting with completion status.",
+      "Tasks are pulled directly from conversations and tracked per meeting. No more digging through notes to find who committed to what.",
   },
   {
     icon: Plug,
-    title: "MCP Integration",
+    title: "Plug into your tools",
     description:
-      "Expose your meeting data to Claude Desktop, Cursor, or other tools via the Model Context Protocol.",
+      "Connect meeting data to Claude Desktop, Cursor, or any MCP-compatible tool. Your meetings become queryable from anywhere.",
   },
 ];
 
 const STEPS = [
   {
     step: "1",
-    title: "Create a meeting",
+    title: "Paste your meeting link",
     description:
-      "Paste your Zoom, Meet, Teams, or Webex link. Optionally add an agenda and upload documents.",
+      "Drop a Zoom, Meet, Teams, or Webex link. Add an agenda or upload docs if you want — takes 10 seconds.",
   },
   {
     step: "2",
-    title: "Agent joins your call",
+    title: "Vernix joins as a participant",
     description:
-      "Vernix joins as a participant — transcribing, listening, and ready to answer when addressed.",
+      "The agent enters your call, starts transcribing, and listens for questions. You run the meeting as usual.",
   },
   {
     step: "3",
-    title: "Review and act",
+    title: "Get everything after the call",
     description:
-      "Get summaries, action items, and searchable transcripts. Chat with your notes or export as PDF.",
+      "Summary, action items, and full transcript — ready to search, chat with, or export as PDF.",
   },
+];
+
+const PAIN_POINTS = [
+  "Writing meeting notes while trying to pay attention",
+  "Searching Slack for something someone definitely said on a call",
+  "Asking 'can you repeat that?' because you were typing",
+  "Spending 20 minutes after every meeting writing a recap no one reads",
 ];
 
 const PLATFORMS = ["Zoom", "Google Meet", "Microsoft Teams", "Webex"];
@@ -117,26 +125,55 @@ export default function LandingPage() {
           />
         </div>
         <h1 className="mb-4 text-4xl font-bold tracking-tight sm:text-5xl">
-          Your AI teammate for video calls
+          An AI agent that joins your calls and does the rest
         </h1>
         <p className="text-muted-foreground mx-auto mb-8 max-w-xl text-lg">
-          Vernix joins your calls, transcribes everything, generates summaries,
-          and answers questions live — using context from your meetings and
-          documents.
+          Vernix transcribes your video calls, writes the summary, extracts
+          action items, and answers questions live — so you can actually focus
+          on the conversation.
         </p>
-        <div className="flex justify-center gap-3">
+        <div className="flex flex-col justify-center gap-3 sm:flex-row">
           <Button size="lg" render={<Link href="/register" />}>
-            Get Started Free
+            Try Vernix Free
             <ArrowRight className="ml-1 h-4 w-4" />
           </Button>
-          <Button variant="outline" size="lg" render={<a href="#features" />}>
-            See Features
+          <Button variant="outline" size="lg" render={<a href="#how" />}>
+            See How It Works
           </Button>
         </div>
-        <div className="text-muted-foreground mt-8 flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm">
-          {PLATFORMS.map((p) => (
-            <span key={p}>{p}</span>
+        <p className="text-muted-foreground mt-4 text-xs">
+          No credit card required. 5 meetings free.
+        </p>
+        <div className="text-muted-foreground mt-8 flex flex-wrap items-center justify-center gap-x-1 text-sm">
+          <Video className="mr-1 h-4 w-4" />
+          {PLATFORMS.map((p, i) => (
+            <span key={p}>
+              {p}
+              {i < PLATFORMS.length - 1 && (
+                <span className="mx-1 opacity-30">/</span>
+              )}
+            </span>
           ))}
+        </div>
+      </section>
+
+      {/* Pain points */}
+      <section className="border-border border-t py-20">
+        <div className="mx-auto max-w-3xl px-4 text-center">
+          <h2 className="mb-8 text-2xl font-bold">Sound familiar?</h2>
+          <ul className="space-y-3">
+            {PAIN_POINTS.map((point) => (
+              <li
+                key={point}
+                className="text-muted-foreground text-base italic"
+              >
+                &ldquo;{point}&rdquo;
+              </li>
+            ))}
+          </ul>
+          <p className="mt-8 text-sm font-medium">
+            Vernix handles all of this. You just show up and talk.
+          </p>
         </div>
       </section>
 
@@ -144,11 +181,12 @@ export default function LandingPage() {
       <section id="features" className="border-border border-t py-24">
         <div className="mx-auto max-w-6xl px-4">
           <h2 className="mb-4 text-center text-2xl font-bold">
-            Transcription, summaries, and a voice agent that knows your context
+            Everything that happens after &ldquo;let&rsquo;s hop on a
+            call&rdquo;
           </h2>
           <p className="text-muted-foreground mx-auto mb-12 max-w-xl text-center">
-            Everything you need to capture, search, and act on what happens in
-            your meetings.
+            Transcription, summaries, action items, a voice agent, document
+            search, and tool integrations — in one place.
           </p>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {FEATURES.map((feature) => (
@@ -167,9 +205,14 @@ export default function LandingPage() {
       </section>
 
       {/* How it works */}
-      <section className="border-border border-t py-24">
+      <section id="how" className="border-border border-t py-24">
         <div className="mx-auto max-w-4xl px-4">
-          <h2 className="mb-12 text-center text-2xl font-bold">How it works</h2>
+          <h2 className="mb-4 text-center text-2xl font-bold">
+            Three steps. Under a minute.
+          </h2>
+          <p className="text-muted-foreground mx-auto mb-12 max-w-md text-center">
+            No integrations to configure, no browser extensions to install.
+          </p>
           <div className="grid gap-8 sm:grid-cols-3">
             {STEPS.map((item) => (
               <div key={item.step} className="text-center">
@@ -190,17 +233,17 @@ export default function LandingPage() {
       <section className="bg-primary text-primary-foreground py-24">
         <div className="mx-auto max-w-3xl px-4 text-center">
           <h2 className="mb-4 text-2xl font-bold">
-            Stop taking notes. Start having better meetings.
+            Stop writing notes. Start running meetings.
           </h2>
           <p className="mb-8 opacity-80">
-            Get started in under a minute. No credit card required.
+            Your first 5 meetings are free. Set up takes 10 seconds.
           </p>
           <Button
             size="lg"
             variant="secondary"
             render={<Link href="/register" />}
           >
-            Get Started Free
+            Create Your Free Account
             <ArrowRight className="ml-1 h-4 w-4" />
           </Button>
         </div>
