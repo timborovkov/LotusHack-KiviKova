@@ -77,7 +77,12 @@ export default function PrivacyPage() {
           <h2 className="mb-2 text-lg font-semibold">6. Cookies</h2>
           <p className="text-muted-foreground text-sm">
             We use essential cookies for authentication and session management.
-            We do not use third-party tracking cookies.
+            We also use optional Google Analytics cookies only after you provide
+            consent via our cookie banner. For details, see our{" "}
+            <a href="/cookie-policy" className="text-foreground underline">
+              Cookie Policy
+            </a>
+            .
           </p>
         </section>
 
