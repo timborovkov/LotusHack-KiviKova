@@ -19,7 +19,10 @@ interface SettingsFormProps {
   enableGithub: boolean;
 }
 
-export function SettingsForm({ enableGoogle, enableGithub }: SettingsFormProps) {
+export function SettingsForm({
+  enableGoogle,
+  enableGithub,
+}: SettingsFormProps) {
   const { keys, createKey, deleteKey } = useApiKeys();
   const { servers, addServer, toggleServer, deleteServer } = useMcpServers();
   const {
@@ -159,66 +162,70 @@ export function SettingsForm({ enableGoogle, enableGithub }: SettingsFormProps) 
             {profile ? (
               <div className="space-y-3">
                 {/* Google */}
-                {profile.accounts.find((a) => a.provider === "google") ? (
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="font-medium">Google</span>
-                      <span className="text-muted-foreground">Connected</span>
+                {enableGoogle &&
+                  (profile.accounts.find((a) => a.provider === "google") ? (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="font-medium">Google</span>
+                        <span className="text-muted-foreground">Connected</span>
+                      </div>
+                      <Button
+                        size="xs"
+                        variant="ghost"
+                        onClick={() => unlinkAccount("google")}
+                      >
+                        Unlink
+                      </Button>
                     </div>
-                    <Button
-                      size="xs"
-                      variant="ghost"
-                      onClick={() => unlinkAccount("google")}
-                    >
-                      Unlink
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Google</span>
-                    <Button
-                      size="xs"
-                      variant="outline"
-                      onClick={() =>
-                        signIn("google", { callbackUrl: "/dashboard/settings" })
-                      }
-                    >
-                      Connect
-                    </Button>
-                  </div>
-                )}
+                  ) : (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Google</span>
+                      <Button
+                        size="xs"
+                        variant="outline"
+                        onClick={() =>
+                          signIn("google", {
+                            callbackUrl: "/dashboard/settings",
+                          })
+                        }
+                      >
+                        Connect
+                      </Button>
+                    </div>
+                  ))}
 
                 {/* GitHub */}
-                {profile.accounts.find((a) => a.provider === "github") ? (
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="font-medium">GitHub</span>
-                      <span className="text-muted-foreground">Connected</span>
+                {enableGithub &&
+                  (profile.accounts.find((a) => a.provider === "github") ? (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="font-medium">GitHub</span>
+                        <span className="text-muted-foreground">Connected</span>
+                      </div>
+                      <Button
+                        size="xs"
+                        variant="ghost"
+                        onClick={() => unlinkAccount("github")}
+                      >
+                        Unlink
+                      </Button>
                     </div>
-                    <Button
-                      size="xs"
-                      variant="ghost"
-                      onClick={() => unlinkAccount("github")}
-                    >
-                      Unlink
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">GitHub</span>
-                    <Button
-                      size="xs"
-                      variant="outline"
-                      onClick={() =>
-                        signIn("github", {
-                          callbackUrl: "/dashboard/settings",
-                        })
-                      }
-                    >
-                      Connect
-                    </Button>
-                  </div>
-                )}
+                  ) : (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">GitHub</span>
+                      <Button
+                        size="xs"
+                        variant="outline"
+                        onClick={() =>
+                          signIn("github", {
+                            callbackUrl: "/dashboard/settings",
+                          })
+                        }
+                      >
+                        Connect
+                      </Button>
+                    </div>
+                  ))}
 
                 {profile.hasPassword && (
                   <div className="flex items-center justify-between">
