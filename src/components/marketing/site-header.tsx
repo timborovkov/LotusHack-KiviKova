@@ -20,33 +20,33 @@ export function SiteHeader() {
   return (
     <header className="border-border bg-background/80 sticky top-0 z-50 border-b backdrop-blur-sm">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-3">
           <Image
             src="/brand/icon/icon.svg"
             alt=""
-            width={24}
-            height={24}
+            width={28}
+            height={28}
             className="dark:hidden"
           />
           <Image
             src="/brand/icon/icon-dark.png"
             alt=""
-            width={24}
-            height={24}
+            width={28}
+            height={28}
             className="hidden dark:block"
           />
           <Image
             src="/brand/wordmark/wordmark-nobg.png"
             alt="Vernix"
-            width={80}
-            height={24}
+            width={90}
+            height={26}
             className="dark:hidden"
           />
           <Image
             src="/brand/wordmark/wordmark-dark.png"
             alt="Vernix"
-            width={80}
-            height={24}
+            width={90}
+            height={26}
             className="hidden dark:block"
           />
         </Link>

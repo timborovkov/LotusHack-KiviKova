@@ -14,24 +14,24 @@ All colors are defined as CSS custom properties using the **OKLCH color space** 
 
 Use these tokens everywhere. Never hardcode a hex or rgb value for UI chrome.
 
-| Token                  | Light value                    | Dark value                      | Usage                                  |
-| ---------------------- | ------------------------------ | ------------------------------- | -------------------------------------- |
-| `background`           | `oklch(1 0 0)` — white         | `oklch(0.145 0 0)` — near black | Page background                        |
-| `foreground`           | `oklch(0.145 0 0)`             | `oklch(0.985 0 0)`              | Primary text                           |
-| `card`                 | `oklch(1 0 0)`                 | `oklch(0.205 0 0)`              | Card surfaces                          |
-| `card-foreground`      | `oklch(0.145 0 0)`             | `oklch(0.985 0 0)`              | Text inside cards                      |
-| `primary`              | `oklch(0.205 0 0)` — dark gray | `oklch(0.922 0 0)` — light gray | CTAs, active states                    |
-| `primary-foreground`   | `oklch(0.985 0 0)`             | `oklch(0.205 0 0)`              | Text on primary                        |
-| `secondary`            | `oklch(0.97 0 0)`              | `oklch(0.269 0 0)`              | Secondary buttons, backgrounds         |
-| `secondary-foreground` | `oklch(0.205 0 0)`             | `oklch(0.985 0 0)`              | Text on secondary                      |
-| `muted`                | `oklch(0.97 0 0)`              | `oklch(0.269 0 0)`              | Hover states, disabled backgrounds     |
-| `muted-foreground`     | `oklch(0.556 0 0)` — mid gray  | `oklch(0.708 0 0)`              | Secondary text, metadata, placeholders |
-| `accent`               | `oklch(0.96 0.02 290)` — violet tint | `oklch(0.25 0.04 290)`     | Focus highlights, hover backgrounds    |
-| `accent-foreground`    | `oklch(0.37 0.15 290)` — dark violet | `oklch(0.85 0.12 290)`    | Text on accent                         |
-| `destructive`          | `oklch(0.577 0.245 27°)` — red | `oklch(0.704 0.191 22°)`        | Delete actions, errors                 |
-| `border`               | `oklch(0.922 0 0)`             | `oklch(1 0 0 / 10%)`            | Dividers, input borders                |
-| `input`                | `oklch(0.922 0 0)`             | `oklch(1 0 0 / 15%)`            | Input field borders                    |
-| `ring`                 | `oklch(0.55 0.15 290)` — violet | `oklch(0.65 0.18 290)`        | Focus rings                            |
+| Token                  | Light value                          | Dark value                      | Usage                                  |
+| ---------------------- | ------------------------------------ | ------------------------------- | -------------------------------------- |
+| `background`           | `oklch(1 0 0)` — white               | `oklch(0.145 0 0)` — near black | Page background                        |
+| `foreground`           | `oklch(0.145 0 0)`                   | `oklch(0.985 0 0)`              | Primary text                           |
+| `card`                 | `oklch(1 0 0)`                       | `oklch(0.205 0 0)`              | Card surfaces                          |
+| `card-foreground`      | `oklch(0.145 0 0)`                   | `oklch(0.985 0 0)`              | Text inside cards                      |
+| `primary`              | `oklch(0.205 0 0)` — dark gray       | `oklch(0.922 0 0)` — light gray | CTAs, active states                    |
+| `primary-foreground`   | `oklch(0.985 0 0)`                   | `oklch(0.205 0 0)`              | Text on primary                        |
+| `secondary`            | `oklch(0.97 0 0)`                    | `oklch(0.269 0 0)`              | Secondary buttons, backgrounds         |
+| `secondary-foreground` | `oklch(0.205 0 0)`                   | `oklch(0.985 0 0)`              | Text on secondary                      |
+| `muted`                | `oklch(0.97 0 0)`                    | `oklch(0.269 0 0)`              | Hover states, disabled backgrounds     |
+| `muted-foreground`     | `oklch(0.556 0 0)` — mid gray        | `oklch(0.708 0 0)`              | Secondary text, metadata, placeholders |
+| `accent`               | `oklch(0.96 0.02 290)` — violet tint | `oklch(0.25 0.04 290)`          | Focus highlights, hover backgrounds    |
+| `accent-foreground`    | `oklch(0.37 0.15 290)` — dark violet | `oklch(0.85 0.12 290)`          | Text on accent                         |
+| `destructive`          | `oklch(0.577 0.245 27°)` — red       | `oklch(0.704 0.191 22°)`        | Delete actions, errors                 |
+| `border`               | `oklch(0.922 0 0)`                   | `oklch(1 0 0 / 10%)`            | Dividers, input borders                |
+| `input`                | `oklch(0.922 0 0)`                   | `oklch(1 0 0 / 15%)`            | Input field borders                    |
+| `ring`                 | `oklch(0.55 0.15 290)` — violet      | `oklch(0.65 0.18 290)`          | Focus rings                            |
 
 **Sidebar tokens** follow the same pattern with `sidebar-` prefix. In dark mode, `sidebar-primary` uses violet (`oklch(0.65 0.18 290°)`).
 
@@ -473,51 +473,51 @@ All brand assets live in `public/brand/`. Use `next/image` with light/dark mode 
 
 ### Icon Mark
 
-| File | Description |
-|------|-------------|
-| `brand/icon/icon.svg` | Vector icon (light mode) |
-| `brand/icon/icon-dark.png` | White icon for dark mode |
-| `brand/icon/icon-{32..1024}.png` | PNG at various sizes (transparent) |
-| `brand/icon/icon-dark-{128..512}.png` | White PNG at various sizes |
-| `brand/icon/icon-on-white.png` | Icon on white background |
-| `brand/icon/icon-on-dark.png` | White icon on dark background |
+| File                                  | Description                        |
+| ------------------------------------- | ---------------------------------- |
+| `brand/icon/icon.svg`                 | Vector icon (light mode)           |
+| `brand/icon/icon-dark.png`            | White icon for dark mode           |
+| `brand/icon/icon-{32..1024}.png`      | PNG at various sizes (transparent) |
+| `brand/icon/icon-dark-{128..512}.png` | White PNG at various sizes         |
+| `brand/icon/icon-on-white.png`        | Icon on white background           |
+| `brand/icon/icon-on-dark.png`         | White icon on dark background      |
 
 ### Wordmark
 
-| File | Description |
-|------|-------------|
-| `brand/wordmark/wordmark.svg` | Vector wordmark (light mode) |
-| `brand/wordmark/wordmark-nobg.png` | Black wordmark, transparent background |
-| `brand/wordmark/wordmark-dark.png` | White wordmark, transparent background |
-| `brand/wordmark/wordmark-h{64..256}.png` | Black wordmark at various heights |
-| `brand/wordmark/wordmark-dark-h{64..128}.png` | White wordmark at various heights |
+| File                                          | Description                            |
+| --------------------------------------------- | -------------------------------------- |
+| `brand/wordmark/wordmark.svg`                 | Vector wordmark (light mode)           |
+| `brand/wordmark/wordmark-nobg.png`            | Black wordmark, transparent background |
+| `brand/wordmark/wordmark-dark.png`            | White wordmark, transparent background |
+| `brand/wordmark/wordmark-h{64..256}.png`      | Black wordmark at various heights      |
+| `brand/wordmark/wordmark-dark-h{64..128}.png` | White wordmark at various heights      |
 
 ### Combo (Icon + Wordmark)
 
-| File | Description |
-|------|-------------|
-| `brand/combo/horizontal-nobg.png` | Side by side, transparent |
+| File                                   | Description                |
+| -------------------------------------- | -------------------------- |
+| `brand/combo/horizontal-nobg.png`      | Side by side, transparent  |
 | `brand/combo/horizontal-dark-nobg.png` | White version, transparent |
-| `brand/combo/horizontal-on-white.png` | On white background |
-| `brand/combo/horizontal-on-dark.png` | On dark background |
-| `brand/combo/vertical-*` | Stacked layout variants |
+| `brand/combo/horizontal-on-white.png`  | On white background        |
+| `brand/combo/horizontal-on-dark.png`   | On dark background         |
+| `brand/combo/vertical-*`               | Stacked layout variants    |
 
 ### Favicon
 
-| File | Description |
-|------|-------------|
-| `brand/favicon/favicon.svg` | Vector favicon |
-| `brand/favicon/favicon-{16..512}.png` | PNG at standard sizes |
-| `brand/favicon/apple-touch-icon.png` | 180x180 Apple touch icon |
+| File                                  | Description              |
+| ------------------------------------- | ------------------------ |
+| `brand/favicon/favicon.svg`           | Vector favicon           |
+| `brand/favicon/favicon-{16..512}.png` | PNG at standard sizes    |
+| `brand/favicon/apple-touch-icon.png`  | 180x180 Apple touch icon |
 
 ### OG / Social Images
 
-| File | Description |
-|------|-------------|
+| File                            | Description                                         |
+| ------------------------------- | --------------------------------------------------- |
 | `brand/og/og-with-subtitle.png` | Default OG image (dark, icon + wordmark + subtitle) |
-| `brand/og/og-horizontal.png` | Horizontal layout (dark) |
-| `brand/og/og-centered.png` | Stacked layout (dark) |
-| `brand/og/og-light.png` | Light variant |
+| `brand/og/og-horizontal.png`    | Horizontal layout (dark)                            |
+| `brand/og/og-centered.png`      | Stacked layout (dark)                               |
+| `brand/og/og-light.png`         | Light variant                                       |
 
 ### Usage Pattern
 
