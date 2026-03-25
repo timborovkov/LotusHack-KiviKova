@@ -16,7 +16,7 @@ const TIERS = [
     price: "$0",
     period: "to get started",
     features: [
-      "5 meetings",
+      "5 meetings total",
       "Live transcription",
       "AI summaries",
       "Action item extraction",
@@ -30,6 +30,7 @@ const TIERS = [
     price: "$29",
     period: "/ month",
     features: [
+      "Everything in Free, plus:",
       "Unlimited meetings",
       "Voice agent",
       "Knowledge base uploads",
