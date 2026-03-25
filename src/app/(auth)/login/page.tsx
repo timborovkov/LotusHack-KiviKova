@@ -7,8 +7,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { VernixLogo } from "@/components/ui/vernix-logo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -43,54 +41,50 @@ export default function LoginPage() {
   };
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
-        <div className="flex justify-center">
-          <VernixLogo size={48} />
+    <div className="w-full max-w-sm">
+      <h1 className="mb-1 text-2xl font-bold">Welcome back</h1>
+      <p className="text-muted-foreground mb-8 text-sm">
+        Sign in to your Vernix account.
+      </p>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {error && (
+          <p className="text-destructive text-center text-sm">{error}</p>
+        )}
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
+            required
+          />
         </div>
-        <CardTitle className="text-center text-2xl">
-          Sign in to Vernix
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
-            <p className="text-destructive text-center text-sm">{error}</p>
-          )}
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-              required
-            />
-          </div>
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Signing in..." : "Sign in"}
-          </Button>
-        </form>
-        <p className="text-muted-foreground mt-4 text-center text-sm">
-          No account?{" "}
-          <Link href="/register" className="text-foreground underline">
-            Sign up
-          </Link>
-        </p>
-      </CardContent>
-    </Card>
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
+            required
+          />
+        </div>
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? "Signing in..." : "Sign in"}
+        </Button>
+      </form>
+
+      <p className="text-muted-foreground mt-6 text-center text-sm">
+        No account?{" "}
+        <Link href="/register" className="text-foreground underline">
+          Sign up free
+        </Link>
+      </p>
+    </div>
   );
 }
