@@ -79,7 +79,7 @@ The `<html>` root carries `antialiased` for smooth rendering.
 
 | Class                        | Size | Weight | Usage                                                                |
 | ---------------------------- | ---- | ------ | -------------------------------------------------------------------- |
-| `text-3xl font-bold`         | 30px | 700    | Main page title ("Vernix" dashboard header)                          |
+| `text-3xl font-bold`         | 30px | 700    | Main page title (landing page hero)                                  |
 | `text-2xl font-bold`         | 24px | 700    | Dashboard sub-page titles (Knowledge Base, Settings, meeting title)  |
 | `text-lg font-semibold`      | 18px | 600    | Section headings within a page (Participants, Transcript, Documents) |
 | `text-lg` (inside CardTitle) | 18px | 500    | Card titles (Agenda, Summary, Action Items)                          |
@@ -455,15 +455,23 @@ Common icons by category:
 
 ## File Locations
 
-| Concern                                             | Path                                |
-| --------------------------------------------------- | ----------------------------------- |
-| CSS variables & `@theme`                            | `src/app/globals.css`               |
-| Button, Badge, Card, Dialog, Input, Label, Table    | `src/components/ui/`                |
-| Meeting card, chat, task list, knowledge list, etc. | `src/components/`                   |
-| Meeting status → badge variant map                  | `src/lib/meetings/constants.ts`     |
-| Query client setup                                  | `src/components/query-provider.tsx` |
-| Query key factory                                   | `src/lib/query-keys.ts`             |
-| Markdown renderer                                   | `src/lib/format.ts`                 |
+| Concern                                             | Path                                   |
+| --------------------------------------------------- | -------------------------------------- |
+| CSS variables & `@theme`                            | `src/app/globals.css`                  |
+| Button, Badge, Card, Dialog, Input, Label, Table    | `src/components/ui/`                   |
+| Skeleton primitive                                  | `src/components/ui/skeleton.tsx`       |
+| Vernix logo component                               | `src/components/ui/vernix-logo.tsx`    |
+| Meeting card, chat, task list, knowledge list, etc. | `src/components/`                      |
+| Dashboard sticky header                             | `src/components/dashboard-header.tsx`  |
+| Theme toggle (light/dark/system)                    | `src/components/theme-toggle.tsx`      |
+| Theme init script (FOUC prevention)                 | `src/components/theme-script.tsx`      |
+| Scroll reveal animation                             | `src/components/scroll-reveal.tsx`     |
+| Marketing header & footer                           | `src/components/marketing/`            |
+| Meeting status → badge variant map                  | `src/lib/meetings/constants.ts`        |
+| Query client setup                                  | `src/components/query-provider.tsx`    |
+| Query key factory                                   | `src/lib/query-keys.ts`                |
+| Markdown renderer                                   | `src/lib/format.ts`                    |
+| Product marketing context                           | `.claude/product-marketing-context.md` |
 
 ---
 
@@ -521,12 +529,60 @@ All brand assets live in `public/brand/`. Use `next/image` with light/dark mode 
 
 ### Usage Pattern
 
+Use the pre-made combo images in headers/footers instead of assembling icon + wordmark manually:
+
 ```tsx
-// Icon + Wordmark in headers/footers
-<Image src="/brand/icon/icon.svg" alt="" width={24} height={24} className="dark:hidden" />
-<Image src="/brand/icon/icon-dark.png" alt="" width={24} height={24} className="hidden dark:block" />
-<Image src="/brand/wordmark/wordmark-nobg.png" alt="Vernix" width={80} height={24} className="dark:hidden" />
-<Image src="/brand/wordmark/wordmark-dark.png" alt="Vernix" width={80} height={24} className="hidden dark:block" />
+// Horizontal combo in headers/footers (preferred)
+<Image src="/brand/combo/horizontal-nobg.png" alt="Vernix" width={120} height={32} className="dark:hidden" />
+<Image src="/brand/combo/horizontal-dark-nobg.png" alt="Vernix" width={120} height={32} className="hidden dark:block" />
 ```
 
-Use `alt=""` on icon when adjacent text/wordmark provides the label. Use `alt="Vernix"` on the wordmark.
+Use individual icon/wordmark images only when they appear separately (e.g., hero section icon alone, or standalone wordmark).
+
+---
+
+## Animations
+
+### Philosophy
+
+Animations are purposeful and subtle. The brand is confident and professional — motion should enhance understanding and provide feedback, never distract. All animations respect `prefers-reduced-motion`.
+
+### Hero Entrance (Landing Page)
+
+Staggered fade-up using CSS `@keyframes fade-up` with `animation-delay` classes (`delay-100` through `delay-400` at 100ms intervals). Easing: `cubic-bezier(0.25, 1, 0.5, 1)` (ease-out-quart).
+
+### Scroll Reveals (Landing Page)
+
+`ScrollReveal` component (`src/components/scroll-reveal.tsx`) uses IntersectionObserver to trigger a `translateY(12px) → 0` + `opacity: 0 → 1` transition on scroll. Accepts `delay` prop for staggering within grids.
+
+### FAQ Accordion
+
+CSS grid-template-rows transition (`0fr → 1fr`) for smooth open/close on `<details>` elements. No JavaScript needed — pure CSS via `.faq-answer` class.
+
+### Theme Initialization
+
+`ThemeScript` component (`src/components/theme-script.tsx`) injects a blocking inline `<script>` in `<head>` that reads `localStorage.theme` and applies the `dark` class before first paint. Prevents FOUC (Flash of Unstyled Content). This is the standard approach used by next-themes.
+
+`ThemeToggle` component (`src/components/theme-toggle.tsx`) cycles light → dark → system using `useSyncExternalStore` for lint-safe state management.
+
+---
+
+## Page Structure
+
+### Marketing Pages
+
+All under `src/app/(public)/` route group. Shared layout with `SiteHeader` + `SiteFooter` (`src/components/marketing/`).
+
+Pages: `/` (landing), `/pricing`, `/faq`, `/contact`, `/terms`, `/privacy`.
+
+### Auth Pages
+
+Under `src/app/(auth)/` route group. Split layout: dark value panel (left, desktop only) + centered form (right). Mobile shows logo above form.
+
+### Dashboard
+
+Under `src/app/dashboard/`. Shared layout with `DashboardHeader` (sticky, logo + nav) + footer (terms/privacy/contact + theme toggle).
+
+### Loading Skeletons
+
+Each dashboard route has a `loading.tsx` file rendering a structural skeleton matching the page layout. Uses the `Skeleton` primitive (`src/components/ui/skeleton.tsx`) with `aria-hidden="true"`.
