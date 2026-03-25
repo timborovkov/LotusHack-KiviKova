@@ -19,7 +19,7 @@ export default function KnowledgePage() {
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-8">
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="sm" render={<Link href="/dashboard" />}>
             <ArrowLeft className="h-4 w-4" />
