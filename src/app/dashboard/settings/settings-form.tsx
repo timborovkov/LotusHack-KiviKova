@@ -33,6 +33,7 @@ export function SettingsForm({
     changePassword,
     changingPassword,
     unlinkAccount,
+    unlinkingAccount,
   } = useProfile();
 
   const [editName, setEditName] = useState("");
@@ -180,6 +181,7 @@ export function SettingsForm({
                       <Button
                         size="xs"
                         variant="ghost"
+                        disabled={unlinkingAccount}
                         onClick={() => unlinkAccount("google")}
                       >
                         Unlink
@@ -213,6 +215,7 @@ export function SettingsForm({
                       <Button
                         size="xs"
                         variant="ghost"
+                        disabled={unlinkingAccount}
                         onClick={() => unlinkAccount("github")}
                       >
                         Unlink
