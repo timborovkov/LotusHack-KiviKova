@@ -12,7 +12,6 @@ import { authConfig } from "./config";
 // Build providers array conditionally
 const providers: Provider[] = [];
 
-// Google OAuth (if configured)
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   providers.push(
     Google({
@@ -22,7 +21,6 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   );
 }
 
-// GitHub OAuth (if configured)
 if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
   providers.push(
     GitHub({
@@ -32,7 +30,6 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
   );
 }
 
-// Credentials (email/password)
 providers.push(
   Credentials({
     credentials: {
@@ -51,8 +48,6 @@ providers.push(
         .where(eq(users.email, email));
 
       if (!user) return null;
-
-      // SSO-only user attempting credentials login
       if (!user.passwordHash) return null;
 
       const valid = await compare(password, user.passwordHash);
@@ -68,21 +63,46 @@ providers.push(
   })
 );
 
+/** Extract the OAuth profile image URL from provider-specific fields */
+function getOAuthImage(
+  profile: Record<string, unknown> | undefined
+): string | null {
+  if (!profile) return null;
+  return (
+    (profile.picture as string | undefined) ??
+    (profile.avatar_url as string | undefined) ??
+    null
+  );
+}
+
+/** Check if the OAuth provider guarantees the email is verified */
+function isEmailVerified(
+  provider: string,
+  profile: Record<string, unknown> | undefined
+): boolean {
+  // Google always verifies emails
+  if (provider === "google") return true;
+  // GitHub: check the email_verified field from the profile
+  if (provider === "github") {
+    return profile?.email_verified === true;
+  }
+  return false;
+}
+
+const { callbacks: baseCallbacks = {}, ...restConfig } = authConfig;
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  ...authConfig,
+  ...restConfig,
   providers,
   callbacks: {
-    jwt: authConfig.callbacks!.jwt!,
-    session: authConfig.callbacks!.session!,
+    ...baseCallbacks,
     async signIn({ user, account, profile }) {
-      // Credentials provider — already handled by authorize()
       if (account?.provider === "credentials") return true;
-
-      // OAuth providers
       if (!account || !user.email) return false;
 
       const email = user.email;
       const providerAccountId = account.providerAccountId;
+      const oauthProfile = profile as Record<string, unknown> | undefined;
 
       // Check if this provider account is already linked
       const [existingAccount] = await db
@@ -96,7 +116,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         );
 
       if (existingAccount) {
-        // Already linked — allow sign-in
         user.id = existingAccount.userId;
         return true;
       }
@@ -108,8 +127,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         .where(eq(users.email, email));
 
       if (existingUser) {
-        // Auto-link: both Google and GitHub provide verified emails via
-        // their OAuth flows. Link the provider to the existing user account.
+        // Only auto-link if the provider guarantees the email is verified
+        if (!isEmailVerified(account.provider, oauthProfile)) {
+          return "/login?error=AccountExists";
+        }
+
+        // Link the provider to the existing user
         await db.insert(accounts).values({
           userId: existingUser.id,
           provider: account.provider,
@@ -121,26 +144,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         user.id = existingUser.id;
 
         // Persist OAuth avatar to DB if user doesn't have one yet
-        const oauthImage =
-          (profile as { picture?: string } | undefined)?.picture ??
-          (profile as { avatar_url?: string } | undefined)?.avatar_url ??
-          null;
-        const resolvedImage = existingUser.image ?? oauthImage;
-        if (resolvedImage && !existingUser.image) {
+        const oauthImage = getOAuthImage(oauthProfile);
+        if (oauthImage && !existingUser.image) {
           await db
             .update(users)
-            .set({ image: resolvedImage, updatedAt: new Date() })
+            .set({ image: oauthImage, updatedAt: new Date() })
             .where(eq(users.id, existingUser.id));
         }
-        user.image = resolvedImage;
+        user.image = existingUser.image ?? oauthImage;
         return true;
       }
 
       // New user — create account
-      const image =
-        (profile as { picture?: string } | undefined)?.picture ??
-        (profile as { avatar_url?: string } | undefined)?.avatar_url ??
-        null;
+      const image = getOAuthImage(oauthProfile);
 
       const [newUser] = await db
         .insert(users)
