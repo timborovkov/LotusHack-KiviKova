@@ -17,6 +17,7 @@ const envSchema = z
 
     // App
     NEXT_PUBLIC_APP_URL: z.string().default("http://localhost:3000"),
+    NEXT_PUBLIC_GA_MEASUREMENT_ID: z.string().optional(),
 
     // Meeting Bot
     MEETING_BOT_PROVIDER: z.enum(["recall", "mock"]),
