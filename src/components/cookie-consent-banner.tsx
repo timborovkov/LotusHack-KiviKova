@@ -48,7 +48,10 @@ function persistConsent(choice: ConsentChoice) {
 
 function subscribeConsent(listener: () => void) {
   consentListeners.add(listener);
-  return () => consentListeners.delete(listener);
+  return () => {
+    // eslint-disable-next-line drizzle/enforce-delete-with-where
+    consentListeners.delete(listener);
+  };
 }
 
 function getConsentSnapshot(): ConsentChoice | null {
@@ -90,16 +93,13 @@ export function CookieConsentBanner({
     };
   }, []);
 
-  function handleConsent(choice: ConsentChoice) {
+  const handleConsent = useCallback((choice: ConsentChoice) => {
     persistConsent(choice);
-    setConsentChoice(choice);
     setIsPreferencesOpen(false);
-  }
+  }, []);
 
   const isVisible =
-    hydrated &&
-    analyticsEnabled &&
-    (consentChoice === null || isPreferencesOpen);
+    analyticsEnabled && (consentChoice === null || isPreferencesOpen);
 
   if (!isVisible) {
     return null;
@@ -124,14 +124,14 @@ export function CookieConsentBanner({
           size="sm"
           onClick={() => handleConsent("rejected")}
         >
-          Reject optional analytics
+          Reject all
         </Button>
         <Button
           variant="accent"
           size="sm"
           onClick={() => handleConsent("accepted")}
         >
-          Accept analytics
+          Accept all
         </Button>
       </div>
     </div>
