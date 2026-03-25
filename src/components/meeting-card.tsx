@@ -90,7 +90,7 @@ export function MeetingCard({
             </p>
           )}
         </CardContent>
-        <CardFooter className="gap-2">
+        <CardFooter className="mt-auto gap-2">
           {canJoin && (
             <Button
               size="sm"
