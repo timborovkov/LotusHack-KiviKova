@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "FAQ — Vernix",
+  description:
+    "Frequently asked questions about Vernix — platform support, voice agent, silent mode, data security, document uploads, and MCP integration.",
 };
 
 const QUESTIONS = [
