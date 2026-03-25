@@ -20,7 +20,7 @@ export default function AuthLayout({
   return (
     <div className="flex min-h-dvh">
       {/* Left: value panel — hidden on mobile */}
-      <div className="bg-primary text-primary-foreground hidden w-1/2 flex-col justify-between p-12 lg:flex">
+      <div className="hidden w-1/2 flex-col justify-between bg-[oklch(0.145_0_0)] p-12 text-white lg:flex">
         <Link href="/">
           <Image
             src="/brand/combo/horizontal-dark-nobg.png"

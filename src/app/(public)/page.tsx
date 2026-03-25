@@ -134,7 +134,7 @@ export default function LandingPage() {
           on the conversation.
         </p>
         <div className="animate-fade-up flex flex-col justify-center gap-3 delay-300 sm:flex-row">
-          <Button size="lg" render={<Link href="/register" />}>
+          <Button variant="accent" size="lg" render={<Link href="/register" />}>
             Try Vernix Free
             <ArrowRight className="ml-1 h-4 w-4" />
           </Button>
@@ -224,7 +224,11 @@ export default function LandingPage() {
 
           {/* Mid-page CTA */}
           <div className="mt-12 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-            <Button size="lg" render={<Link href="/register" />}>
+            <Button
+              variant="accent"
+              size="lg"
+              render={<Link href="/register" />}
+            >
               Try Vernix Free
               <ArrowRight className="ml-1 h-4 w-4" />
             </Button>
@@ -252,7 +256,7 @@ export default function LandingPage() {
             {STEPS.map((item, i) => (
               <ScrollReveal key={item.step} delay={i * 100}>
                 <div className="text-center">
-                  <div className="bg-primary text-primary-foreground mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold">
+                  <div className="bg-ring mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold text-white">
                     {item.step}
                   </div>
                   <h3 className="mb-2 font-medium">{item.title}</h3>

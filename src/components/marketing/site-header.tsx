@@ -57,7 +57,7 @@ export function SiteHeader() {
           <Button variant="ghost" size="sm" render={<Link href="/login" />}>
             Sign In
           </Button>
-          <Button size="sm" render={<Link href="/register" />}>
+          <Button variant="accent" size="sm" render={<Link href="/register" />}>
             Get Started
           </Button>
         </div>
@@ -95,7 +95,11 @@ export function SiteHeader() {
             <Button variant="outline" size="sm" render={<Link href="/login" />}>
               Sign In
             </Button>
-            <Button size="sm" render={<Link href="/register" />}>
+            <Button
+              variant="accent"
+              size="sm"
+              render={<Link href="/register" />}
+            >
               Get Started
             </Button>
           </div>

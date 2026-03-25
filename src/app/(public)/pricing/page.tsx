@@ -101,7 +101,7 @@ export default function PricingPage() {
               </ul>
               <Button
                 className="w-full"
-                variant={tier.highlighted ? "default" : "outline"}
+                variant={tier.highlighted ? "accent" : "outline"}
                 render={<Link href="/register" />}
               >
                 {tier.cta}

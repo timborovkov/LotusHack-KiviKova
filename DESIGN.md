@@ -8,7 +8,7 @@ This document captures the current visual language, component patterns, and conv
 
 ### Philosophy
 
-All colors are defined as CSS custom properties using the **OKLCH color space** (perceptually uniform, better for accessibility than HSL/HEX). Tailwind utilities map to these tokens via `@theme inline` in `globals.css`. The palette is **grayscale-first with a warm violet accent** (hue 290°). The accent appears on focus rings, active states, and interactive highlights. Primary surfaces (buttons, dark panels) stay grayscale. Status colors (green, yellow, red) are hardcoded by convention since they carry semantic meaning independent of theme.
+All colors are defined as CSS custom properties using the **OKLCH color space** (perceptually uniform, better for accessibility than HSL/HEX). Tailwind utilities map to these tokens via `@theme inline` in `globals.css`. The palette is **grayscale-first with a warm violet accent** (hue 290°). The accent appears on focus rings, active states, interactive highlights, and hero CTAs (via `accent` button variant). Standard buttons (`default` variant) and dark surfaces stay grayscale. Use `accent` for high-visibility signup/conversion CTAs only — not for every button. Status colors (green, yellow, red) are hardcoded by convention since they carry semantic meaning independent of theme.
 
 ### Semantic Tokens
 
@@ -199,7 +199,8 @@ Defined in `src/components/ui/button.tsx` via CVA.
 
 | Variant       | Style                                                        | When to use                       |
 | ------------- | ------------------------------------------------------------ | --------------------------------- |
-| `default`     | `bg-primary text-primary-foreground`                         | Primary CTA                       |
+| `default`     | `bg-primary text-primary-foreground`                         | Standard CTA (grayscale)          |
+| `accent`      | `bg-ring text-white hover:bg-ring/90`                        | Hero/signup CTAs (violet)         |
 | `outline`     | `border-border bg-background hover:bg-muted`                 | Secondary action                  |
 | `secondary`   | `bg-secondary text-secondary-foreground`                     | Alternative secondary             |
 | `ghost`       | `hover:bg-muted hover:text-foreground`                       | Icon-only or low-emphasis actions |
@@ -455,23 +456,23 @@ Common icons by category:
 
 ## File Locations
 
-| Concern                                             | Path                                   |
-| --------------------------------------------------- | -------------------------------------- |
-| CSS variables & `@theme`                            | `src/app/globals.css`                  |
-| Button, Badge, Card, Dialog, Input, Label, Table    | `src/components/ui/`                   |
-| Skeleton primitive                                  | `src/components/ui/skeleton.tsx`       |
-| Vernix logo component                               | `src/components/ui/vernix-logo.tsx`    |
-| Meeting card, chat, task list, knowledge list, etc. | `src/components/`                      |
-| Dashboard sticky header                             | `src/components/dashboard-header.tsx`  |
-| Theme toggle (light/dark/system)                    | `src/components/theme-toggle.tsx`      |
-| Theme init script (FOUC prevention)                 | `src/components/theme-script.tsx`      |
-| Scroll reveal animation                             | `src/components/scroll-reveal.tsx`     |
-| Marketing header & footer                           | `src/components/marketing/`            |
-| Meeting status → badge variant map                  | `src/lib/meetings/constants.ts`        |
-| Query client setup                                  | `src/components/query-provider.tsx`    |
-| Query key factory                                   | `src/lib/query-keys.ts`                |
-| Markdown renderer                                   | `src/lib/format.ts`                    |
-| Product marketing context                           | `.claude/product-marketing-context.md` |
+| Concern                                             | Path                                  |
+| --------------------------------------------------- | ------------------------------------- |
+| CSS variables & `@theme`                            | `src/app/globals.css`                 |
+| Button, Badge, Card, Dialog, Input, Label, Table    | `src/components/ui/`                  |
+| Skeleton primitive                                  | `src/components/ui/skeleton.tsx`      |
+| Vernix logo component                               | `src/components/ui/vernix-logo.tsx`   |
+| Meeting card, chat, task list, knowledge list, etc. | `src/components/`                     |
+| Dashboard sticky header                             | `src/components/dashboard-header.tsx` |
+| Theme toggle (light/dark/system)                    | `src/components/theme-toggle.tsx`     |
+| Theme init script (FOUC prevention)                 | `src/components/theme-script.tsx`     |
+| Scroll reveal animation                             | `src/components/scroll-reveal.tsx`    |
+| Marketing header & footer                           | `src/components/marketing/`           |
+| Meeting status → badge variant map                  | `src/lib/meetings/constants.ts`       |
+| Query client setup                                  | `src/components/query-provider.tsx`   |
+| Query key factory                                   | `src/lib/query-keys.ts`               |
+| Markdown renderer                                   | `src/lib/format.ts`                   |
+| Product marketing context                           | `MARKETING.md`                        |
 
 ---
 
