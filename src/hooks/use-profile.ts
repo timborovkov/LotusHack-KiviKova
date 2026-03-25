@@ -98,11 +98,12 @@ export function useProfile() {
   return {
     profile: profile ?? null,
     loading,
-    updateName: updateName.mutateAsync,
+    updateName: (name: string) => updateName.mutate(name),
     updatingName: updateName.isPending,
-    changePassword: changePassword.mutateAsync,
+    changePassword: (args: { currentPassword?: string; newPassword: string }) =>
+      changePassword.mutate(args),
     changingPassword: changePassword.isPending,
-    unlinkAccount: unlinkAccount.mutateAsync,
+    unlinkAccount: (provider: string) => unlinkAccount.mutate(provider),
     unlinkingAccount: unlinkAccount.isPending,
   };
 }
