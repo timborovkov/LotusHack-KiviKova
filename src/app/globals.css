@@ -179,6 +179,20 @@ details .faq-answer > div {
   overflow: hidden;
 }
 
+/* Hero background line pulse */
+@keyframes line-pulse {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+.hero-line-pulse {
+  animation: line-pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-up {

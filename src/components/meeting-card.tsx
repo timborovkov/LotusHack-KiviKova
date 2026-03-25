@@ -113,12 +113,13 @@ export function MeetingCard({
             </Button>
           )}
           <Button
-            size="sm"
-            variant="destructive"
+            size="icon-sm"
+            variant="ghost"
             disabled={!!actionLoading}
             onClick={() => setConfirmDelete(true)}
+            className="text-muted-foreground hover:text-destructive ml-auto"
           >
-            <Trash2 className="h-3 w-3" />
+            <Trash2 className="h-3.5 w-3.5" />
           </Button>
         </CardFooter>
       </Card>

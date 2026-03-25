@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollReveal } from "@/components/scroll-reveal";
+import { HeroBg } from "@/components/hero-bg";
 import {
   Mic,
   FileText,
@@ -108,7 +109,8 @@ export default function LandingPage() {
   return (
     <>
       {/* Hero */}
-      <section className="mx-auto max-w-3xl px-4 py-24 text-center">
+      <section className="relative mx-auto max-w-3xl px-4 py-24 text-center">
+        <HeroBg />
         <div className="animate-fade-up mb-8 flex justify-center">
           <Image
             src="/brand/icon/icon.svg"
@@ -271,7 +273,7 @@ export default function LandingPage() {
       </section>
 
       {/* CTA — Loss aversion + Regret aversion + Present bias */}
-      <section className="bg-primary text-primary-foreground py-24">
+      <section className="bg-[oklch(0.145_0_0)] py-24 text-white">
         <div className="mx-auto max-w-3xl px-4 text-center">
           <h2 className="mb-4 text-2xl font-bold">
             Your next meeting could be the first one you never have to

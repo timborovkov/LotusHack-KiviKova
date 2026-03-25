@@ -77,7 +77,7 @@ export default function DashboardPage() {
               <Button
                 key={status}
                 size="sm"
-                variant={statusFilter === status ? "default" : "outline"}
+                variant={statusFilter === status ? "accent" : "outline"}
                 onClick={() => setStatusFilter(status)}
               >
                 {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -99,7 +99,7 @@ export default function DashboardPage() {
             <CardTitle className="flex items-center gap-2 text-lg">
               <ListChecks className="h-4 w-4" />
               Pending Tasks
-              <span className="bg-primary text-primary-foreground ml-1 rounded-full px-2 py-0.5 text-xs">
+              <span className="bg-ring ml-1 rounded-full px-2 py-0.5 text-xs text-white">
                 {pendingTasks.length}
               </span>
             </CardTitle>
