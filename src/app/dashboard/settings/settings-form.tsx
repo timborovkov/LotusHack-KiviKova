@@ -40,19 +40,27 @@ export function SettingsForm({
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
 
-  const handleNameSave = () => {
-    updateName(editName);
-    setNameEditing(false);
+  const handleNameSave = async () => {
+    try {
+      await updateName(editName);
+      setNameEditing(false);
+    } catch {
+      // Error handled by toast in hook
+    }
   };
 
-  const handlePasswordChange = (e: React.FormEvent) => {
+  const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
-    changePassword({
-      currentPassword: profile?.hasPassword ? currentPassword : undefined,
-      newPassword,
-    });
-    setCurrentPassword("");
-    setNewPassword("");
+    try {
+      await changePassword({
+        currentPassword: profile?.hasPassword ? currentPassword : undefined,
+        newPassword,
+      });
+      setCurrentPassword("");
+      setNewPassword("");
+    } catch {
+      // Error handled by toast in hook — fields kept for retry
+    }
   };
 
   return (
