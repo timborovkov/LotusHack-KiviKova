@@ -63,6 +63,9 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <script src="/theme-init.js" />
+      </head>
       <body className="flex min-h-full flex-col">
         <SessionProvider>
           <QueryProvider>
