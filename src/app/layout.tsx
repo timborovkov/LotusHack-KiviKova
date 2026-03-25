@@ -21,8 +21,16 @@ export const metadata: Metadata = {
     "AI-powered meeting assistant that joins your video calls, transcribes conversations, and answers questions using context from current and past meetings.",
   icons: {
     icon: [
-      { url: "/brand/favicon/favicon-32.png", sizes: "32x32", type: "image/png" },
-      { url: "/brand/favicon/favicon-192.png", sizes: "192x192", type: "image/png" },
+      {
+        url: "/brand/favicon/favicon-32.png",
+        sizes: "32x32",
+        type: "image/png",
+      },
+      {
+        url: "/brand/favicon/favicon-192.png",
+        sizes: "192x192",
+        type: "image/png",
+      },
       { url: "/brand/favicon/favicon.svg", type: "image/svg+xml" },
     ],
     apple: "/brand/favicon/apple-touch-icon.png",
@@ -32,7 +40,9 @@ export const metadata: Metadata = {
     title: "Vernix — AI Video Call Agent",
     description:
       "AI-powered meeting assistant that joins your video calls, transcribes conversations, and answers questions.",
-    images: [{ url: "/brand/og/og-with-subtitle.png", width: 1200, height: 630 }],
+    images: [
+      { url: "/brand/og/og-with-subtitle.png", width: 1200, height: 630 },
+    ],
   },
   twitter: {
     card: "summary_large_image",
