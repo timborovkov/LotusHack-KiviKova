@@ -3,6 +3,8 @@ import { Mail } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Contact — Vernix",
+  description:
+    "Get in touch with the Vernix team for questions, feature requests, or support.",
 };
 
 export default function ContactPage() {
