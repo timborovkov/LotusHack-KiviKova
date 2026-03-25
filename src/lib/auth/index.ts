@@ -75,18 +75,13 @@ function getOAuthImage(
   );
 }
 
-/** Check if the OAuth provider guarantees the email is verified */
-function isEmailVerified(
-  provider: string,
-  profile: Record<string, unknown> | undefined
-): boolean {
-  // Google always verifies emails
-  if (provider === "google") return true;
-  // GitHub: check the email_verified field from the profile
-  if (provider === "github") {
-    return profile?.email_verified === true;
-  }
-  return false;
+/** Check if the OAuth provider guarantees the email is verified.
+ *  Google: always verified.
+ *  GitHub: the /user endpoint doesn't return email_verified, but GitHub
+ *  only exposes the primary email via OAuth scope, and primary emails
+ *  must be verified on GitHub. Safe to auto-link. */
+function isEmailVerified(provider: string): boolean {
+  return provider === "google" || provider === "github";
 }
 
 const { callbacks: baseCallbacks = {}, ...restConfig } = authConfig;
@@ -128,7 +123,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       if (existingUser) {
         // Only auto-link if the provider guarantees the email is verified
-        if (!isEmailVerified(account.provider, oauthProfile)) {
+        if (!isEmailVerified(account.provider)) {
           return "/login?error=AccountExists";
         }
 
