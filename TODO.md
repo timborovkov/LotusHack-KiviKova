@@ -102,20 +102,20 @@
 - ~~**Env validation** — `src/lib/env.ts` validates all required env vars with Zod at first access; client singletons use `getEnv()`~~
 - ~~**Webhook signature verification** — HMAC-SHA256 verification of Recall webhook payloads via `RECALL_WEBHOOK_SECRET` (optional, skip in dev)~~
 
-## P14 — Rebrand to Vernix (vernix.app)
+## P14 — Rebrand to Vernix (vernix.app) ~~DONE~~
 
-- **Rename everywhere** — Package name, repo, README, CLAUDE.md, UI text, bot name, prompts, SEO metadata
-- **Rename GitHub repository**
-- **Register the domain and social media**
-- **Domain** — Point vernix.app to the deployment
-- **Update Recall** — Bot name from "Vernix Agent" to "Vernix Agent", webhook URLs
-- **Voice agent wake words** — Change from "Vernix" to "Vernix" in system prompt and UI hints
-- **Logo set** — Create icon, wordmark, favicon, and OG image in the style of the current site
-- **Design system doc** — Write `DESIGN.md` capturing current color palette, typography, spacing, and component patterns so they're codified and consistent
+- ~~**Rename everywhere** — Package name, repo, README, CLAUDE.md, UI text, bot name, prompts, SEO metadata~~
+- ~~**Rename GitHub repository**~~
+- ~~**Register the domain and social media**~~
+- ~~**Domain** — Point vernix.app to the deployment~~
+- ~~**Update Recall** — Bot name from "Vernix Agent" to "Vernix Agent", webhook URLs~~
+- ~~**Voice agent wake words** — Change from "Vernix" to "Vernix" in system prompt and UI hints~~
+- ~~**Logo set** — Create icon, wordmark, favicon, and OG image in the style of the current site~~
+- ~~**Design system doc** — Write `DESIGN.md` capturing current color palette, typography, spacing, and component patterns so they're codified and consistent~~
 
 ## P15 — UI Polish & Launch Prep
 
-- **Implement the logo set**
+- ~~**Implement the logo set** – Start using the new logo set in the UI~~
 - **Loading skeletons** – Structurally correct loading skeletons; general, page, and component specific loading components
 - **Landing page** — Build a clean marketing landing page matching the existing site style, with clear CTAs and value props
 - **Mobile responsiveness** — Audit and fix all pages for mobile; dashboard, meeting detail, settings, knowledge base
@@ -180,9 +180,12 @@
 
 ## P22 — Billing with Polar
 
+- **Calculate the pricing** — Calculate our baseline costs and add our margins on top, decide on the pricing strategy. Use proper Claude skills to do this. Current pricing idea: Free trial for pro, Pro (x hours of meetings / month), Unlimited (not really unlimited, fair use applies)
+- **Create a pricing page** — `/pricing` page with the pricing tiers and a call to action to sign up.
+- **Pricing as consts in the code** — Pricing tiers as consts in the code, so we can easily change the pricing without having to change the code. Would affect billing, pricing page, and marketing.
 - **Polar integration** — Connect Polar.sh for subscription management
-- **Pricing tiers** — Free trial for pro, Pro (x hours of meetings / month), Unlimited (not really unlimited, fair use applies)
 - **Hard caps** – Fair use hard caps on uploaded context, meeting duration, token usage, embeddings creation etc for each plan
 - **Usage tracking** — Track meeting minutes, API calls, and storage per user
 - **Billing UI** — `/settings/billing` page with current plan, usage, and upgrade options
 - **Webhook handler** — `POST /api/webhooks/polar` for subscription lifecycle events
+- **Configure paywalls** — Configure paywalls for the pricing tiers. Claude Code has a paywall skill that can be used to configure paywalls.
