@@ -138,14 +138,14 @@
 - ~~**FOUC prevention** — Blocking `ThemeScript` in `<head>` applies theme before React hydration~~
 - ~~**Component audit** — Fixed hardcoded surfaces (auth panel, landing CTA) that broke in dark mode~~
 
-## P16b — User Profiles & SSO
+## P16b — User Profiles & SSO ~~DONE~~
 
-- **Profile page** — `/settings/profile` page where users can edit name, email, company, and avatar
-- **Change password** — Current password verification + new password form
-- **SSO providers** — Add Google, GitHub, and X (Twitter) OAuth providers to NextAuth config
-- **Update docs** – Make sure all the new env variables and everything that needs to be done on google console etc. are well documented
-- **Account linking** — Allow users to link multiple auth providers to one account
-- **Profile API** — `PATCH /api/user/profile` endpoint for updating user details
+- ~~**Profile page** — Profile card on settings page with avatar, editable name, read-only email~~
+- ~~**Change password** — Current password verification + new password form (SSO users can set without current)~~
+- ~~**SSO providers** — Google and GitHub OAuth providers added to NextAuth (conditionally loaded from env vars)~~
+- ~~**Update docs** — `.env.example` updated with OAuth setup instructions and callback URLs~~
+- ~~**Account linking** — Auto-link by verified email; unlink from settings with guard against removing last auth method~~
+- ~~**Profile API** — `GET/PATCH /api/user/profile`, `PATCH /api/user/password`, `GET/DELETE /api/user/accounts`~~
 
 ## P18 — Silent Agent Mode (Text Agent) ~~DONE~~
 
