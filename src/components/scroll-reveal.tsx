@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { cn } from "@/lib/utils";
 
 interface ScrollRevealProps {
@@ -15,22 +15,25 @@ export function ScrollReveal({
   delay = 0,
 }: ScrollRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
+
+  const reveal = useCallback((el: HTMLDivElement) => {
+    el.style.opacity = "1";
+    el.style.transform = "translateY(0)";
+  }, []);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
 
-    // Respect reduced motion
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setVisible(true);
+      reveal(el);
       return;
     }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setVisible(true);
+          reveal(el);
           observer.unobserve(el);
         }
       },
@@ -39,19 +42,17 @@ export function ScrollReveal({
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [reveal]);
 
   return (
     <div
       ref={ref}
-      className={cn(
-        "transition-all duration-500",
-        visible
-          ? "translate-y-0 opacity-100"
-          : "translate-y-3 opacity-0",
-        className
-      )}
-      style={{ transitionDelay: `${delay}ms` }}
+      className={cn(className)}
+      style={{
+        opacity: 0,
+        transform: "translateY(12px)",
+        transition: `opacity 0.5s cubic-bezier(0.25,1,0.5,1) ${delay}ms, transform 0.5s cubic-bezier(0.25,1,0.5,1) ${delay}ms`,
+      }}
     >
       {children}
     </div>
