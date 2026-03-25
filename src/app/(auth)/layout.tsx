@@ -6,7 +6,10 @@ const VALUE_POINTS = [
   { icon: Mic, text: "Real-time transcription with speaker identification" },
   { icon: FileText, text: "AI summaries and key decisions after every call" },
   { icon: MessageSquare, text: "Voice agent that answers questions live" },
-  { icon: ListChecks, text: "Action items extracted and tracked automatically" },
+  {
+    icon: ListChecks,
+    text: "Action items extracted and tracked automatically",
+  },
 ];
 
 export default function AuthLayout({
