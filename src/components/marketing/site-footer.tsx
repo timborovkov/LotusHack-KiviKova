@@ -74,8 +74,11 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="border-border text-muted-foreground mt-12 border-t pt-6 text-center text-xs">
-          &copy; {new Date().getFullYear()} Vernix. All rights reserved.
+        <div className="border-border text-muted-foreground mt-12 flex flex-col items-center gap-1 border-t pt-6 text-xs">
+          <span>
+            &copy; {new Date().getFullYear()} Vernix. All rights reserved.
+          </span>
+          <span>Built with &hearts; in Europe</span>
         </div>
       </div>
     </footer>
