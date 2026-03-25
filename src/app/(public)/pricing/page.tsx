@@ -6,6 +6,8 @@ import { Check } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Pricing — Vernix",
+  description:
+    "Simple, transparent pricing for Vernix. Start free with 5 meetings, upgrade to Pro or Unlimited for voice agents, knowledge base, and API access.",
 };
 
 const TIERS = [
