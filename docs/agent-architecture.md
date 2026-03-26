@@ -87,14 +87,14 @@ Bot joins meeting
 HTML page loads in Recall bot browser
     |
     v
-Start audio capture (AudioWorklet, 24kHz PCM)
+Start audio capture (ScriptProcessor, 24kHz PCM)
     |
     +---> Circular 10s ring buffer (always running)
     |
     +---> FAST PATH: Client-Side VAD + Transcription
     |     |
     |     v
-    |     AudioWorklet computes RMS energy per frame
+    |     ScriptProcessor computes RMS energy per frame
     |     |
     |     v
     |     Speech detected (RMS > 0.015)?
