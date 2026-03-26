@@ -12,7 +12,7 @@ import { processMeetingEnd } from "@/lib/agent/processing";
 const fallbackSchema = z.object({
   meetingId: z.uuid(),
   botSecret: z.string().min(1, "Bot secret is required"),
-  transcriptWindow: z.string().optional(),
+  transcriptWindow: z.string().min(1, "Transcript context is required"),
 });
 
 export async function POST(request: Request) {
@@ -63,13 +63,6 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { error: "Meeting has no owner" },
       { status: 404 }
-    );
-  }
-
-  if (!transcriptWindow) {
-    return NextResponse.json(
-      { error: "No transcript context provided" },
-      { status: 400 }
     );
   }
 
