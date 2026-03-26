@@ -15,6 +15,14 @@ vi.mock("@/lib/email/templates", () => ({
 vi.mock("@/lib/rate-limit", () => ({
   rateLimitByIp: () => ({ success: true, remaining: 99 }),
 }));
+// Mock next/server's after() to execute the callback immediately in tests
+vi.mock("next/server", async (importOriginal) => {
+  const original = await importOriginal<typeof import("next/server")>();
+  return {
+    ...original,
+    after: (fn: () => Promise<void>) => fn(),
+  };
+});
 
 import { POST } from "./route";
 import { createJsonRequest, parseJsonResponse } from "@/test/helpers";
