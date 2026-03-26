@@ -30,10 +30,11 @@
 - Pricing strategy calculation
 - Pricing page (`/pricing`)
 
-## Hybrid Voice Activation Mode (Wake-on-Demand Realtime)
+## Voice Mode Rewrite (On-Demand Realtime)
 
-- **Mode design** — Add a new per-meeting mode where a lightweight listener is always on, and OpenAI Realtime spins up only when the agent is explicitly addressed.
-- **Background listener** — Implement cheap wake detection from Recall transcript stream + wake words ("Vernix", "Agent", "Assistant") + question intent heuristics.
+Replace always-on Realtime API connection with on-demand activation. Voice mode will use wake-word detection on the transcript stream and only spin up OpenAI Realtime when the agent is addressed. This is the only voice mode — no separate "always-on" option.
+
+- **Background listener** — Implement wake detection from Recall transcript stream + wake words ("Vernix", "Agent", "Assistant") + question intent heuristics.
 - **Activation gate** — Require confidence threshold + debounce/rate limits before creating a Realtime session to prevent accidental triggers.
 - **On-demand Realtime lifecycle** — Create Realtime session on trigger, inject agenda + RAG/MCP tools, respond, then auto-close after short idle timeout.
 - **Faster spin-up path** — Reduce activation latency via precomputed context cache (recent transcript + top RAG snippets), prompt/session template reuse, and parallel token/tool preparation.
@@ -42,9 +43,9 @@
 - **No-interruption guardrails** — Keep strict "respond only when addressed" logic and add cooldown after each response to avoid back-to-back accidental replies.
 - **Context handoff** — On activation, fetch latest transcript window + relevant RAG context so the model has immediate conversational grounding.
 - **Fallback behavior** — If Realtime session fails, send brief text response in meeting chat (or skip with safe no-op) and keep listener alive.
-- **Cost & usage telemetry** — Track per-meeting/per-user activation count, Realtime connected seconds, token usage, and estimated cost deltas vs always-on mode.
-- **UX controls** — Expose mode selector and status ("Listening for wake word", "Responding", "Cooling down") on meeting detail.
-- **Testing & rollout** — Add integration tests + staged rollout (feature flag) + success criteria (lower cost, low false-trigger rate, acceptable response latency).
+- **Cost & usage telemetry** — Track per-meeting/per-user activation count, Realtime connected seconds, token usage, and estimated cost.
+- **UX controls** — Expose status ("Listening", "Responding", "Cooling down") on meeting detail.
+- **Testing & rollout** — Add integration tests + staged rollout (feature flag) + success criteria (low false-trigger rate, acceptable response latency).
 
 ## Adittional Agent Tools for In-Call Usage
 
