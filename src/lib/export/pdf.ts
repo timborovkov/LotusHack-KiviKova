@@ -9,20 +9,21 @@ import {
 export function stripMarkdown(text: string): string {
   return (
     text
-      // Bold/italic
-      .replace(/\*\*(.+?)\*\*/g, "$1")
-      .replace(/\*(.+?)\*/g, "$1")
-      .replace(/__(.+?)__/g, "$1")
-      .replace(/_(.+?)_/g, "$1")
+      // List markers first (before italic stripping to avoid * conflicts)
+      .replace(/^[-*+]\s+/gm, "- ")
+      .replace(/^(\d+)\.\s+/gm, "$1. ")
       // Headers
       .replace(/^#{1,6}\s+/gm, "")
+      // Bold (must run before italic)
+      .replace(/\*\*(.+?)\*\*/g, "$1")
+      .replace(/__(.+?)__/g, "$1")
+      // Italic (non-greedy, must not start at line beginning after "- ")
+      .replace(/(?<!\w)\*([^*]+?)\*(?!\*)/g, "$1")
+      .replace(/(?<!\w)_([^_]+?)_(?!\w)/g, "$1")
       // Links
       .replace(/\[(.+?)\]\(.+?\)/g, "$1")
       // Inline code
       .replace(/`(.+?)`/g, "$1")
-      // List markers
-      .replace(/^[-*+]\s+/gm, "- ")
-      .replace(/^(\d+)\.\s+/gm, "$1. ")
   );
 }
 
