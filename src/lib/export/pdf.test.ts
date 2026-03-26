@@ -80,4 +80,16 @@ describe("stripMarkdown", () => {
   it("preserves plain text", () => {
     expect(stripMarkdown("Hello world")).toBe("Hello world");
   });
+
+  it("handles list items with italic content", () => {
+    expect(stripMarkdown("* Revenue grew *significantly*")).toBe(
+      "- Revenue grew significantly"
+    );
+  });
+
+  it("handles bold inside list items", () => {
+    expect(stripMarkdown("- **Important:** do this")).toBe(
+      "- Important: do this"
+    );
+  });
 });
