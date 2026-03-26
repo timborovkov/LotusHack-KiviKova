@@ -6,9 +6,9 @@
 
 ## Cost Basis
 
-### Voice Meeting — Wake-on-Demand (default) — ~$1.40/hr
+### Voice Meeting — ~$1.40/hr
 
-Wake-on-demand: wake-word detection on transcript stream, Realtime API spins up only when addressed. Conservative estimate: ~8 activations/hr, ~45 sec avg (includes session spin-up, warm pool overhead) = ~6 min of Realtime per hour.
+Voice agent listens for wake words on the transcript stream and spins up OpenAI Realtime only when addressed. Conservative estimate: ~8 activations/hr, ~45 sec avg (includes session spin-up, warm pool overhead) = ~6 min of Realtime per hour.
 
 | Cost Item                          | Detail                                           | Cost   |
 | ---------------------------------- | ------------------------------------------------ | ------ |
@@ -18,17 +18,7 @@ Wake-on-demand: wake-word detection on transcript stream, Realtime API spins up 
 | Embeddings + Summary + Tasks       | Transcript chunks, post-meeting processing       | ~$0.01 |
 | Warm pool / session overhead       | Pre-initialized sessions, idle keepalive         | ~$0.04 |
 
-### Voice Meeting — Always-On — ~$7.66/hr
-
-Realtime API connected for full meeting duration. Opt-in for users who want continuous voice interaction. Consumes credits at $10/hr (vs $3/hr for wake-on-demand).
-
-| Cost Item                          | Detail                          | Cost   |
-| ---------------------------------- | ------------------------------- | ------ |
-| Recall bot + transcription         | $0.65/hr combined               | $0.65  |
-| OpenAI Realtime (gpt-realtime-1.5) | ~60 min listen, ~10 min speak   | ~$7.00 |
-| Embeddings + Summary + Tasks       | Transcript chunks, post-meeting | ~$0.01 |
-
-### Silent Mode Meeting — ~$0.71/hr
+### Silent Meeting — ~$0.71/hr
 
 | Cost Item                    | Detail                      | Cost   |
 | ---------------------------- | --------------------------- | ------ |
@@ -81,7 +71,7 @@ Railway is shared infrastructure (Next.js + Postgres + Qdrant + Minio). Cost is 
 - Full Pro features including voice mode (excludes API/MCP)
 - 90 minutes total (voice and silent combined, shared pool)
 - Auto-activates on signup
-- **Max CAC:** ~$2.10 (1.5 hrs wake-on-demand voice × $1.40)
+- **Max CAC:** ~$2.10 (1.5 hrs voice × $1.40)
 
 ### Pro — $29/month
 
@@ -92,14 +82,13 @@ Railway is shared infrastructure (Next.js + Postgres + Qdrant + Minio). Cost is 
 
 ### Usage Rates
 
-| Meeting Type                   | User Price   | Our Cost | Margin |
-| ------------------------------ | ------------ | -------- | ------ |
-| Voice meeting (wake-on-demand) | **$3/hr**    | ~$1.40   | 53.3%  |
-| Voice meeting (always-on)      | **$10/hr**   | ~$7.66   | 23.4%  |
-| Silent meeting                 | **$1.50/hr** | ~$0.71   | 52.7%  |
-| Post-meeting chat              | **Free**     | ~$0.01   | Incl.  |
+| Meeting Type      | User Price   | Our Cost | Margin |
+| ----------------- | ------------ | -------- | ------ |
+| Voice meeting     | **$3/hr**    | ~$1.40   | 53.3%  |
+| Silent meeting    | **$1.50/hr** | ~$0.71   | 52.7%  |
+| Post-meeting chat | **Free**     | ~$0.01   | Incl.  |
 
-Credits are consumed at these rates. Once exhausted, the same rates apply as metered overage. Always-on voice consumes credits at $10/hr — a 1-hour always-on meeting uses $10 of the $30 credit.
+Credits are consumed at these rates. Once exhausted, the same rates apply as metered overage.
 
 ---
 
@@ -157,7 +146,7 @@ Credits are consumed at these rates. Once exhausted, the same rates apply as met
 
 _Polar also charges 4% + $0.40 on each overage invoice._
 
-### Pro $29/mo Scenarios (wake-on-demand voice)
+### Pro $29/mo Scenarios
 
 **Light (1 hr voice + 3 hr silent):**
 
