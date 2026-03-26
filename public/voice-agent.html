@@ -801,13 +801,14 @@
       // --- Fallback to chat ---
       async function triggerFallback(transcriptWindow) {
         log("Falling back to chat response...");
-        sessionActive = false;
-        sessionStartedAt = 0;
+        // Close WebSocket immediately but keep sessionActive true
+        // to prevent polling from triggering a duplicate activation
         if (ws) {
           ws.onclose = null;
           ws.close();
           ws = null;
         }
+        setStatus("Sending via chat...", "thinking");
 
         try {
           await fetch(`${appUrl}/api/agent/voice-fallback`, {
@@ -820,6 +821,9 @@
           log("Fallback error: " + err.message);
         }
 
+        // Reset state only after fallback completes
+        sessionActive = false;
+        sessionStartedAt = 0;
         notifyState("idle");
         setStatus("Listening for your name...", "idle");
         startPolling();
