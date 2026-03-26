@@ -80,58 +80,15 @@
       /* Logo container with ring */
       #logo-container {
         position: relative;
-        width: 120px;
-        height: 120px;
         margin-bottom: 24px;
       }
       #logo-ring {
-        position: absolute;
-        inset: -6px;
-        border-radius: 50%;
-        border: 2px solid rgba(255, 255, 255, 0.08);
-        transition:
-          border-color 0.5s ease,
-          box-shadow 0.5s ease;
-      }
-      #logo-ring.idle {
-        border-color: rgba(255, 255, 255, 0.08);
-      }
-      #logo-ring.connecting {
-        border-color: rgba(234, 179, 8, 0.4);
-        box-shadow: 0 0 20px rgba(234, 179, 8, 0.15);
-        animation: ringPulse 1.5s ease-in-out infinite;
-      }
-      #logo-ring.listening {
-        border-color: rgba(34, 197, 94, 0.4);
-        box-shadow: 0 0 20px rgba(34, 197, 94, 0.1);
-      }
-      #logo-ring.thinking {
-        border-color: rgba(234, 179, 8, 0.4);
-        box-shadow: 0 0 20px rgba(234, 179, 8, 0.15);
-        animation: ringPulse 1.5s ease-in-out infinite;
-      }
-      #logo-ring.speaking {
-        border-color: rgba(59, 130, 246, 0.5);
-        box-shadow: 0 0 24px rgba(59, 130, 246, 0.2);
-        animation: ringPulse 0.8s ease-in-out infinite;
-      }
-      #logo-ring.cooldown {
-        border-color: rgba(34, 197, 94, 0.15);
-      }
-
-      @keyframes ringPulse {
-        0%,
-        100% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.04);
-        }
+        display: none;
       }
 
       #logo {
-        width: 120px;
-        height: 120px;
+        height: 140px;
+        width: auto;
         opacity: 0.9;
         transition: opacity 0.3s;
         filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
@@ -150,45 +107,9 @@
         transition: opacity 0.3s;
       }
 
-      /* Status dot */
+      /* Status dot — hidden, glow ring provides visual feedback */
       #indicator {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #333;
-        transition: background 0.3s;
-      }
-      #indicator.idle {
-        background: #555;
-      }
-      #indicator.connecting {
-        background: #eab308;
-        animation: dotPulse 0.8s infinite;
-      }
-      #indicator.listening {
-        background: #22c55e;
-      }
-      #indicator.thinking {
-        background: #eab308;
-        animation: dotPulse 0.8s infinite;
-      }
-      #indicator.speaking {
-        background: #3b82f6;
-        animation: dotPulse 0.8s infinite;
-      }
-      #indicator.cooldown {
-        background: #166534;
-      }
-      @keyframes dotPulse {
-        0%,
-        100% {
-          transform: scale(1);
-          opacity: 1;
-        }
-        50% {
-          transform: scale(1.8);
-          opacity: 0.6;
-        }
+        display: none;
       }
 
       #log {
@@ -235,10 +156,12 @@
       let idleTimer = null;
 
       // --- Constants ---
-      const POLL_INTERVAL_MS = 2000;
+      const POLL_INTERVAL_MS = 1000;
       const IDLE_TIMEOUT_MS = 15000;
       const AUDIO_BUFFER_SECONDS = 10;
-      const FALLBACK_TIMEOUT_MS = 5000;
+      const FALLBACK_TIMEOUT_MS = 4000;
+      let cachedToken = null;
+      let cachedTokenExpiresAt = 0;
 
       function setStatus(text, state) {
         statusEl.textContent = text;
@@ -407,7 +330,8 @@
           if (isMuted) {
             setStatus("Muted", "");
           } else {
-            setStatus("Listening for your name...", "idle");
+            setStatus('Say "Vernix" to ask a question', "idle");
+            prefetchToken(); // pre-fetch for next activation
           }
           startPolling();
         }
@@ -632,7 +556,7 @@
           if (!data.muted && isMuted) {
             isMuted = false;
             leaving = false;
-            setStatus("Listening for your name...", "idle");
+            setStatus('Say "Vernix" to ask a question', "idle");
           }
 
           if (isMuted) return;
@@ -645,6 +569,33 @@
         } catch {
           /* ignore polling errors */
         }
+      }
+
+      // --- Token pre-fetch ---
+      async function prefetchToken() {
+        try {
+          const res = await fetch(
+            `${appUrl}/api/agent/voice-token?meetingId=${meetingId}&botSecret=${botSecret}`
+          );
+          if (!res.ok) return;
+          const data = await res.json();
+          cachedToken = data.token;
+          cachedTokenExpiresAt = (data.expiresAt || 0) * 1000; // convert to ms
+          mcpToolNames = new Set(data.mcpToolNames || []);
+          log("Token pre-fetched");
+        } catch {
+          /* best effort */
+        }
+      }
+
+      function getCachedToken() {
+        // Use cached token if it expires more than 30s from now
+        if (cachedToken && cachedTokenExpiresAt > Date.now() + 30000) {
+          const token = cachedToken;
+          cachedToken = null; // consume it — each token is single-use
+          return token;
+        }
+        return null;
       }
 
       // --- On-demand Realtime session ---
@@ -665,38 +616,39 @@
           }
         }, FALLBACK_TIMEOUT_MS);
 
-        let tokenRes;
-        try {
-          tokenRes = await fetch(
-            `${appUrl}/api/agent/voice-token?meetingId=${meetingId}&botSecret=${botSecret}`
-          );
-        } catch (err) {
-          clearTimeout(fallbackTimer);
+        // Try cached token first, fetch fresh one if needed
+        let token = getCachedToken();
+        if (!token) {
+          let tokenRes;
+          try {
+            tokenRes = await fetch(
+              `${appUrl}/api/agent/voice-token?meetingId=${meetingId}&botSecret=${botSecret}`
+            );
+          } catch (err) {
+            clearTimeout(fallbackTimer);
+            if (fallbackFired) return;
+            log("Token fetch failed: " + err.message);
+            triggerFallback(transcriptWindow);
+            return;
+          }
+
           if (fallbackFired) return;
-          log("Token fetch failed: " + err.message);
-          triggerFallback(transcriptWindow);
-          return;
+
+          if (!tokenRes.ok) {
+            clearTimeout(fallbackTimer);
+            log("Token error: " + tokenRes.status);
+            triggerFallback(transcriptWindow);
+            return;
+          }
+
+          const tokenData = await tokenRes.json();
+          token = tokenData.token;
+          mcpToolNames = new Set(tokenData.mcpToolNames || []);
+
+          if (fallbackFired) return;
         }
 
-        // Fallback timer may have fired while fetch was pending — bail out
-        if (fallbackFired) return;
-
-        if (!tokenRes.ok) {
-          clearTimeout(fallbackTimer);
-          log("Token error: " + tokenRes.status);
-          triggerFallback(transcriptWindow);
-          return;
-        }
-
-        const tokenData = await tokenRes.json();
-        const token = tokenData.token;
-        mcpToolNames = new Set(tokenData.mcpToolNames || []);
-
-        // Check again after json() parse
-        if (fallbackFired) return;
-
-        // Token fetched successfully — cancel the fallback timer.
-        // If the WebSocket itself fails, ws.onclose handles cleanup via closeSession.
+        // Token ready — cancel the fallback timer.
         clearTimeout(fallbackTimer);
 
         const url = "wss://api.openai.com/v1/realtime?model=gpt-realtime-1.5";
@@ -814,7 +766,7 @@
           ws.close();
           ws = null;
         }
-        setStatus("Sending via chat...", "thinking");
+        setStatus("Thinking...", "thinking");
 
         try {
           await fetch(`${appUrl}/api/agent/voice-fallback`, {
@@ -834,7 +786,7 @@
         sessionActive = false;
         sessionStartedAt = 0;
         notifyState("idle", { sessionDurationMs });
-        setStatus("Listening for your name...", "idle");
+        setStatus('Say "Vernix" to ask a question', "idle");
         startPolling();
       }
 
@@ -848,11 +800,12 @@
 
         // Set logo src using appUrl so it works inside Recall bot
         document.getElementById("logo").src =
-          appUrl + "/brand/icon/icon-on-dark.png";
+          appUrl + "/brand/combo/vertical-dark-nobg.png";
 
         try {
           await startCapture();
-          setStatus("Listening for your name...", "idle");
+          setStatus('Say "Vernix" to ask a question', "idle");
+          prefetchToken(); // pre-fetch token so activation is faster
           startPolling();
         } catch (err) {
           setStatus("Error: " + err.message, "");
