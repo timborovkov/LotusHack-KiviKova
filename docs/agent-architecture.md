@@ -49,6 +49,7 @@ External MCP tools are dynamically loaded per user. They're available in all thr
 | Respond (single-turn)  | `gpt-5.4`          | `max_completion_tokens: 1024`, `temperature: 0.7`                       |
 | Summary Generation     | `gpt-5.4-mini`     | Used in `generateMeetingSummary()`                                      |
 | Action Item Extraction | `gpt-5.4-mini`     | JSON mode, extracts tasks from transcript                               |
+| Wake-Word Detection    | `gpt-4o-mini-transcribe` | $0.003/min, VAD-filtered audio chunks, language: "en"              |
 
 ---
 
@@ -75,6 +76,10 @@ All agents use the same RAG pipeline (`src/lib/agent/rag.ts`):
 
 ## Voice Mode Lifecycle (On-Demand Realtime)
 
+### Wake-Word Detection (Dual Path)
+
+Two parallel detection systems run simultaneously. The fast path typically fires first (~500ms), with the slow path as redundant fallback (~2-4s).
+
 ```
 Bot joins meeting
     |
@@ -82,68 +87,95 @@ Bot joins meeting
 HTML page loads in Recall bot browser
     |
     v
-Start audio capture (24kHz PCM) + circular 10s buffer
+Start audio capture (AudioWorklet, 24kHz PCM)
+    |
+    +---> Circular 10s ring buffer (always running)
+    |
+    +---> FAST PATH: Client-Side VAD + Transcription
+    |     |
+    |     v
+    |     AudioWorklet computes RMS energy per frame
+    |     |
+    |     v
+    |     Speech detected (RMS > 0.015)?
+    |     |
+    |     v
+    |     Buffer 1.5s of speech audio
+    |     |
+    |     v
+    |     Downsample 24kHz → 16kHz, encode as WAV
+    |     |
+    |     v
+    |     POST /api/agent/wake-detect (2s cooldown)
+    |     |
+    |     v
+    |     Server: gpt-4o-mini-transcribe → text → keyword match
+    |     |
+    |     v
+    |     { activated: true, transcriptWindow } ──> activateSession()
+    |
+    +---> SLOW PATH: Transcript Webhook (Fallback)
+          |
+          v
+          Recall transcribes speech (~1-3s)
+          |
+          v
+          Webhook → activation.ts buffers (0.5s debounce)
+          |
+          v
+          Keyword match → write "activated" to DB
+          |
+          v
+          Poll (1s interval) detects activation
+```
+
+Both paths write to the same `voiceActivation` metadata — first one wins. The consume-on-read mechanism (activated → responding) prevents duplicate activations.
+
+### Session Flow (After Activation)
+
+```
+Activation detected (fast or slow path)
     |
     v
-Poll /api/agent/activation-status every 2s  <---------+
-    |                                                   |
-    v                                                   |
-[Server-side: transcript webhook detects                |
- wake word in spoken text]                              |
-    |                                                   |
-    v                                                   |
-activation.ts buffers chunks (1.5s debounce)            |
-    |                                                   |
-    v                                                   |
-Rate limit check (1 per 15s)                            |
-    |                                                   |
-    v                                                   |
-Write state="activated" + transcriptWindow to metadata  |
-    |                                                   |
-    v                                                   |
-Poll returns state="activated"                          |
-Server atomically consumes: activated -> responding     |
-    |                                                   |
-    v                                                   |
-Play acknowledgement beep                               |
-    |                                                   |
-    v                                                   |
-Fetch ephemeral token from /api/agent/voice-token       |
-    |                                                   |
-    v                                                   |
-Connect to wss://api.openai.com/v1/realtime             |
-    |                                                   |
-    v                                                   |
-On session.created:                                     |
-  - Inject transcript window as conversation context    |
-  - Flush 10s audio ring buffer                         |
-  - Send response.create to trigger initial response    |
-    |                                                   |
-    v                                                   |
-Model responds via audio                                |
-    |                                                   |
-    v                                                   |
-15s idle timeout starts after response ends             |
-    |                                                   |
-    +-- Follow-up speech detected? Reset timer          |
-    |                                                   |
-    v                                                   |
-Timeout expires -> close WebSocket                      |
-    |                                                   |
-    v                                                   |
-Send sessionDurationMs to /api/agent/activation-status  |
-    |                                                   |
-    +----> Return to polling --------------------------->+
+Play acknowledgement beep
+    |
+    v
+Fetch voice token (pre-cached when possible)           <----+
+    |                                                        |
+    v                                                        |
+Connect to wss://api.openai.com/v1/realtime                  |
+    |                                                        |
+    v                                                        |
+On session.created:                                          |
+  - Inject transcript window as conversation context         |
+  - Flush 10s audio ring buffer                              |
+  - Send response.create to trigger initial response         |
+    |                                                        |
+    v                                                        |
+Model responds via audio                                     |
+    |                                                        |
+    v                                                        |
+15s idle timeout starts after response ends                  |
+    |                                                        |
+    +-- Follow-up speech detected? Reset timer               |
+    |                                                        |
+    v                                                        |
+Timeout expires → close WebSocket                            |
+    |                                                        |
+    v                                                        |
+Send sessionDurationMs to activation-status                  |
+    |                                                        |
+    +----> Resume VAD + polling ---------------------------->+
 ```
 
 ### Fallback Path
 
-If OpenAI Realtime fails to connect within 5 seconds:
+If OpenAI Realtime fails to connect within 4 seconds:
 
 1. HTML page calls `POST /api/agent/voice-fallback`
 2. Server generates text response via `generateAgentResponse()` (gpt-5.4-mini)
 3. Sends response via Recall chat API (`sendChatMessage`)
-4. Returns to polling
+4. Returns to VAD + polling
 
 ### Guards & Limits
 
@@ -289,6 +321,7 @@ Per-meeting voice telemetry tracked in-memory, flushed to `metadata.voiceTelemet
 | `activationCount`       | `recordActivation()` in activation.ts            |
 | `totalConnectedSeconds` | `recordSessionEnd()` via activation-status route |
 | `avgSessionSeconds`     | Computed on flush                                |
+| `wakeDetectCalls`       | `recordWakeDetectCall()` in wake-detect route    |
 
 Displayed in dashboard meeting detail page under "Voice Agent Stats".
 
@@ -309,21 +342,23 @@ Mute is a cross-cutting concern that affects both voice and silent modes:
 
 ## Key Constants Reference
 
-| Constant                | Value                    | File              |
-| ----------------------- | ------------------------ | ----------------- |
-| Voice wake words        | vernix, agent, assistant | activation.ts     |
-| Voice debounce          | 1.5s                     | activation.ts     |
-| Voice rate limit        | 15s                      | activation.ts     |
-| Voice transcript window | 30s                      | activation.ts     |
-| Silent trigger          | vernix                   | silent.ts         |
-| Silent debounce         | 3s                       | silent.ts         |
-| Silent rate limit       | 30s                      | silent.ts         |
-| Silent response cap     | 500 chars                | response.ts       |
-| Idle timeout            | 15s                      | voice-agent.html  |
-| Fallback timeout        | 5s                       | voice-agent.html  |
-| Poll interval           | 2s                       | voice-agent.html  |
-| Audio buffer            | 10s                      | voice-agent.html  |
-| MCP cache TTL           | 5 min                    | voice-token route |
+| Constant                | Value                                        | File              |
+| ----------------------- | -------------------------------------------- | ----------------- |
+| Wake words (shared)     | vernix + variants, agent, assistant          | activation.ts     |
+| Voice debounce          | 0.5s                                         | activation.ts     |
+| Voice rate limit        | 15s                                          | activation.ts     |
+| Voice transcript window | 30s                                          | activation.ts     |
+| Silent debounce         | 3s                                           | silent.ts         |
+| Silent rate limit       | 30s                                          | silent.ts         |
+| Silent response cap     | 500 chars                                    | response.ts       |
+| VAD RMS threshold       | 0.015                                        | voice-agent.html  |
+| VAD buffer duration     | 1.5s                                         | voice-agent.html  |
+| Wake-detect cooldown    | 2s                                           | voice-agent.html  |
+| Idle timeout            | 15s                                          | voice-agent.html  |
+| Fallback timeout        | 4s                                           | voice-agent.html  |
+| Poll interval           | 1s                                           | voice-agent.html  |
+| Audio buffer            | 10s                                          | voice-agent.html  |
+| MCP cache TTL           | 5 min                                        | voice-token route |
 | MCP server timeout      | 10s                      | mcp/client.ts     |
 | RAG boost factor        | 1.15x                    | rag.ts            |
 | RAG max results         | 10                       | rag.ts            |
