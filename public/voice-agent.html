@@ -467,6 +467,8 @@
         }
         audioQueue.length = 0;
         isPlaying = false;
+        vadBuffer = [];
+        vadBufferStartAt = 0;
         audioDone = true;
 
         // Notify server with session duration for telemetry
