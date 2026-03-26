@@ -89,20 +89,22 @@ describe("POST /api/agent/activation-status", () => {
     expect(data.error).toBe("Invalid bot secret");
   });
 
-  it("returns activation state from metadata", async () => {
-    mockDb.where.mockResolvedValueOnce([
-      {
-        metadata: {
-          voiceSecret: "valid-secret",
-          botId: "bot-1",
-          voiceActivation: {
-            state: "activated",
-            transcriptWindow: "Alice: hello",
+  it("returns activated state and consumes it to prevent duplicate triggers", async () => {
+    mockDb.where
+      .mockResolvedValueOnce([
+        {
+          metadata: {
+            voiceSecret: "valid-secret",
+            botId: "bot-1",
+            voiceActivation: {
+              state: "activated",
+              transcriptWindow: "Alice: hello",
+            },
           },
+          userId: "user-1",
         },
-        userId: "user-1",
-      },
-    ]);
+      ])
+      .mockResolvedValueOnce(undefined);
 
     const req = createJsonRequest(URL, {
       method: "POST",
@@ -117,7 +119,15 @@ describe("POST /api/agent/activation-status", () => {
     expect(data.state).toBe("activated");
     expect(data.muted).toBe(false);
     expect(data.transcriptWindow).toBe("Alice: hello");
-    expect(mockDb.update).not.toHaveBeenCalled();
+    // Should consume the activated state by writing "responding" to DB
+    expect(mockDb.update).toHaveBeenCalled();
+    expect(mockDb.set).toHaveBeenCalledWith(
+      expect.objectContaining({
+        metadata: expect.objectContaining({
+          voiceActivation: { state: "responding" },
+        }),
+      })
+    );
   });
 
   it("returns idle when no voiceActivation in metadata", async () => {
