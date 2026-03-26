@@ -21,7 +21,6 @@ Conservative estimates based on typical B2B SaaS freemium benchmarks.
 **End-to-end: 0.16% of visits become Pro users.**
 
 Typical SaaS benchmarks for comparison:
-
 - Visitor → signup: 2–5% (we use 3%)
 - Signup → trial activation: 40–60% (we use 50%)
 - Trial → meaningful use: 40–60% (we use 53%)
@@ -37,25 +36,31 @@ Free users and trialists cost us money before they ever pay.
 
 | Cost driver                        | Monthly  |
 | ---------------------------------- | -------- |
-| Active free users (100 × $0.21)    | $21      |
+| Active free users (75 × $0.21)     | $16      |
+| Free RAG chat cost (~20 heavy users × $3/mo) | $60 |
 | Trial users (75 × $1.06)           | $80      |
-| **Total organic acquisition cost** | **$101** |
-| New Pro conversions                | 8        |
-| **Organic CAC**                    | **$13**  |
+| **Total organic acquisition cost** | **$156** |
+| New Pro conversions                 | 8        |
+| **Organic CAC**                    | **$20**  |
 
-Trial cost dominates — each trialist costs $1.06 (~30 min voice + ~30 min silent on average over the 90 min trial). Most of the organic CAC is trial infrastructure, not free tier.
+*75 active free users = 150 signups × 50% active rate. 75 trialists = all signups auto-start trial. Free RAG cost assumes ~20 users max out 20 queries/day regularly at $0.01/query — most won't, but some will.*
+
+Trial cost dominates — each trialist costs $1.06 (~30 min voice + ~30 min silent on average over the 90 min trial). Free tier RAG chat is the second biggest cost if users are active chatters.
 
 ### With paid acquisition
 
-| Monthly ad spend | Organic cost | Total cost | Pro conversions | Blended CAC |
-| ---------------- | ------------ | ---------- | --------------- | ----------- |
-| $0               | $101         | $101       | 8               | $13         |
-| $500             | $101         | $601       | 12              | $50         |
-| $1,000           | $101         | $1,101     | 16              | $69         |
-| $2,000           | $101         | $2,101     | 24              | $88         |
-| $5,000           | $101         | $5,101     | 48              | $106        |
+| Monthly ad spend | Organic cost | Total cost | Additional visits | Additional Pro users | Total Pro | Blended CAC |
+| ---------------- | ------------ | ---------- | ----------------- | -------------------- | --------- | ----------- |
+| $0               | $156         | $156       | —                 | —                    | 8         | $20         |
+| $1,000           | $156         | $1,156     | 333               | 1                    | 9         | $128        |
+| $3,000           | $156         | $3,156     | 1,000             | 2                    | 10        | $316        |
 
-Assumes paid traffic converts at the same rate as organic (conservative — paid traffic often converts worse). Each $500 in ad spend drives ~2,500 additional visits → ~4 new Pro users at the 0.16% end-to-end rate.
+**B2B SaaS CPC is $3–8.** At $3/click, $1,000 buys 333 visits → 0.53 Pro users at 0.16% conversion. Paid acquisition is expensive at our current conversion rates. Realistically, ad spend only makes sense after optimizing the organic funnel.
+
+To make paid ads work at 3:1 LTV:CAC, we need either:
+- CPC under $1 (social/content marketing, not search ads)
+- Higher conversion rate (better landing page, onboarding)
+- Both
 
 ---
 
@@ -67,42 +72,50 @@ Based on the 1,000-user scenario from the pricing model.
 | ---------------------- | ------------ | ---------- |
 | Monthly churn          | 8%           | 5%         |
 | Average lifetime       | 12 months    | 20 months  |
-| Avg monthly revenue    | $40          | $40        |
-| Avg monthly COGS       | $17          | $17        |
-| **Avg monthly margin** | **$23**      | **$23**    |
-| **Lifetime value**     | **$276**     | **$460**   |
 
-Revenue per Pro user averages $40/mo ($29 base + ~$11 avg overage across all user types). COGS includes Recall, OpenAI, Polar fees, and infra share.
+**Revenue split by user type:**
+
+| User type  | % of Pro users | Monthly revenue  | Monthly COGS |
+| ---------- | -------------- | ---------------- | ------------ |
+| Light      | 45%            | $29 (no overage) | $3.53        |
+| Typical    | 35%            | $29 (no overage) | $11.30       |
+| Heavy      | 15%            | $59 (with overage)| $28.95      |
+| Very heavy | 5%             | $147 (with overage)| $70.50     |
+
+**Median Pro user (light/typical, 80% of users):** pays $29/mo flat, no overage.
+- Median LTV margin (conservative, 12 mo): ($29 - $1.56 Polar - $7.42 avg COGS) × 12 = **$240**
+- Median LTV margin (optimistic, 20 mo): **$400**
+
+**Mean across all Pro users:** $39.73 revenue, $16.30 COGS, $1.56+ Polar = $21.87 margin/mo.
+- Mean LTV margin (conservative, 12 mo): **$262**
+- Mean LTV margin (optimistic, 20 mo): **$437**
+
+*Use median for CAC decisions (what most users are worth). Use mean for total business projections.*
 
 ---
 
 ## LTV:CAC
 
-The ratio that determines how much we can spend to acquire a customer. 3:1 is the standard SaaS benchmark.
+3:1 is the standard SaaS benchmark for healthy unit economics.
 
-| Scenario      | CAC  | LTV  | Ratio  | Verdict   |
-| ------------- | ---- | ---- | ------ | --------- |
-| Organic only  | $13  | $276 | 21.2:1 | Excellent |
-| $500/mo ads   | $50  | $276 | 5.5:1  | Strong    |
-| $1,000/mo ads | $69  | $276 | 4.0:1  | Healthy   |
-| $2,000/mo ads | $88  | $276 | 3.1:1  | Threshold |
-| $5,000/mo ads | $106 | $276 | 2.6:1  | Risky     |
+| Scenario     | CAC  | LTV (median) | Ratio  | Verdict              |
+| ------------ | ---- | ------------ | ------ | -------------------- |
+| Organic only | $20  | $240         | 12.0:1 | Excellent            |
+| +$1,000 ads  | $128 | $240         | 1.9:1  | Unprofitable         |
 
-**Max ad spend at 3:1 target: ~$2,000/mo.** Beyond that, we need better conversion rates to justify spend.
+**Organic is excellent. Paid ads don't work at current conversion rates.** The 0.16% visit-to-Pro rate makes paid traffic too expensive. Focus on organic growth and funnel optimization before spending on ads.
 
-**Max affordable blended CAC: $92** ($276 / 3).
+**To make $1,000/mo ads viable (3:1 ratio):**
+- Need CPC ≤ $1 AND visit-to-Pro rate ≥ 0.5%
+- Or: content marketing / referrals with near-zero CPC
 
 ---
 
 ## CAC Payback Period
 
-How quickly a new Pro user pays back their acquisition cost.
-
-| Scenario      | CAC | Monthly margin | Payback    |
-| ------------- | --- | -------------- | ---------- |
-| Organic       | $13 | $23            | < 1 month  |
-| $1,000/mo ads | $69 | $23            | 3.0 months |
-| $2,000/mo ads | $88 | $23            | 3.8 months |
+| Scenario | CAC | Monthly margin (median) | Payback   |
+| -------- | --- | ----------------------- | --------- |
+| Organic  | $20 | $20                     | 1 month   |
 
 SaaS benchmark: payback under 12 months is healthy. Under 6 months is strong. Organic payback is essentially instant.
 
@@ -110,20 +123,23 @@ SaaS benchmark: payback under 12 months is healthy. Under 6 months is strong. Or
 
 ## Levers to Improve Economics
 
+**Improve conversion (highest impact):**
+- Visitor → signup: better landing page, social proof, demo video
+- Signup → trial: reduce friction in first meeting setup, auto-join demo meeting
+- Trial → paid: in-trial upgrade prompts, usage alerts near trial end, show value ("You saved X hours")
+
 **Reduce CAC:**
-
-- Improve visitor → signup rate (better landing page, social proof)
-- Improve trial activation (onboarding flow, first-meeting nudges)
-- Improve trial → paid (in-trial upgrade prompts, usage alerts near trial end)
-
-**Increase LTV:**
-
-- Reduce churn (better product, engagement emails, usage insights)
-- Increase ARPU (users naturally grow into heavier usage over time)
-- Annual plans lock in 12 months at slight discount ($24/mo vs $29)
-
-**Reduce organic CAC:**
-
-- Tighten free tier if abuse detected (currently 30 min silent is very cheap)
+- Tighten free tier RAG limit if abuse detected (20/day → 10/day)
 - Shorten trial from 14 → 7 days if data shows most decisions happen in first week
 - Cap trial minutes lower (currently 90 min — could test 60 min)
+- Block disposable email domains from trial signup
+
+**Increase LTV:**
+- Reduce churn (better product, engagement emails, usage insights)
+- Increase ARPU (users naturally grow into heavier usage over time)
+- Annual plans lock in 12 months ($24/mo vs $29 — better retention, lower Polar fees)
+
+**Unlock paid acquisition:**
+- Content marketing and SEO (near-zero CPC)
+- Referral program (existing users invite colleagues)
+- Product-led viral loops (meeting participants see Vernix in action)

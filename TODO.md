@@ -63,6 +63,11 @@
 - **Webhook handler** — `POST /api/webhooks/polar` for subscription lifecycle events
 - **Configure paywalls** — Configure paywalls for the pricing tiers. Claude Code has a paywall skill that can be used to configure paywalls.
 
+## Dashboard Tasks & Knowledge UX
+
+- **Hide completed tasks from dashboard action points** — Completed tasks should be removed from the dashboard tasks/action points view by default (with optional toggle to show completed).
+- **Show meeting-scoped files on knowledge page** — `dashboard/knowledge` should list context files uploaded to specific meetings, show which meeting each file belongs to, and include a link to that meeting.
+
 ## SEO & Discoverability
 
 - **robots.txt** — Add `public/robots.txt` allowing all crawlers, pointing to sitemap
