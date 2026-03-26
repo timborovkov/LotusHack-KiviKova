@@ -128,18 +128,21 @@ Tests must verify **real behavior**, not just confirm that mocks return what you
 **Every test should answer: "What bug would this catch?"** If the answer is "none", delete it.
 
 **What makes a test strong:**
+
 - Tests real logic: validation rejection, branching, state transitions, math, parsing
 - Tests negative cases: invalid input rejected, unauthorized access blocked, missing data handled
 - Verifies values passed TO dependencies (not just what comes back from mocks): assert `mockDb.set` was called with `{ status: "processing" }`, assert `hash` was called with `(password, 12)`
 - Would break if the implementation logic changed
 
 **What makes a test weak (don't write these):**
+
 - Only asserts that a mock's return value came out the other end: `mock.mockReturnValue(x); expect(result).toBe(x)` — tests nothing
 - Mocks away the thing being tested: mocking bcrypt in a password test defeats the purpose
 - Only tests happy paths with no error/edge cases
 - No negative assertions (`expect(x).not.toHaveBeenCalled()`)
 
 **Specific patterns:**
+
 - **Rate limiting**: Do NOT mock `rateLimitByIp`. Use the real rate limiter. Import `resetRateLimits` in `beforeEach`. Add a test that exceeds the limit and expects 429.
 - **Bcrypt**: Keep mocked for speed, but assert `hash` was called with `(password, 12)` and verify the hash output was passed to the DB.
 - **DB writes**: Assert `mockDb.set` or `mockDb.values` was called with the correct values — this verifies your route actually transforms and stores data correctly.
