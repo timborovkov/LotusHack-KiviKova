@@ -48,12 +48,12 @@ function buildFallbackSummary(
     participantList.length
       ? `Participants: ${participantList.join(", ")}`
       : undefined,
-    "\n",
+    "",
     "Transcript highlights:",
     ...(highlights.length > 0
       ? highlights
       : ["- No transcript excerpts available."]),
-  ].filter(Boolean);
+  ].filter((line): line is string => line !== undefined);
 
   return lines.join("\n");
 }
