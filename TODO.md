@@ -202,6 +202,24 @@
 - ~~**Send on registration** — Fire-and-forget welcome email from `POST /api/auth/register`~~
 - ~~**Email provider** — Resend with lazy singleton client, graceful no-op when unconfigured~~
 
+## Hybrid Voice Activation Mode (Wake-on-Demand Realtime)
+
+- **Mode design** — Add a new per-meeting mode where a lightweight listener is always on, and OpenAI Realtime spins up only when the agent is explicitly addressed.
+- **Background listener** — Implement cheap wake detection from Recall transcript stream + wake words ("Vernix", "Agent", "Assistant") + question intent heuristics.
+- **Activation gate** — Require confidence threshold + debounce/rate limits before creating a Realtime session to prevent accidental triggers.
+- **On-demand Realtime lifecycle** — Create Realtime session on trigger, inject agenda + RAG/MCP tools, respond, then auto-close after short idle timeout.
+- **No-interruption guardrails** — Keep strict "respond only when addressed" logic and add cooldown after each response to avoid back-to-back accidental replies.
+- **Context handoff** — On activation, fetch latest transcript window + relevant RAG context so the model has immediate conversational grounding.
+- **Fallback behavior** — If Realtime session fails, send brief text response in meeting chat (or skip with safe no-op) and keep listener alive.
+- **Cost & usage telemetry** — Track per-meeting/per-user activation count, Realtime connected seconds, token usage, and estimated cost deltas vs always-on mode.
+- **UX controls** — Expose mode selector and status ("Listening for wake word", "Responding", "Cooling down") on meeting detail.
+- **Testing & rollout** — Add integration tests + staged rollout (feature flag) + success criteria (lower cost, low false-trigger rate, acceptable response latency).
+
+## Adittional Agent Tools for In-Call Usage
+
+- **Self-kick agent tool** — Add an in-call agent tool that lets Vernix remove itself from the meeting when explicitly asked (safe intent confirmation + call leave action).
+- **Switch to silent mode tool** — Add an in-call agent tool that lets Vernix switch to silent mode when explicitly asked (safe intent confirmation + call switch to silent mode action).
+
 ## Billing with Polar
 
 - **Calculate the pricing** — Calculate our baseline costs and add our margins on top, decide on the pricing strategy. Use proper Claude skills to do this. Current pricing idea: Free trial for pro, Pro (x hours of meetings / month), Unlimited (not really unlimited, fair use applies)
@@ -224,15 +242,10 @@
 - **Meta tags audit** — Verify all pages have unique title, description, and OG images
 - **Canonical URLs** — Ensure all pages have proper canonical tags via metadataBase
 
-## Google Analytics Sales Funnel
-
-- **Funnel events** — Define and instrument key conversion events: landing page → signup → first meeting → upgrade
-- **Goal configuration** — Set up GA4 conversions for signup, first meeting created, plan upgrade
-- **Attribution** — UTM parameter tracking across signup flow for campaign attribution
-
 ## Meeting Recordings & Recall Data Sync
 
 - **Audit Recall data** — Investigate what data Recall provides after a meeting: video recording (MP4), participant events, meeting metadata, speaker timeline. Map what's available via their API.
+- **Webhook fallback fetch** — Implement a reliability fallback that actively fetches meeting/recording/transcript status from Recall when expected webhooks are delayed or missing (scheduled retries + reconciliation job).
 - **Copy recordings to our storage** — After `recording_done`, download the video MP4 from Recall's S3 URL (expires after 6h) and upload to our S3/Minio bucket. Store the S3 key in meeting metadata.
 - **Participant data** — Fetch participant events and speaker timeline from Recall, store in meeting metadata (currently only populated from transcript speaker names).
 - **Video playback UI** — Add a video player to the meeting detail page. Sync transcript timeline with video position (click a transcript line → seek to that timestamp).
@@ -257,12 +270,20 @@
 - **MCP + REST** — Skill uses the REST API under the hood; MCP server remains as an alternative for direct MCP clients (Claude Desktop, Cursor)
 - **Use cases** — "What did we discuss in yesterday's standup?", "Find all action items assigned to me", "Search meetings for mentions of the Q4 roadmap"
 
-## Vision-Based Document Parsing
+## Security Hardening & Infra Go-Live Check
 
-- **OpenAI Vision for PDFs** — Current PDF parsing (pdfjs-dist) extracts raw text only — images, charts, tables, and scanned pages are invisible. Use GPT-4o vision to process PDF pages as images for richer extraction
-- **Image/diagram uploads** — Accept PNG, JPG, SVG uploads in knowledge base, extract descriptions via vision API
-- **Hybrid parsing** — Try text extraction first; if a page has low text density, fall back to vision-based extraction
-- **Cost management** — Vision API is expensive per page; add per-user limits or make it a premium feature
+- **Set provider usage caps** — Add usage caps in OpenAI, Recall, and other third-party services.
+- **Set Railway usage caps** — Add spend/usage caps and guardrails in Railway.
+- **Configure alerting** — Configure alerts for cost, error rate, downtime, and abuse signals.
+- **Configure Railway autoscaling** — Tune autoscaling limits and policies for safe production traffic handling.
+- **Configure edge/network protection** — Set up firewalls and abuse blocking rules.
+- **Run security scan & audit** — Run a security scan/audit with a tool like [Snyk](https://snyk.io/), then track/fix findings.
+- **Block malicious bots** — Add bot blocking at app/edge level.
+- **Internal blocklist controls** — Add internal admin tooling to quickly blocklist abusive IPs, emails, and user accounts.
+- **Collect and attribute usage telemetry** — Track token usage, Recall usage, and related costs; attribute to users and flag abnormalities.
+- **Block brute-force attempts** — Add brute-force protection on auth and other sensitive endpoints.
+- **Enforce hard product usage caps** — Enforce hard caps for storage, embeddings, and meetings.
+- **Admin account data purge** — Add an admin operation to fully remove all data for a user account across DB records, object storage bucket data, and Recall resources.
 
 ## Changelog & Status Page
 
@@ -282,3 +303,23 @@
   - "Voice agent vs. silent mode: when to use each"
   - "Building Vernix: from hackathon idea to production"
   - "Why we built MCP integration into a meeting tool"
+
+## Google Analytics Sales Funnel
+
+- **Funnel events** — Define and instrument key conversion events: landing page → signup → first meeting → upgrade
+- **Goal configuration** — Set up GA4 conversions for signup, first meeting created, plan upgrade
+- **Attribution** — UTM parameter tracking across signup flow for campaign attribution
+
+## A/B Testing for Landing Pages
+
+- **Experiment setup** — Add A/B testing framework for landing page variants (headline, hero CTA, social proof blocks, pricing teaser).
+- **Variant assignment** — Implement deterministic user/session bucketing and persist variant assignment.
+- **Experiment analytics** — Track impressions, CTA clicks, signup starts, and completed signups per variant.
+- **Decision workflow** — Define experiment guardrails (minimum sample size, runtime, significance target) and rollout/rollback process.
+
+## Vision-Based Document Parsing
+
+- **OpenAI Vision for PDFs** — Current PDF parsing (pdfjs-dist) extracts raw text only — images, charts, tables, and scanned pages are invisible. Use GPT-4o vision to process PDF pages as images for richer extraction
+- **Image/diagram uploads** — Accept PNG, JPG, SVG uploads in knowledge base, extract descriptions via vision API
+- **Hybrid parsing** — Try text extraction first; if a page has low text density, fall back to vision-based extraction
+- **Cost management** — Vision API is expensive per page; add per-user limits or make it a premium feature
