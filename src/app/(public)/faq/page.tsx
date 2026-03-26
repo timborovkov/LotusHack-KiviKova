@@ -17,7 +17,7 @@ const QUESTIONS = [
   },
   {
     q: "How does the voice agent work?",
-    a: "The voice agent listens during your call and responds when addressed by name. It searches through meeting transcripts and your knowledge base to give accurate, context-aware answers. By default it uses wake-on-demand mode — it only activates when you speak to it, keeping costs low. You can also opt into always-on mode for continuous interaction.",
+    a: "The voice agent listens during your call and responds when addressed by name. It searches through meeting transcripts and your knowledge base to give accurate, context-aware answers. It only activates when you speak to it, so it stays quiet until needed.",
   },
   {
     q: "What is silent mode?",
@@ -33,11 +33,11 @@ const QUESTIONS = [
   },
   {
     q: "How does pricing work?",
-    a: "Pro is $29/mo and includes $30 of usage credit. Voice meetings cost $3/hr (wake-on-demand) or $10/hr (always-on). Silent meetings cost $1.50/hr. Most users stay within the $30 credit and pay a flat $29/mo. If you go over, you only pay for the extra usage. You can set a monthly spending cap to avoid surprises.",
+    a: "Pro is $29/mo and includes $30 of usage credit. Voice meetings cost $3/hr. Silent meetings cost $1.50/hr. Most users stay within the $30 credit and pay a flat $29/mo. If you go over, you only pay for the extra usage. You can set a monthly spending cap to avoid surprises.",
   },
   {
     q: "What counts as usage?",
-    a: "Meeting time is the main usage metric. A 1-hour voice meeting (wake-on-demand) uses $3 of credit. A 1-hour silent meeting uses $1.50. Post-meeting chat, summaries, and action items are included at no extra cost. Your $30 monthly credit covers roughly 10 hours of voice meetings or 20 hours of silent meetings.",
+    a: "Meeting time is the main usage metric. A 1-hour voice meeting uses $3 of credit. A 1-hour silent meeting uses $1.50. Post-meeting chat, summaries, and action items are included at no extra cost. Your $30 monthly credit covers roughly 10 hours of voice meetings or 20 hours of silent meetings.",
   },
   {
     q: "Can I use my own documents?",
