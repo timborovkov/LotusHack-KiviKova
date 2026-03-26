@@ -163,28 +163,31 @@ The hardest conversion is trial → Pro. These principles should be baked into t
 
 People feel losses 2x more than equivalent gains (loss aversion). Every message about upgrading should emphasize what they lose by not upgrading, not what they gain.
 
-| Instead of                              | Say                                                    |
-| --------------------------------------- | ------------------------------------------------------ |
-| "Upgrade to get voice mode"             | "Your voice agent stops joining meetings in 3 days"    |
-| "Pro gives you unlimited meetings"      | "You have 12 minutes left — after that, no more meetings until next month" |
-| "Subscribe to keep your meeting history"| "Your 8 meeting summaries and 23 action items become read-only in 3 days" |
-| "Try Pro for more features"             | "You saved 4.5 hours this trial. That stops Friday."   |
+| Instead of                               | Say                                                                        |
+| ---------------------------------------- | -------------------------------------------------------------------------- |
+| "Upgrade to get voice mode"              | "Your voice agent stops joining meetings in 3 days"                        |
+| "Pro gives you unlimited meetings"       | "You have 12 minutes left — after that, no more meetings until next month" |
+| "Subscribe to keep your meeting history" | "Your 8 meeting summaries and 23 action items become read-only in 3 days"  |
+| "Try Pro for more features"              | "You saved 4.5 hours this trial. That stops Friday."                       |
 
 ### Show Progress and Quantify Value
 
 Goal-gradient effect: people accelerate toward a goal. Present bias: people care about what happened now, not what could happen later. Combine both.
 
 **During trial:**
+
 - "You've used 52 of 90 minutes — 3 meetings transcribed, 11 action items captured"
 - "Vernix answered 7 questions in your meetings this week"
 - Show a running total of time saved (estimate: 15 min saved per meeting hour)
 
 **At trial expiry:**
+
 - "In 14 days, Vernix saved you 6.2 hours of note-taking and captured 34 action items"
 - "Your team asked Vernix 19 questions mid-meeting instead of interrupting the flow"
 - Make the value concrete and personal before asking for $29
 
 **Near credit limit (Pro):**
+
 - "You've used $24 of $30 credit this month (3 voice meetings, 8 silent)"
 - Progress bar in dashboard, not just a number
 
@@ -199,9 +202,10 @@ Present bias means people discount future benefits. The landing page should prom
 
 ### Comparison Pages: Lead With the Gap
 
-Contrast effect: differences feel larger when shown side by side. Comparison pages should open with what the competitor *can't* do, then show Vernix filling that gap.
+Contrast effect: differences feel larger when shown side by side. Comparison pages should open with what the competitor _can't_ do, then show Vernix filling that gap.
 
 Structure:
+
 1. "Otter.ai transcribes your meetings. That's it."
 2. "But who answers questions? Who tracks action items? Who searches past meetings for context?"
 3. "Vernix does. It joins the call, listens, responds, and writes everything down."
@@ -220,6 +224,7 @@ The first action should be trivially easy. Don't make people configure anything 
 ### Pricing Page: One Plan, No Choice Paralysis
 
 Paradox of choice is already solved — one plan. Reinforce it:
+
 - Show the single plan prominently with clear "what you get"
 - Use mental accounting: "$29/mo — less than one hour of your salary to save 10+ hours of meeting admin"
 - Annual toggle with anchoring: show $29/mo crossed out → $24/mo ("Save $60/year")
@@ -238,16 +243,16 @@ Paradox of choice is already solved — one plan. Reinforce it:
 
 ## Metrics to Track
 
-| Metric                    | Target (month 3) | Target (month 6) |
-| ------------------------- | ----------------- | ----------------- |
-| Monthly organic visitors  | 500               | 2,000             |
-| Visitor → signup rate     | 3%                | 4%                |
-| Trial → Pro rate          | 10%               | 15%               |
-| End-to-end visit → Pro   | 0.08%             | 0.16%             |
-| Viral coefficient         | Measure           | > 0.1             |
-| Monthly Pro signups       | 2-5               | 10-20             |
+| Metric                   | Target (month 3) | Target (month 6) |
+| ------------------------ | ---------------- | ---------------- |
+| Monthly organic visitors | 500              | 2,000            |
+| Visitor → signup rate    | 3%               | 4%               |
+| Trial → Pro rate         | 10%              | 15%              |
+| End-to-end visit → Pro   | 0.08%            | 0.16%            |
+| Viral coefficient        | Measure          | > 0.1            |
+| Monthly Pro signups      | 2-5              | 10-20            |
 
-*Viral coefficient: avg number of new signups generated by each existing user's meetings. Even 0.1 (1 new signup per 10 users) compounds significantly.*
+_Viral coefficient: avg number of new signups generated by each existing user's meetings. Even 0.1 (1 new signup per 10 users) compounds significantly._
 
 ---
 
