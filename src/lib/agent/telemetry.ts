@@ -7,12 +7,14 @@ export interface MeetingTelemetry {
   totalConnectedMs: number;
   sessionDurations: number[];
   lastActivatedAt: number;
+  wakeDetectCalls: number;
 }
 
 export interface FlushedTelemetry {
   activationCount: number;
   totalConnectedSeconds: number;
   avgSessionSeconds: number;
+  wakeDetectCalls: number;
 }
 
 const telemetryMap = new Map<string, MeetingTelemetry>();
@@ -25,6 +27,7 @@ export function recordActivation(meetingId: string): void {
       totalConnectedMs: 0,
       sessionDurations: [],
       lastActivatedAt: 0,
+      wakeDetectCalls: 0,
     };
     telemetryMap.set(meetingId, entry);
   }
@@ -40,11 +43,27 @@ export function recordSessionEnd(meetingId: string, durationMs: number): void {
       totalConnectedMs: 0,
       sessionDurations: [],
       lastActivatedAt: 0,
+      wakeDetectCalls: 0,
     };
     telemetryMap.set(meetingId, entry);
   }
   entry.totalConnectedMs += durationMs;
   entry.sessionDurations.push(durationMs);
+}
+
+export function recordWakeDetectCall(meetingId: string): void {
+  let entry = telemetryMap.get(meetingId);
+  if (!entry) {
+    entry = {
+      activationCount: 0,
+      totalConnectedMs: 0,
+      sessionDurations: [],
+      lastActivatedAt: 0,
+      wakeDetectCalls: 0,
+    };
+    telemetryMap.set(meetingId, entry);
+  }
+  entry.wakeDetectCalls++;
 }
 
 export async function flushTelemetry(
@@ -72,6 +91,7 @@ export async function flushTelemetry(
     activationCount: entry.activationCount,
     totalConnectedSeconds,
     avgSessionSeconds,
+    wakeDetectCalls: entry.wakeDetectCalls,
   };
 
   const [meeting] = await db

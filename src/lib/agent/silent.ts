@@ -6,7 +6,7 @@ import { and, eq } from "drizzle-orm";
 import { processMeetingEnd } from "@/lib/agent/processing";
 import { generateAgentResponse } from "@/lib/agent/response";
 
-const TRIGGER_KEYWORDS = ["vernix"];
+const TRIGGER_KEYWORDS = ["vernix", "varnix", "burnix", "fernix", "vernik", "vernicks"];
 const DEBOUNCE_MS = 3000;
 const RATE_LIMIT_INTERVAL_MS = 30_000;
 
