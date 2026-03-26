@@ -52,37 +52,37 @@ export default function PricingPage() {
       </p>
 
       {/* Billing toggle */}
-      <div className="mb-12 flex items-center justify-center gap-3">
-        <span
-          className={`text-sm ${!annual ? "text-foreground font-medium" : "text-muted-foreground"}`}
-        >
-          Monthly
-        </span>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={annual}
-          onClick={() => setAnnual(!annual)}
-          className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
-            annual ? "bg-ring" : "bg-muted"
-          }`}
-        >
+      <div className="mb-12 flex flex-col items-center">
+        <div className="flex items-center justify-center gap-3">
           <span
-            className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${
-              annual ? "translate-x-5" : "translate-x-0"
+            className={`text-sm ${!annual ? "text-foreground font-medium" : "text-muted-foreground"}`}
+          >
+            Monthly
+          </span>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={annual}
+            onClick={() => setAnnual(!annual)}
+            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
+              annual ? "bg-ring" : "bg-muted"
             }`}
-          />
-        </button>
-        <span
-          className={`text-sm ${annual ? "text-foreground font-medium" : "text-muted-foreground"}`}
-        >
-          Annual
-        </span>
-        {savings && (
-          <Badge variant="secondary" className="ml-1">
-            {savings}
-          </Badge>
-        )}
+          >
+            <span
+              className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${
+                annual ? "translate-x-5" : "translate-x-0"
+              }`}
+            />
+          </button>
+          <span
+            className={`text-sm ${annual ? "text-foreground font-medium" : "text-muted-foreground"}`}
+          >
+            Annual
+          </span>
+        </div>
+        <div className="mt-2 h-6">
+          {savings && <Badge variant="secondary">{savings}</Badge>}
+        </div>
       </div>
 
       <div className="mx-auto grid max-w-3xl gap-6 sm:grid-cols-2">
