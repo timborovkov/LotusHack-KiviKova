@@ -5,9 +5,11 @@ const { mockSendEmail, mockSvixVerify } = vi.hoisted(() => ({
 
 vi.mock("@/lib/email/send", () => ({ sendEmail: mockSendEmail }));
 vi.mock("svix", () => ({
-  Webhook: vi.fn().mockImplementation(() => ({
-    verify: mockSvixVerify,
-  })),
+  Webhook: class {
+    verify(body: string, _headers: Record<string, string>) {
+      return mockSvixVerify(body, _headers);
+    }
+  },
 }));
 vi.mock("@/lib/rate-limit", () => ({
   rateLimitByIp: () => ({ success: true, remaining: 99 }),
@@ -35,7 +37,7 @@ describe("POST /api/webhooks/resend", () => {
   beforeEach(() => {
     vi.stubEnv("RESEND_WEBHOOK_SECRET", "whsec_test");
     vi.stubEnv("EMAIL_FORWARD_TO", "admin@example.com");
-    mockSvixVerify.mockImplementation((_body: string) => JSON.parse(_body));
+    mockSvixVerify.mockImplementation((body: string) => JSON.parse(body));
   });
 
   it("forwards inbound email to configured recipients", async () => {
