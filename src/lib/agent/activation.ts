@@ -48,64 +48,6 @@ function trimRecentTranscript(
   return recent.filter((c) => c.timestampMs >= cutoff);
 }
 
-export async function getActivationState(meetingId: string): Promise<{
-  state: VoiceActivation["state"];
-  muted: boolean;
-  transcriptWindow?: string;
-}> {
-  const [meeting] = await db
-    .select({ metadata: meetings.metadata })
-    .from(meetings)
-    .where(eq(meetings.id, meetingId));
-
-  if (!meeting) {
-    return { state: "idle", muted: false };
-  }
-
-  const metadata = (meeting.metadata ?? {}) as Record<string, unknown>;
-  const activation = metadata.voiceActivation as VoiceActivation | undefined;
-  const muted = Boolean(metadata.muted);
-
-  if (!activation) {
-    return { state: "idle", muted };
-  }
-
-  return {
-    state: activation.state,
-    muted,
-    transcriptWindow: activation.transcriptWindow,
-  };
-}
-
-export async function setActivationState(
-  meetingId: string,
-  userId: string,
-  state: VoiceActivation["state"],
-  transcriptWindow?: string
-): Promise<void> {
-  const [meeting] = await db
-    .select({ metadata: meetings.metadata })
-    .from(meetings)
-    .where(and(eq(meetings.id, meetingId), eq(meetings.userId, userId)));
-
-  if (!meeting) return;
-
-  const metadata = (meeting.metadata ?? {}) as Record<string, unknown>;
-  const activation: VoiceActivation = {
-    state,
-    ...(state === "activated" ? { activatedAt: Date.now() } : {}),
-    ...(transcriptWindow ? { transcriptWindow } : {}),
-  };
-
-  await db
-    .update(meetings)
-    .set({
-      metadata: { ...metadata, voiceActivation: activation },
-      updatedAt: new Date(),
-    })
-    .where(and(eq(meetings.id, meetingId), eq(meetings.userId, userId)));
-}
-
 async function flushVoiceBuffer(
   meetingId: string,
   userId: string

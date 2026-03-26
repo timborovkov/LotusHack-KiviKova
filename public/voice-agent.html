@@ -796,6 +796,7 @@
       async function triggerFallback(transcriptWindow) {
         log("Falling back to chat response...");
         sessionActive = false;
+        sessionStartedAt = 0;
         if (ws) {
           ws.onclose = null;
           ws.close();
