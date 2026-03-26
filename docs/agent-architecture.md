@@ -147,17 +147,22 @@ If OpenAI Realtime fails to connect within 5 seconds:
 
 ### Guards & Limits
 
-| Guard              | Value                          | Purpose                                       |
-| ------------------ | ------------------------------ | --------------------------------------------- |
-| Wake words         | "vernix", "agent", "assistant" | Case-insensitive substring match              |
-| Debounce           | 1.5s                           | Wait for speaker to finish                    |
-| Rate limit         | 1 activation per 15s           | Prevent rapid re-triggers                     |
-| Idle timeout       | 15s                            | Auto-close session after response             |
-| Fallback timeout   | 5s                             | Fall back to chat if Realtime fails           |
-| Audio buffer       | 10s (circular)                 | Ensure model hears full question              |
-| Transcript window  | 30s rolling                    | Context for model on activation               |
-| Consume-on-read    | activated -> responding        | Prevent duplicate activations                 |
-| fallbackFired flag | Per-activation                 | Prevent orphaned WebSocket/duplicate fallback |
+| Guard                | Value                                     | Purpose                                       |
+| -------------------- | ----------------------------------------- | --------------------------------------------- |
+| Wake words           | "vernix" + variants, "agent", "assistant" | Case-insensitive substring match              |
+| Fast detection       | VAD + gpt-4o-mini-transcribe              | ~500ms via /api/agent/wake-detect             |
+| Slow detection       | Recall transcript webhook                 | ~2-4s fallback via activation.ts              |
+| VAD threshold        | RMS > 0.015                               | Filters silence from speech                   |
+| VAD buffer           | 1.5s of speech                            | Minimum speech before transcription           |
+| Wake-detect cooldown | 2s                                        | Max 1 transcription request per 2s            |
+| Debounce (fallback)  | 0.5s                                      | Transcript webhook debounce                   |
+| Rate limit           | 1 activation per 15s                      | Prevent rapid re-triggers                     |
+| Idle timeout         | 15s                                       | Auto-close session after response             |
+| Fallback timeout     | 5s                                        | Fall back to chat if Realtime fails           |
+| Audio buffer         | 10s (circular)                            | Ensure model hears full question              |
+| Transcript window    | 30s rolling                               | Context for model on activation               |
+| Consume-on-read      | activated -> responding                   | Prevent duplicate activations                 |
+| fallbackFired flag   | Per-activation                            | Prevent orphaned WebSocket/duplicate fallback |
 
 ---
 
@@ -196,13 +201,13 @@ Handle tool results:
 
 ### Guards & Limits
 
-| Guard             | Value                   | Purpose                                                  |
-| ----------------- | ----------------------- | -------------------------------------------------------- |
-| Trigger keyword   | "vernix" only           | Narrower than voice mode                                 |
-| Debounce          | 3s                      | Longer than voice (text is less urgent)                  |
-| Rate limit        | 1 response per 30s      | Prevent chat spam                                        |
-| Speaker isolation | Checks spoken text only | Avoids false positive from speaker name "Vernix Support" |
-| Response cap      | 500 characters          | Keep chat messages concise                               |
+| Guard             | Value                                     | Purpose                                                  |
+| ----------------- | ----------------------------------------- | -------------------------------------------------------- |
+| Trigger keywords  | "vernix" + variants, "agent", "assistant" | Same as voice mode                                       |
+| Debounce          | 3s                                        | Longer than voice (text is less urgent)                  |
+| Rate limit        | 1 response per 30s                        | Prevent chat spam                                        |
+| Speaker isolation | Checks spoken text only                   | Avoids false positive from speaker name "Vernix Support" |
+| Response cap      | 500 characters                            | Keep chat messages concise                               |
 
 ---
 
@@ -254,16 +259,17 @@ pending -----> joining -----> active -----> processing -----> completed
 
 ### Public (bot-secret verified)
 
-| Route                          | Method | Purpose                            |
-| ------------------------------ | ------ | ---------------------------------- |
-| `/api/agent/voice-token`       | GET    | Ephemeral OpenAI Realtime token    |
-| `/api/agent/rag`               | POST   | RAG search for voice agent         |
-| `/api/agent/mcp-tool`          | POST   | MCP tool execution                 |
-| `/api/agent/activation-status` | POST   | Poll/update voice activation state |
-| `/api/agent/voice-fallback`    | POST   | Chat fallback when Realtime fails  |
-| `/api/agent/leave`             | POST   | Bot leaves meeting                 |
-| `/api/agent/switch-mode`       | POST   | Switch voice to silent             |
-| `/api/agent/mute-self`         | POST   | Mute agent                         |
+| Route                          | Method | Purpose                                             |
+| ------------------------------ | ------ | --------------------------------------------------- |
+| `/api/agent/voice-token`       | GET    | Ephemeral OpenAI Realtime token                     |
+| `/api/agent/rag`               | POST   | RAG search for voice agent                          |
+| `/api/agent/mcp-tool`          | POST   | MCP tool execution                                  |
+| `/api/agent/activation-status` | POST   | Poll/update voice activation state                  |
+| `/api/agent/wake-detect`       | POST   | Fast wake-word detection via gpt-4o-mini-transcribe |
+| `/api/agent/voice-fallback`    | POST   | Chat fallback when Realtime fails                   |
+| `/api/agent/leave`             | POST   | Bot leaves meeting                                  |
+| `/api/agent/switch-mode`       | POST   | Switch voice to silent                              |
+| `/api/agent/mute-self`         | POST   | Mute agent                                          |
 
 ### Webhooks (no auth, payload-validated)
 
