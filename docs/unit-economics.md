@@ -2,7 +2,7 @@
 
 How much it costs to acquire a paying user, what that user is worth, and where to spend on growth.
 
-All numbers reference the [pricing model](./pricing.md): Pro at $29/mo, $30 credit, wake-on-demand voice $1.40/hr, silent $0.71/hr.
+All numbers reference the [pricing model](./pricing.md): Pro at $29/mo, $30 credit, voice $1.40/hr, silent $0.71/hr.
 
 ---
 
@@ -92,21 +92,21 @@ The organic CAC is $14 regardless of how many visitors we get — it scales line
 | Social (cheap) | $0.50 | 2,000  | 30             | 15           | 6            | 0.9       | $1,111        |
 | Content/SEO    | ~$0   | —      | —              | —            | —            | —         | ~$0 (organic) |
 
-**Paid ads are not viable at current conversion rates.** Even cheap social traffic at $0.50 CPC produces $1,111 CAC — far above the ~$240 LTV.
+**Paid ads are not viable at current conversion rates.** Even cheap social traffic at $0.50 CPC produces $1,111 CAC — far above the ~$246 LTV.
 
 ### When paid ads become worth it
 
-For a paid channel to hit 3:1 LTV:CAC, the ad spend CAC must stay under **$80** (LTV $240 / 3). That means:
+For a paid channel to hit 3:1 LTV:CAC, the ad spend CAC must stay under **$82** (LTV $246 / 3). That means:
 
 | CPC   | Required visit-to-Pro rate | What that means                                   |
 | ----- | -------------------------- | ------------------------------------------------- |
-| $5.00 | 6.25%                      | 1 in 16 visitors converts. Unrealistic.           |
-| $2.00 | 2.50%                      | 1 in 40 visitors. Very optimistic.                |
-| $1.00 | 1.25%                      | 1 in 80 visitors. Achievable with great funnel.   |
-| $0.50 | 0.63%                      | 1 in 160 visitors. Realistic target.              |
-| $0.20 | 0.25%                      | 1 in 400 visitors. Close to current organic rate. |
+| $5.00 | 6.10%                      | 1 in 16 visitors converts. Unrealistic.           |
+| $2.00 | 2.44%                      | 1 in 41 visitors. Very optimistic.                |
+| $1.00 | 1.22%                      | 1 in 82 visitors. Achievable with great funnel.   |
+| $0.50 | 0.61%                      | 1 in 164 visitors. Realistic target.              |
+| $0.20 | 0.24%                      | 1 in 410 visitors. Close to current organic rate. |
 
-_Formula: required rate = CPC / $80. At $80 CAC and the given CPC, you need that % of visitors to become Pro._
+_Formula: required rate = CPC / $82. At $82 CAC and the given CPC, you need that % of visitors to become Pro._
 
 **Realistic path to paid ads:**
 
@@ -140,10 +140,10 @@ _Heavy/very heavy revenue = $29 base + overage. Heavy Polar = $1.56 base + $1.66
 
 | Metric         | Median (80% of users) | Mean (all users) |
 | -------------- | --------------------- | ---------------- |
-| Monthly margin | $20.03                | $22.83           |
-| **LTV**        | **$240**              | **$274**         |
+| Monthly margin | $20.51                | $24.25           |
+| **LTV**        | **$246**              | **$291**         |
 
-_Median = weighted avg of light ($23.91) and typical ($16.14) at 56/44 split within the 80%. Mean = weighted avg across all types._
+_Median = weighted avg of light ($23.91) and typical ($16.14) at 56/44 split within the 80%. Mean = 0.45 x $23.91 + 0.35 x $16.14 + 0.15 x $28.33 + 0.05 x $71.74._
 
 ---
 
@@ -152,13 +152,13 @@ _Median = weighted avg of light ($23.91) and typical ($16.14) at 56/44 split wit
 | Metric            | Value          |
 | ----------------- | -------------- |
 | Organic CAC       | $14            |
-| LTV (median)      | $240           |
-| LTV:CAC (organic) | 17:1           |
+| LTV (median)      | $246           |
+| LTV:CAC (organic) | 17.6:1         |
 | Payback period    | < 1 month      |
 | Paid ads viable?  | No (at launch) |
 | Break-even CPC    | < $0.10        |
 
-Organic unit economics are strong. Every $14 spent serving free/trial users returns $240 in lifetime margin. The focus at launch should be entirely on driving organic traffic and optimizing the conversion funnel — not paid ads.
+Organic unit economics are strong. Every $14 spent serving free/trial users returns $246 in lifetime margin. The focus at launch should be entirely on driving organic traffic and optimizing the conversion funnel — not paid ads.
 
 ---
 
