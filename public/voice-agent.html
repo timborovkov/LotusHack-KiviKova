@@ -250,7 +250,7 @@
           );
           setTimeout(async () => {
             if (leaving) return;
-            leaving = true;
+            // Don't set leaving — mute is reversible via dashboard unmute
             try {
               await fetch(`${appUrl}/api/agent/mute-self`, {
                 method: "POST",
@@ -369,7 +369,7 @@
           } catch (e) {
             /* ignore polling errors */
           }
-        }, 5000);
+        }, 10000);
       }
 
       // --- OpenAI WebSocket ---
