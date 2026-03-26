@@ -151,8 +151,8 @@ describe("handleVoiceTranscript", () => {
       1000
     );
 
-    // Advance 1 second (not yet 1.5s debounce)
-    vi.advanceTimersByTime(1000);
+    // Advance 200ms (not yet 500ms debounce)
+    vi.advanceTimersByTime(200);
     expect(mockDb.update).not.toHaveBeenCalled();
 
     // New chunk arrives — timer resets
