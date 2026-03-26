@@ -47,6 +47,7 @@ export function recordSessionEnd(meetingId: string, durationMs: number): void {
   entry.sessionDurations.push(durationMs);
 }
 
+/** Get telemetry for a meeting (test-only). */
 export function getTelemetry(meetingId: string): MeetingTelemetry | null {
   return telemetryMap.get(meetingId) ?? null;
 }
