@@ -63,8 +63,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid bot secret" }, { status: 403 });
   }
 
+  if (!meeting.userId) {
+    return NextResponse.json({ state: "idle", muted: false });
+  }
+
   // If the HTML page is updating state, write it
-  if (newState && meeting.userId) {
+  if (newState) {
     const activation: VoiceActivation = { state: newState };
     const updatedMetadata = { ...metadata, voiceActivation: activation };
     await db
@@ -91,7 +95,7 @@ export async function POST(request: Request) {
 
   // If activated, atomically consume it by transitioning to "responding"
   // so a duplicate poll won't re-trigger activateSession
-  if (activation?.state === "activated" && meeting.userId) {
+  if (activation?.state === "activated") {
     const consumed: VoiceActivation = { state: "responding" };
     await db
       .update(meetings)
