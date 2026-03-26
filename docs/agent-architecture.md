@@ -41,15 +41,15 @@ External MCP tools are dynamically loaded per user. They're available in all thr
 
 ## Models
 
-| Endpoint               | Model              | Parameters                                                              |
-| ---------------------- | ------------------ | ----------------------------------------------------------------------- |
-| Voice Realtime         | `gpt-realtime-1.5` | PCM 24kHz, voice "cedar", semantic VAD (low eagerness)                  |
-| Silent Response        | `gpt-5.4-mini`     | `max_completion_tokens: 200`, `temperature: 0.7`, 500-char response cap |
-| Chat (streaming)       | `gpt-5.4`          | Vercel AI SDK `streamText()`, max 10 tool-call rounds                   |
-| Respond (single-turn)  | `gpt-5.4`          | `max_completion_tokens: 1024`, `temperature: 0.7`                       |
-| Summary Generation     | `gpt-5.4-mini`     | Used in `generateMeetingSummary()`                                      |
-| Action Item Extraction | `gpt-5.4-mini`     | JSON mode, extracts tasks from transcript                               |
-| Wake-Word Detection    | `gpt-4o-mini-transcribe` | $0.003/min, VAD-filtered audio chunks, language: "en"              |
+| Endpoint               | Model                    | Parameters                                                              |
+| ---------------------- | ------------------------ | ----------------------------------------------------------------------- |
+| Voice Realtime         | `gpt-realtime-1.5`       | PCM 24kHz, voice "cedar", semantic VAD (low eagerness)                  |
+| Silent Response        | `gpt-5.4-mini`           | `max_completion_tokens: 200`, `temperature: 0.7`, 500-char response cap |
+| Chat (streaming)       | `gpt-5.4`                | Vercel AI SDK `streamText()`, max 10 tool-call rounds                   |
+| Respond (single-turn)  | `gpt-5.4`                | `max_completion_tokens: 1024`, `temperature: 0.7`                       |
+| Summary Generation     | `gpt-5.4-mini`           | Used in `generateMeetingSummary()`                                      |
+| Action Item Extraction | `gpt-5.4-mini`           | JSON mode, extracts tasks from transcript                               |
+| Wake-Word Detection    | `gpt-4o-mini-transcribe` | $0.003/min, VAD-filtered audio chunks, language: "en"                   |
 
 ---
 
@@ -342,24 +342,24 @@ Mute is a cross-cutting concern that affects both voice and silent modes:
 
 ## Key Constants Reference
 
-| Constant                | Value                                        | File              |
-| ----------------------- | -------------------------------------------- | ----------------- |
-| Wake words (shared)     | vernix + variants, agent, assistant          | activation.ts     |
-| Voice debounce          | 0.5s                                         | activation.ts     |
-| Voice rate limit        | 15s                                          | activation.ts     |
-| Voice transcript window | 30s                                          | activation.ts     |
-| Silent debounce         | 3s                                           | silent.ts         |
-| Silent rate limit       | 30s                                          | silent.ts         |
-| Silent response cap     | 500 chars                                    | response.ts       |
-| VAD RMS threshold       | 0.015                                        | voice-agent.html  |
-| VAD buffer duration     | 1.5s                                         | voice-agent.html  |
-| Wake-detect cooldown    | 2s                                           | voice-agent.html  |
-| Idle timeout            | 15s                                          | voice-agent.html  |
-| Fallback timeout        | 4s                                           | voice-agent.html  |
-| Poll interval           | 1s                                           | voice-agent.html  |
-| Audio buffer            | 10s                                          | voice-agent.html  |
-| MCP cache TTL           | 5 min                                        | voice-token route |
-| MCP server timeout      | 10s                      | mcp/client.ts     |
-| RAG boost factor        | 1.15x                    | rag.ts            |
-| RAG max results         | 10                       | rag.ts            |
-| RAG max concurrent      | 5                        | rag.ts            |
+| Constant                | Value                               | File              |
+| ----------------------- | ----------------------------------- | ----------------- |
+| Wake words (shared)     | vernix + variants, agent, assistant | activation.ts     |
+| Voice debounce          | 0.5s                                | activation.ts     |
+| Voice rate limit        | 15s                                 | activation.ts     |
+| Voice transcript window | 30s                                 | activation.ts     |
+| Silent debounce         | 3s                                  | silent.ts         |
+| Silent rate limit       | 30s                                 | silent.ts         |
+| Silent response cap     | 500 chars                           | response.ts       |
+| VAD RMS threshold       | 0.015                               | voice-agent.html  |
+| VAD buffer duration     | 1.5s                                | voice-agent.html  |
+| Wake-detect cooldown    | 2s                                  | voice-agent.html  |
+| Idle timeout            | 15s                                 | voice-agent.html  |
+| Fallback timeout        | 4s                                  | voice-agent.html  |
+| Poll interval           | 1s                                  | voice-agent.html  |
+| Audio buffer            | 10s                                 | voice-agent.html  |
+| MCP cache TTL           | 5 min                               | voice-token route |
+| MCP server timeout      | 10s                                 | mcp/client.ts     |
+| RAG boost factor        | 1.15x                               | rag.ts            |
+| RAG max results         | 10                                  | rag.ts            |
+| RAG max concurrent      | 5                                   | rag.ts            |
