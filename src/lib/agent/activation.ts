@@ -130,18 +130,50 @@ async function flushVoiceBuffer(
     return;
   }
 
-  // Check current state — don't activate if already responding
-  const current = await getActivationState(meetingId);
-  if (current.state === "responding" || current.state === "activated") {
-    resetRateLimitKey(rateLimitKey);
-    return;
-  }
-
   // Build transcript window from recent chunks
   const transcriptWindow = buildTranscriptWindow(buffer.recentTranscript);
 
+  // Atomically check current state and activate in a single read-then-write
+  // to prevent race conditions between concurrent webhook calls
   try {
-    await setActivationState(meetingId, userId, "activated", transcriptWindow);
+    const [meeting] = await db
+      .select({ metadata: meetings.metadata })
+      .from(meetings)
+      .where(and(eq(meetings.id, meetingId), eq(meetings.userId, userId)));
+
+    if (!meeting) {
+      resetRateLimitKey(rateLimitKey);
+      return;
+    }
+
+    const metadata = (meeting.metadata ?? {}) as Record<string, unknown>;
+    const currentActivation = metadata.voiceActivation as
+      | VoiceActivation
+      | undefined;
+
+    // Don't activate if already responding or activated
+    if (
+      currentActivation?.state === "responding" ||
+      currentActivation?.state === "activated"
+    ) {
+      resetRateLimitKey(rateLimitKey);
+      return;
+    }
+
+    const activation: VoiceActivation = {
+      state: "activated",
+      activatedAt: Date.now(),
+      transcriptWindow,
+    };
+
+    await db
+      .update(meetings)
+      .set({
+        metadata: { ...metadata, voiceActivation: activation },
+        updatedAt: new Date(),
+      })
+      .where(and(eq(meetings.id, meetingId), eq(meetings.userId, userId)));
+
     console.log(`[Voice Activation] Activated for meeting ${meetingId}`);
   } catch (err) {
     resetRateLimitKey(rateLimitKey);

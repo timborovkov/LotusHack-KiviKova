@@ -35,23 +35,7 @@
 - Mute state enforcement
 - Hide completed tasks from dashboard action points
 - Show meeting-scoped files on knowledge page
-
-## Voice Mode Rewrite (On-Demand Realtime)
-
-Replace always-on Realtime API connection with on-demand activation. Voice mode will use wake-word detection on the transcript stream and only spin up OpenAI Realtime when the agent is addressed. This is the only voice mode — no separate "always-on" option.
-
-- **Background listener** — Implement wake detection from Recall transcript stream + wake words ("Vernix", "Agent", "Assistant") + question intent heuristics.
-- **Activation gate** — Require confidence threshold + debounce/rate limits before creating a Realtime session to prevent accidental triggers.
-- **On-demand Realtime lifecycle** — Create Realtime session on trigger, inject agenda + RAG/MCP tools, respond, then auto-close after short idle timeout.
-- **Faster spin-up path** — Reduce activation latency via precomputed context cache (recent transcript + top RAG snippets), prompt/session template reuse, and parallel token/tool preparation.
-- **Warm pool strategy** — Keep a very small capped pool of pre-initialized short-lived voice sessions during active meetings (with strict timeout) to avoid full cold starts.
-- **Progressive response strategy** — Start with a short acknowledgement ("One sec") while context finalization runs, then stream the full answer as soon as ready.
-- **No-interruption guardrails** — Keep strict "respond only when addressed" logic and add cooldown after each response to avoid back-to-back accidental replies.
-- **Context handoff** — On activation, fetch latest transcript window + relevant RAG context so the model has immediate conversational grounding.
-- **Fallback behavior** — If Realtime session fails, send brief text response in meeting chat (or skip with safe no-op) and keep listener alive.
-- **Cost & usage telemetry** — Track per-meeting/per-user activation count, Realtime connected seconds, token usage, and estimated cost.
-- **UX controls** — Expose status ("Listening", "Responding", "Cooling down") on meeting detail.
-- **Testing & rollout** — Add integration tests + staged rollout (feature flag) + success criteria (low false-trigger rate, acceptable response latency).
+- Voice Mode Rewrite (On-Demand Realtime)
 
 ## Internal Agent System Documentation
 

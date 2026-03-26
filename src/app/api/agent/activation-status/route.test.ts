@@ -19,18 +19,6 @@ const { mockDb } = vi.hoisted(() => {
 
 vi.mock("@/lib/db", () => ({ db: mockDb }));
 
-const { mockGetActivationState, mockSetActivationState } = vi.hoisted(() => ({
-  mockGetActivationState: vi
-    .fn()
-    .mockResolvedValue({ state: "idle", muted: false }),
-  mockSetActivationState: vi.fn().mockResolvedValue(undefined),
-}));
-
-vi.mock("@/lib/agent/activation", () => ({
-  getActivationState: mockGetActivationState,
-  setActivationState: mockSetActivationState,
-}));
-
 import { POST } from "./route";
 import { createJsonRequest, parseJsonResponse } from "@/test/helpers";
 
@@ -98,18 +86,20 @@ describe("POST /api/agent/activation-status", () => {
     expect(data.error).toBe("Invalid bot secret");
   });
 
-  it("returns activation state successfully", async () => {
+  it("returns activation state from metadata", async () => {
     mockDb.where.mockResolvedValueOnce([
       {
-        metadata: { voiceSecret: "valid-secret", botId: "bot-1" },
+        metadata: {
+          voiceSecret: "valid-secret",
+          botId: "bot-1",
+          voiceActivation: {
+            state: "activated",
+            transcriptWindow: "Alice: hello",
+          },
+        },
         userId: "user-1",
       },
     ]);
-    mockGetActivationState.mockResolvedValueOnce({
-      state: "activated",
-      muted: false,
-      transcriptWindow: "Alice: hello",
-    });
 
     const req = createJsonRequest(URL, {
       method: "POST",
@@ -124,20 +114,40 @@ describe("POST /api/agent/activation-status", () => {
     expect(data.state).toBe("activated");
     expect(data.muted).toBe(false);
     expect(data.transcriptWindow).toBe("Alice: hello");
-    expect(mockSetActivationState).not.toHaveBeenCalled();
+    expect(mockDb.update).not.toHaveBeenCalled();
   });
 
-  it("updates state when state param provided", async () => {
+  it("returns idle when no voiceActivation in metadata", async () => {
     mockDb.where.mockResolvedValueOnce([
       {
         metadata: { voiceSecret: "valid-secret", botId: "bot-1" },
         userId: "user-1",
       },
     ]);
-    mockGetActivationState.mockResolvedValueOnce({
-      state: "responding",
-      muted: false,
+
+    const req = createJsonRequest(URL, {
+      method: "POST",
+      body: {
+        meetingId: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+        botSecret: "valid-secret",
+      },
     });
+    const { status, data } = await parseJsonResponse(await POST(req));
+
+    expect(status).toBe(200);
+    expect(data.state).toBe("idle");
+    expect(data.muted).toBe(false);
+  });
+
+  it("updates state and writes to DB when state param provided", async () => {
+    mockDb.where
+      .mockResolvedValueOnce([
+        {
+          metadata: { voiceSecret: "valid-secret", botId: "bot-1" },
+          userId: "user-1",
+        },
+      ])
+      .mockResolvedValueOnce(undefined);
 
     const req = createJsonRequest(URL, {
       method: "POST",
@@ -151,10 +161,13 @@ describe("POST /api/agent/activation-status", () => {
 
     expect(status).toBe(200);
     expect(data.state).toBe("responding");
-    expect(mockSetActivationState).toHaveBeenCalledWith(
-      "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
-      "user-1",
-      "responding"
+    expect(mockDb.update).toHaveBeenCalled();
+    expect(mockDb.set).toHaveBeenCalledWith(
+      expect.objectContaining({
+        metadata: expect.objectContaining({
+          voiceActivation: { state: "responding" },
+        }),
+      })
     );
   });
 

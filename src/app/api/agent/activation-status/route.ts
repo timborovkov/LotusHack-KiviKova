@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import { z } from "zod/v4";
 import { db } from "@/lib/db";
 import { meetings } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { rateLimitByIp } from "@/lib/rate-limit";
 import { verifyBotSecret } from "@/lib/agent/verify-bot-secret";
-import { getActivationState, setActivationState } from "@/lib/agent/activation";
+import type { VoiceActivation } from "@/lib/agent/activation";
 
 const activationStatusSchema = z.object({
   meetingId: z.uuid(),
@@ -55,16 +55,30 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid bot secret" }, { status: 403 });
   }
 
-  // If the HTML page is updating state
+  // If the HTML page is updating state, write it
   if (newState && meeting.userId) {
-    await setActivationState(meetingId, meeting.userId, newState);
+    const activation: VoiceActivation = { state: newState };
+    const updatedMetadata = { ...metadata, voiceActivation: activation };
+    await db
+      .update(meetings)
+      .set({ metadata: updatedMetadata, updatedAt: new Date() })
+      .where(
+        and(eq(meetings.id, meetingId), eq(meetings.userId, meeting.userId))
+      );
+
+    // Return the state we just wrote — no second DB read needed
+    return NextResponse.json({
+      state: newState,
+      muted: Boolean(metadata.muted),
+    });
   }
 
-  const activation = await getActivationState(meetingId);
+  // Read-only: return state from the metadata we already fetched
+  const activation = metadata.voiceActivation as VoiceActivation | undefined;
 
   return NextResponse.json({
-    state: activation.state,
-    muted: activation.muted,
-    transcriptWindow: activation.transcriptWindow,
+    state: activation?.state ?? "idle",
+    muted: Boolean(metadata.muted),
+    transcriptWindow: activation?.transcriptWindow,
   });
 }
