@@ -1,15 +1,11 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, ArrowRight } from "lucide-react";
-
-export const metadata: Metadata = {
-  title: "Pricing — Vernix",
-  description:
-    "Simple pricing for Vernix. Free forever for silent meetings. Pro at $29/mo with $30 usage credit for voice agent, API, and MCP access.",
-};
 
 const FREE_FEATURES = [
   "30 minutes of silent meetings per month",
@@ -39,15 +35,55 @@ const USAGE_RATES = [
 ];
 
 export default function PricingPage() {
+  const [annual, setAnnual] = useState(false);
+
+  const price = annual ? "$24" : "$29";
+  const period = annual ? "/ mo, billed annually" : "/ month";
+  const savings = annual ? "Save $60/year" : null;
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-24">
       <h1 className="mb-4 text-center text-3xl font-bold">
         One plan. Pay for what you use.
       </h1>
-      <p className="text-muted-foreground mx-auto mb-12 max-w-lg text-center">
+      <p className="text-muted-foreground mx-auto mb-8 max-w-lg text-center">
         Start free with silent meetings. Pro includes $30 of usage credit — most
         users never go over.
       </p>
+
+      {/* Billing toggle */}
+      <div className="mb-12 flex items-center justify-center gap-3">
+        <span
+          className={`text-sm ${!annual ? "text-foreground font-medium" : "text-muted-foreground"}`}
+        >
+          Monthly
+        </span>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={annual}
+          onClick={() => setAnnual(!annual)}
+          className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
+            annual ? "bg-ring" : "bg-muted"
+          }`}
+        >
+          <span
+            className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${
+              annual ? "translate-x-5" : "translate-x-0"
+            }`}
+          />
+        </button>
+        <span
+          className={`text-sm ${annual ? "text-foreground font-medium" : "text-muted-foreground"}`}
+        >
+          Annual
+        </span>
+        {savings && (
+          <Badge variant="secondary" className="ml-1">
+            {savings}
+          </Badge>
+        )}
+      </div>
 
       <div className="mx-auto grid max-w-3xl gap-6 sm:grid-cols-2">
         {/* Free */}
@@ -91,9 +127,9 @@ export default function PricingPage() {
               <Badge variant="secondary">14-day free trial</Badge>
             </div>
             <div className="mt-2">
-              <span className="text-3xl font-bold">$29</span>
+              <span className="text-3xl font-bold">{price}</span>
               <span className="text-muted-foreground ml-1 text-sm">
-                / month
+                {period}
               </span>
             </div>
             <p className="text-muted-foreground mt-1 text-sm">
@@ -118,7 +154,7 @@ export default function PricingPage() {
               <ArrowRight className="ml-1 h-4 w-4" />
             </Button>
             <p className="text-muted-foreground mt-3 text-center text-xs">
-              $24/mo billed annually. Cancel anytime.
+              Cancel anytime.
             </p>
           </CardContent>
         </Card>
@@ -131,7 +167,8 @@ export default function PricingPage() {
         </h2>
         <p className="text-muted-foreground mx-auto mb-6 max-w-md text-center text-sm">
           Credits cover your meetings. Most users stay within the $30 credit and
-          pay a flat $29/mo. If you go over, you only pay for what you use.
+          pay a flat {annual ? "$24" : "$29"}/mo. If you go over, you only pay
+          for what you use.
         </p>
         <div className="border-border divide-border divide-y rounded-lg border">
           {USAGE_RATES.map((rate) => (
