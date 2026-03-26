@@ -121,10 +121,35 @@ Shadcn/ui with base-ui primitives (not Radix). Use `render` prop instead of `asC
 - Test helpers: `createJsonRequest`, `parseJsonResponse`, `fakeMeeting`, `fakeDocument` in `src/test/helpers.ts`
 - `fakeMeeting()`, `fakeDocument()`, and `fakeTask()` include `userId` field matching the test user
 
+### Test Quality Rules
+
+Tests must verify **real behavior**, not just confirm that mocks return what you told them to. A test that only does `expect(data.field).toBe(mockValue)` without logic in between is worthless — delete it or make it meaningful.
+
+**Every test should answer: "What bug would this catch?"** If the answer is "none", delete it.
+
+**What makes a test strong:**
+- Tests real logic: validation rejection, branching, state transitions, math, parsing
+- Tests negative cases: invalid input rejected, unauthorized access blocked, missing data handled
+- Verifies values passed TO dependencies (not just what comes back from mocks): assert `mockDb.set` was called with `{ status: "processing" }`, assert `hash` was called with `(password, 12)`
+- Would break if the implementation logic changed
+
+**What makes a test weak (don't write these):**
+- Only asserts that a mock's return value came out the other end: `mock.mockReturnValue(x); expect(result).toBe(x)` — tests nothing
+- Mocks away the thing being tested: mocking bcrypt in a password test defeats the purpose
+- Only tests happy paths with no error/edge cases
+- No negative assertions (`expect(x).not.toHaveBeenCalled()`)
+
+**Specific patterns:**
+- **Rate limiting**: Do NOT mock `rateLimitByIp`. Use the real rate limiter. Import `resetRateLimits` in `beforeEach`. Add a test that exceeds the limit and expects 429.
+- **Bcrypt**: Keep mocked for speed, but assert `hash` was called with `(password, 12)` and verify the hash output was passed to the DB.
+- **DB writes**: Assert `mockDb.set` or `mockDb.values` was called with the correct values — this verifies your route actually transforms and stores data correctly.
+- **State transitions**: Verify the status value in `set()` calls (e.g., `{ status: "processing" }`), not just that `set()` was called.
+- **Bot secret verification**: All public agent endpoints must have a test for invalid bot secret returning 403.
+
 ## Checklist for Changes
 
-- [ ] Write tests for new API routes and utility functions
-- [ ] Run `pnpm validate` (format, lint, typecheck, test)
+- [ ] Write meaningful tests for new API routes and utility functions (see Test Quality Rules)
+- [ ] Run `pnpm validate` (format, lint, typecheck, test) — **mandatory after every change**
 - [ ] Update `.env.example` if adding new environment variables
 - [ ] Update `README.md` env table and any relevant sections
 - [ ] Update `docker-compose.yml` if adding new services
