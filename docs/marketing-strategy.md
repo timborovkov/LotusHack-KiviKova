@@ -234,7 +234,7 @@ Paradox of choice is already solved — one plan. Reinforce it:
 
 ## What NOT to Do at Launch
 
-- **No paid ads.** $2-5 CPC with 0.16% conversion = $1,250-3,125 CAC. LTV is $240. See [unit economics](./unit-economics.md).
+- **No paid ads.** $2-5 CPC with 0.16% conversion = $1,250-3,125 CAC. LTV is $246. See [unit economics](./unit-economics.md).
 - **No generic brand awareness.** Nobody knows what Vernix is yet. Lead with the problem ("meetings waste your time") not the brand.
 - **No conference sponsorships.** Too expensive, too broad, too early.
 - **No elaborate content strategy.** 3 great blog posts > 20 mediocre ones. Quality of demo clips matters more than volume.
