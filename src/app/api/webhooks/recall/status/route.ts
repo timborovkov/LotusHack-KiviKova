@@ -75,7 +75,8 @@ export async function POST(request: Request) {
     if (
       !meeting ||
       meeting.status === "completed" ||
-      meeting.status === "failed"
+      meeting.status === "failed" ||
+      meeting.status === "processing"
     ) {
       return NextResponse.json({ skipped: true });
     }
