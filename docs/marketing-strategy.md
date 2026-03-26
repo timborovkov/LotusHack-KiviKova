@@ -155,6 +155,78 @@ After proving the product works, find distribution partners.
 
 ---
 
+## Conversion Psychology
+
+The hardest conversion is trial → Pro. These principles should be baked into the product UX and messaging.
+
+### Frame Around Loss, Not Gain
+
+People feel losses 2x more than equivalent gains (loss aversion). Every message about upgrading should emphasize what they lose by not upgrading, not what they gain.
+
+| Instead of                              | Say                                                    |
+| --------------------------------------- | ------------------------------------------------------ |
+| "Upgrade to get voice mode"             | "Your voice agent stops joining meetings in 3 days"    |
+| "Pro gives you unlimited meetings"      | "You have 12 minutes left — after that, no more meetings until next month" |
+| "Subscribe to keep your meeting history"| "Your 8 meeting summaries and 23 action items become read-only in 3 days" |
+| "Try Pro for more features"             | "You saved 4.5 hours this trial. That stops Friday."   |
+
+### Show Progress and Quantify Value
+
+Goal-gradient effect: people accelerate toward a goal. Present bias: people care about what happened now, not what could happen later. Combine both.
+
+**During trial:**
+- "You've used 52 of 90 minutes — 3 meetings transcribed, 11 action items captured"
+- "Vernix answered 7 questions in your meetings this week"
+- Show a running total of time saved (estimate: 15 min saved per meeting hour)
+
+**At trial expiry:**
+- "In 14 days, Vernix saved you 6.2 hours of note-taking and captured 34 action items"
+- "Your team asked Vernix 19 questions mid-meeting instead of interrupting the flow"
+- Make the value concrete and personal before asking for $29
+
+**Near credit limit (Pro):**
+- "You've used $24 of $30 credit this month (3 voice meetings, 8 silent)"
+- Progress bar in dashboard, not just a number
+
+### Landing Page: Instant Payoff
+
+Present bias means people discount future benefits. The landing page should promise immediate results, not long-term ROI.
+
+- Hero: "Your next meeting gets notes, tasks, and a live AI assistant — automatically"
+- NOT: "Save hours per week on meeting admin" (vague, future-oriented)
+- NOT: "The AI-powered meeting productivity platform" (jargon, no payoff)
+- Show a before/after: messy meeting with no notes → clean summary + tasks + searchable transcript
+
+### Comparison Pages: Lead With the Gap
+
+Contrast effect: differences feel larger when shown side by side. Comparison pages should open with what the competitor *can't* do, then show Vernix filling that gap.
+
+Structure:
+1. "Otter.ai transcribes your meetings. That's it."
+2. "But who answers questions? Who tracks action items? Who searches past meetings for context?"
+3. "Vernix does. It joins the call, listens, responds, and writes everything down."
+4. Feature table (Vernix wins visually)
+5. CTA
+
+### Trial Signup: Reduce Activation Energy
+
+The first action should be trivially easy. Don't make people configure anything before seeing value.
+
+- Signup → paste a meeting link → agent joins. Three steps, under 60 seconds.
+- No credit card required (zero-price effect + removing regret aversion)
+- First meeting should feel magical — this is the peak moment (peak-end rule)
+- If possible, auto-join a demo meeting so they see it work before risking a real call
+
+### Pricing Page: One Plan, No Choice Paralysis
+
+Paradox of choice is already solved — one plan. Reinforce it:
+- Show the single plan prominently with clear "what you get"
+- Use mental accounting: "$29/mo — less than one hour of your salary to save 10+ hours of meeting admin"
+- Annual toggle with anchoring: show $29/mo crossed out → $24/mo ("Save $60/year")
+- Money-back guarantee or "cancel anytime" to eliminate regret aversion
+
+---
+
 ## What NOT to Do at Launch
 
 - **No paid ads.** $2-5 CPC with 0.16% conversion = $1,250-3,125 CAC. LTV is $240. See [unit economics](./unit-economics.md).
