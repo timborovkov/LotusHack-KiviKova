@@ -4,25 +4,156 @@
     <meta charset="utf-8" />
     <title>Vernix Voice Agent</title>
     <style>
+      * {
+        box-sizing: border-box;
+      }
       body {
         margin: 0;
-        background: #111;
+        background: #0a0a0a;
         color: #fff;
-        font-family: system-ui, sans-serif;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
         display: flex;
         align-items: center;
         justify-content: center;
         height: 100vh;
         flex-direction: column;
+        overflow: hidden;
       }
+
+      /* Ambient glow behind the logo */
+      #glow {
+        position: absolute;
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.15;
+        background: #555;
+        transition:
+          background 1s ease,
+          opacity 1s ease;
+        pointer-events: none;
+      }
+      #glow.idle {
+        background: #666;
+        opacity: 0.1;
+      }
+      #glow.connecting {
+        background: #eab308;
+        opacity: 0.25;
+        animation: glowPulse 1.5s ease-in-out infinite;
+      }
+      #glow.listening {
+        background: #22c55e;
+        opacity: 0.2;
+      }
+      #glow.thinking {
+        background: #eab308;
+        opacity: 0.25;
+        animation: glowPulse 1.5s ease-in-out infinite;
+      }
+      #glow.speaking {
+        background: #3b82f6;
+        opacity: 0.3;
+        animation: glowPulse 0.8s ease-in-out infinite;
+      }
+      #glow.cooldown {
+        background: #22c55e;
+        opacity: 0.1;
+      }
+
+      @keyframes glowPulse {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 0.2;
+        }
+        50% {
+          transform: scale(1.15);
+          opacity: 0.35;
+        }
+      }
+
+      /* Logo container with ring */
+      #logo-container {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        margin-bottom: 24px;
+      }
+      #logo-ring {
+        position: absolute;
+        inset: -6px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.08);
+        transition:
+          border-color 0.5s ease,
+          box-shadow 0.5s ease;
+      }
+      #logo-ring.idle {
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+      #logo-ring.connecting {
+        border-color: rgba(234, 179, 8, 0.4);
+        box-shadow: 0 0 20px rgba(234, 179, 8, 0.15);
+        animation: ringPulse 1.5s ease-in-out infinite;
+      }
+      #logo-ring.listening {
+        border-color: rgba(34, 197, 94, 0.4);
+        box-shadow: 0 0 20px rgba(34, 197, 94, 0.1);
+      }
+      #logo-ring.thinking {
+        border-color: rgba(234, 179, 8, 0.4);
+        box-shadow: 0 0 20px rgba(234, 179, 8, 0.15);
+        animation: ringPulse 1.5s ease-in-out infinite;
+      }
+      #logo-ring.speaking {
+        border-color: rgba(59, 130, 246, 0.5);
+        box-shadow: 0 0 24px rgba(59, 130, 246, 0.2);
+        animation: ringPulse 0.8s ease-in-out infinite;
+      }
+      #logo-ring.cooldown {
+        border-color: rgba(34, 197, 94, 0.15);
+      }
+
+      @keyframes ringPulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.04);
+        }
+      }
+
+      #logo {
+        width: 120px;
+        height: 120px;
+        opacity: 0.9;
+        transition: opacity 0.3s;
+        filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+      }
+      #logo-container:hover #logo {
+        opacity: 1;
+      }
+
+      /* Status text */
       #status {
-        font-size: 18px;
-        margin-bottom: 12px;
-        opacity: 0.8;
+        font-size: 16px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        opacity: 0.7;
+        margin-bottom: 6px;
+        transition: opacity 0.3s;
       }
+
+      /* Status dot */
       #indicator {
-        width: 48px;
-        height: 48px;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
         background: #333;
         transition: background 0.3s;
@@ -32,40 +163,50 @@
       }
       #indicator.connecting {
         background: #eab308;
-        animation: pulse 0.8s infinite;
+        animation: dotPulse 0.8s infinite;
       }
       #indicator.listening {
         background: #22c55e;
       }
       #indicator.thinking {
         background: #eab308;
+        animation: dotPulse 0.8s infinite;
       }
       #indicator.speaking {
         background: #3b82f6;
-        animation: pulse 0.8s infinite;
+        animation: dotPulse 0.8s infinite;
       }
       #indicator.cooldown {
         background: #166534;
       }
-      @keyframes pulse {
+      @keyframes dotPulse {
         0%,
         100% {
           transform: scale(1);
+          opacity: 1;
         }
         50% {
-          transform: scale(1.15);
+          transform: scale(1.8);
+          opacity: 0.6;
         }
       }
+
       #log {
-        margin-top: 16px;
-        font-size: 12px;
-        opacity: 0.5;
+        position: absolute;
+        bottom: 20px;
+        font-size: 11px;
+        opacity: 0.3;
         max-width: 600px;
         text-align: center;
       }
     </style>
   </head>
   <body>
+    <div id="glow"></div>
+    <div id="logo-container">
+      <div id="logo-ring"></div>
+      <img id="logo" src="/brand/icon/icon-on-dark.png" alt="Vernix" />
+    </div>
     <div id="status">Initializing...</div>
     <div id="indicator"></div>
     <div id="log"></div>
@@ -79,6 +220,8 @@
       const statusEl = document.getElementById("status");
       const indicatorEl = document.getElementById("indicator");
       const logEl = document.getElementById("log");
+      const glowEl = document.getElementById("glow");
+      const ringEl = document.getElementById("logo-ring");
 
       let ws = null;
       let audioContext = null;
@@ -99,6 +242,8 @@
       function setStatus(text, state) {
         statusEl.textContent = text;
         indicatorEl.className = state || "";
+        glowEl.className = state || "";
+        ringEl.className = state || "";
       }
 
       function log(msg) {
