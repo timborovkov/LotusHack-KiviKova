@@ -672,6 +672,7 @@
           );
         } catch (err) {
           clearTimeout(fallbackTimer);
+          if (fallbackFired) return;
           log("Token fetch failed: " + err.message);
           triggerFallback(transcriptWindow);
           return;
