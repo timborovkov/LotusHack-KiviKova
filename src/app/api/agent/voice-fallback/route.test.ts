@@ -127,8 +127,6 @@ describe("POST /api/agent/voice-fallback", () => {
   });
 
   it("returns 400 when no transcript provided", async () => {
-    mockDb.where.mockResolvedValueOnce([activeMeeting()]);
-
     const req = createJsonRequest(URL, {
       method: "POST",
       body: {
@@ -138,7 +136,7 @@ describe("POST /api/agent/voice-fallback", () => {
     });
     const { status, data } = await parseJsonResponse(await POST(req));
     expect(status).toBe(400);
-    expect(data.error).toBe("No transcript context provided");
+    expect(data.error).toBe("Invalid request");
   });
 
   it("successfully generates and sends fallback response", async () => {
