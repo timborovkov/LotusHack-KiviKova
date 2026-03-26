@@ -6,7 +6,7 @@ import { recordActivation } from "@/lib/agent/telemetry";
 
 // Wake words for voice activation
 const VOICE_TRIGGER_KEYWORDS = ["vernix", "agent", "assistant"];
-const VOICE_DEBOUNCE_MS = 1500;
+const VOICE_DEBOUNCE_MS = 500;
 const VOICE_RATE_LIMIT_MS = 15_000;
 const TRANSCRIPT_WINDOW_SECONDS = 30;
 
