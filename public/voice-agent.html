@@ -675,6 +675,9 @@
           return;
         }
 
+        // Fallback may have fired while fetch was pending — bail out
+        if (!sessionActive) return;
+
         if (!tokenRes.ok) {
           clearTimeout(fallbackTimer);
           log("Token error: " + tokenRes.status);
@@ -685,6 +688,9 @@
         const tokenData = await tokenRes.json();
         const token = tokenData.token;
         mcpToolNames = new Set(tokenData.mcpToolNames || []);
+
+        // Check again after json() parse — fallback could have fired
+        if (!sessionActive) return;
 
         const url = "wss://api.openai.com/v1/realtime?model=gpt-realtime-1.5";
         ws = new WebSocket(url, [
