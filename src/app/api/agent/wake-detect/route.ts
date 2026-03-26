@@ -8,6 +8,7 @@ import { verifyBotSecret } from "@/lib/agent/verify-bot-secret";
 import { getOpenAIClient } from "@/lib/openai/client";
 import {
   containsVoiceMention,
+  getRecentTranscriptWindow,
   type VoiceActivation,
 } from "@/lib/agent/activation";
 import { recordActivation, recordWakeDetectCall } from "@/lib/agent/telemetry";
@@ -107,10 +108,17 @@ export async function POST(request: Request) {
     `[Wake Detect] Wake word found in "${transcribedText.slice(0, 80)}" for meeting ${meetingId}`
   );
 
+  // Build transcript window: recent meeting transcript + the transcribed audio
+  // This gives the model context from before the wake word was spoken
+  const recentTranscript = getRecentTranscriptWindow(meetingId);
+  const transcriptWindow = recentTranscript
+    ? `${recentTranscript}\n${transcribedText}`
+    : transcribedText;
+
   const activation: VoiceActivation = {
     state: "activated",
     activatedAt: Date.now(),
-    transcriptWindow: transcribedText,
+    transcriptWindow,
   };
 
   await db
@@ -127,6 +135,6 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     activated: true,
-    transcriptWindow: transcribedText,
+    transcriptWindow,
   });
 }

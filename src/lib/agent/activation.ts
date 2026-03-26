@@ -4,9 +4,9 @@ import { and, eq } from "drizzle-orm";
 import { rateLimit, resetRateLimitKey } from "@/lib/rate-limit";
 import { recordActivation } from "@/lib/agent/telemetry";
 
-// Wake words for voice activation
+// Wake words for all agents (voice + silent)
 // "vernix" includes fuzzy variants for transcription errors
-const VOICE_TRIGGER_KEYWORDS = [
+export const WAKE_WORDS = [
   "vernix",
   "vern ix",
   "varnix",
@@ -44,11 +44,18 @@ const buffers = new Map<string, VoiceBuffer>();
 
 export function containsVoiceMention(text: string): boolean {
   const lower = text.toLowerCase();
-  return VOICE_TRIGGER_KEYWORDS.some((kw) => lower.includes(kw));
+  return WAKE_WORDS.some((kw) => lower.includes(kw));
 }
 
 function buildTranscriptWindow(chunks: BufferedChunk[]): string {
   return chunks.map((c) => `${c.speaker}: ${c.text}`).join("\n");
+}
+
+/** Get recent transcript window for a meeting (used by wake-detect for context). */
+export function getRecentTranscriptWindow(meetingId: string): string {
+  const buffer = buffers.get(meetingId);
+  if (!buffer || buffer.recentTranscript.length === 0) return "";
+  return buildTranscriptWindow(buffer.recentTranscript);
 }
 
 function trimRecentTranscript(
