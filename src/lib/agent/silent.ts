@@ -36,6 +36,7 @@ const buffers = new Map<string, TranscriptBuffer>();
 interface SilentResponse {
   text: string;
   leave?: boolean;
+  mute?: boolean;
 }
 
 async function generateSilentResponse(
@@ -89,15 +90,26 @@ async function generateSilentResponse(
 
   const openai = getOpenAIClient();
 
-  const leaveToolDef = {
-    type: "function" as const,
-    function: {
-      name: "leave_meeting",
-      description:
-        "Leave the current meeting. Use when a participant explicitly asks you to leave or disconnect.",
-      parameters: { type: "object" as const, properties: {}, required: [] },
+  const builtInToolDefs = [
+    {
+      type: "function" as const,
+      function: {
+        name: "leave_meeting",
+        description:
+          "Leave the current meeting. Use when a participant explicitly asks you to leave or disconnect.",
+        parameters: { type: "object" as const, properties: {}, required: [] },
+      },
     },
-  };
+    {
+      type: "function" as const,
+      function: {
+        name: "mute_self",
+        description:
+          "Mute yourself for the rest of the meeting. Use when a participant asks you to be quiet, stop listening, or mute. You will not respond until the host unmutes you.",
+        parameters: { type: "object" as const, properties: {}, required: [] },
+      },
+    },
+  ];
 
   const mcpToolDefs = mcpTools.map((t) => ({
     type: "function" as const,
@@ -108,7 +120,7 @@ async function generateSilentResponse(
     },
   }));
 
-  const tools = [leaveToolDef, ...mcpToolDefs];
+  const tools = [...builtInToolDefs, ...mcpToolDefs];
 
   const messages: ChatCompletionMessageParam[] = [
     { role: "system", content: systemPrompt },
@@ -126,6 +138,7 @@ async function generateSilentResponse(
   });
 
   let shouldLeave = false;
+  let shouldMute = false;
 
   const firstChoice = completion.choices[0];
   if (
@@ -144,6 +157,16 @@ async function generateSilentResponse(
           role: "tool",
           tool_call_id: call.id,
           content: JSON.stringify({ leaving: true }),
+        });
+        continue;
+      }
+
+      if (call.function.name === "mute_self") {
+        shouldMute = true;
+        messages.push({
+          role: "tool",
+          tool_call_id: call.id,
+          content: JSON.stringify({ muted: true }),
         });
         continue;
       }
@@ -177,11 +200,19 @@ async function generateSilentResponse(
       temperature: 0.7,
     });
     const response = followUp.choices[0]?.message?.content ?? "";
-    return { text: response.slice(0, MAX_RESPONSE_LENGTH), leave: shouldLeave };
+    return {
+      text: response.slice(0, MAX_RESPONSE_LENGTH),
+      leave: shouldLeave,
+      mute: shouldMute,
+    };
   }
 
   const response = firstChoice?.message?.content ?? "";
-  return { text: response.slice(0, MAX_RESPONSE_LENGTH), leave: shouldLeave };
+  return {
+    text: response.slice(0, MAX_RESPONSE_LENGTH),
+    leave: shouldLeave,
+    mute: shouldMute,
+  };
 }
 
 async function flushBuffer(
@@ -233,22 +264,36 @@ async function flushBuffer(
       resetRateLimitKey(rateLimitKey);
     }
 
-    // Handle leave_meeting tool call
-    if (result.leave) {
-      console.log(`[Silent Agent] Leaving meeting ${meetingId}`);
-      const provider = getMeetingBotProvider();
-      try {
-        await provider.leaveMeeting(botId);
-      } catch (leaveErr) {
-        console.warn("leaveMeeting failed:", leaveErr);
-      }
-
+    // Fetch meeting for mute/leave actions
+    if (result.mute || result.leave) {
       const [meeting] = await db
         .select()
         .from(meetings)
         .where(and(eq(meetings.id, meetingId), eq(meetings.userId, userId)));
 
-      if (meeting) {
+      // Handle mute_self tool call
+      if (result.mute && meeting) {
+        console.log(`[Silent Agent] Muting for meeting ${meetingId}`);
+        const metadata = (meeting.metadata as Record<string, unknown>) ?? {};
+        await db
+          .update(meetings)
+          .set({
+            metadata: { ...metadata, muted: true },
+            updatedAt: new Date(),
+          })
+          .where(and(eq(meetings.id, meetingId), eq(meetings.userId, userId)));
+      }
+
+      // Handle leave_meeting tool call
+      if (result.leave && meeting) {
+        console.log(`[Silent Agent] Leaving meeting ${meetingId}`);
+        const provider = getMeetingBotProvider();
+        try {
+          await provider.leaveMeeting(botId);
+        } catch (leaveErr) {
+          console.warn("leaveMeeting failed:", leaveErr);
+        }
+
         await db
           .update(meetings)
           .set({

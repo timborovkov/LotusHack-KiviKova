@@ -48,7 +48,7 @@ function buildFallbackSummary(
     participantList.length
       ? `Participants: ${participantList.join(", ")}`
       : undefined,
-    "",
+    "\n",
     "Transcript highlights:",
     ...(highlights.length > 0
       ? highlights

@@ -242,6 +242,37 @@
           return;
         }
 
+        if (name === "mute_self") {
+          setStatus("Muting...", "thinking");
+          sendToolOutput(
+            callId,
+            "I'll be quiet now. The host can unmute me from the dashboard."
+          );
+          setTimeout(async () => {
+            if (leaving) return;
+            leaving = true;
+            try {
+              await fetch(`${appUrl}/api/agent/mute-self`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ meetingId, botSecret }),
+              });
+            } catch (err) {
+              log("Mute error: " + err.message);
+            }
+            isMuted = true;
+            if (ws) {
+              ws.onclose = null;
+              ws.close();
+              ws = null;
+            }
+            audioQueue.length = 0;
+            isPlaying = false;
+            setStatus("Muted", "");
+          }, 3000);
+          return;
+        }
+
         if (name === "search_meeting_context") {
           setStatus("Searching context...", "thinking");
           try {

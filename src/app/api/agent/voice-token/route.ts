@@ -135,6 +135,17 @@ export async function GET(request: Request) {
               required: [],
             },
           },
+          {
+            type: "function",
+            name: "mute_self",
+            description:
+              "Mute yourself for the rest of the meeting. Use when a participant asks you to be quiet, stop listening, or mute. You will not respond until the host unmutes you from the dashboard.",
+            parameters: {
+              type: "object",
+              properties: {},
+              required: [],
+            },
+          },
           ...mcpOpenAITools,
         ],
         tool_choice: "auto",

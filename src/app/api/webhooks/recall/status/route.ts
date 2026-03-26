@@ -136,6 +136,19 @@ export async function POST(request: Request) {
       console.log(
         `[Webhook:status] Summary generated for meeting ${meeting.id}`
       );
+    } else {
+      // No userId — can't generate summary, but still mark completed
+      await db
+        .update(meetings)
+        .set({
+          status: "completed",
+          endedAt: meeting.endedAt ?? new Date(),
+          updatedAt: new Date(),
+        })
+        .where(eq(meetings.id, meeting.id));
+      console.warn(
+        `[Webhook:status] Meeting ${meeting.id} has no userId, skipping summary`
+      );
     }
 
     return NextResponse.json({ success: true });
