@@ -230,6 +230,7 @@
       let isMuted = false;
       let leaving = false;
       let sessionActive = false;
+      let sessionStartedAt = 0;
       let pollInterval = null;
       let idleTimer = null;
 
@@ -394,11 +395,20 @@
         isPlaying = false;
         audioDone = true;
 
-        // Notify server
-        notifyState("idle");
+        // Notify server with session duration for telemetry
+        const sessionDurationMs =
+          sessionStartedAt > 0 ? Date.now() - sessionStartedAt : 0;
+        sessionStartedAt = 0;
+        notifyState("idle", { sessionDurationMs });
 
-        if (!leaving && !isMuted) {
-          setStatus("Listening for your name...", "idle");
+        if (!leaving) {
+          // Always restart polling so we can detect unmute from host.
+          // pollActivation() already checks isMuted and skips activation.
+          if (isMuted) {
+            setStatus("Muted", "");
+          } else {
+            setStatus("Listening for your name...", "idle");
+          }
           startPolling();
         }
 
@@ -577,12 +587,12 @@
       }
 
       // --- Server state notifications ---
-      async function notifyState(state) {
+      async function notifyState(state, extra) {
         try {
           await fetch(`${appUrl}/api/agent/activation-status`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ meetingId, botSecret, state }),
+            body: JSON.stringify({ meetingId, botSecret, state, ...extra }),
           });
         } catch {
           /* best effort */
@@ -640,6 +650,7 @@
       // --- On-demand Realtime session ---
       async function activateSession(transcriptWindow) {
         sessionActive = true;
+        sessionStartedAt = Date.now();
         playAcknowledgement();
         setStatus("Connecting...", "connecting");
         notifyState("responding");
@@ -691,11 +702,10 @@
 
           switch (msg.type) {
             case "session.created":
-            case "session.updated":
               setStatus("Listening...", "listening");
               log("Session ready");
 
-              // Inject transcript window as context
+              // Inject transcript window as context (only on initial creation)
               if (transcriptWindow) {
                 ws.send(
                   JSON.stringify({
@@ -721,6 +731,10 @@
 
               // Trigger a response to the wake-word question
               ws.send(JSON.stringify({ type: "response.create" }));
+              break;
+
+            case "session.updated":
+              setStatus("Listening...", "listening");
               break;
 
             case "response.output_audio.delta":

@@ -6,12 +6,15 @@ import { and, eq } from "drizzle-orm";
 import { rateLimitByIp } from "@/lib/rate-limit";
 import { verifyBotSecret } from "@/lib/agent/verify-bot-secret";
 import type { VoiceActivation } from "@/lib/agent/activation";
+import { recordSessionEnd } from "@/lib/agent/telemetry";
 
 const activationStatusSchema = z.object({
   meetingId: z.uuid(),
   botSecret: z.string().min(1, "Bot secret is required"),
   // Optional: HTML page can update state
   state: z.enum(["responding", "cooldown", "idle"]).optional(),
+  // Optional: session duration in ms (sent when transitioning to idle)
+  sessionDurationMs: z.number().int().nonnegative().optional(),
 });
 
 export async function POST(request: Request) {
@@ -38,7 +41,12 @@ export async function POST(request: Request) {
     );
   }
 
-  const { meetingId, botSecret, state: newState } = parsed.data;
+  const {
+    meetingId,
+    botSecret,
+    state: newState,
+    sessionDurationMs,
+  } = parsed.data;
 
   const [meeting] = await db
     .select({ metadata: meetings.metadata, userId: meetings.userId })
@@ -65,6 +73,11 @@ export async function POST(request: Request) {
       .where(
         and(eq(meetings.id, meetingId), eq(meetings.userId, meeting.userId))
       );
+
+    // Record session end telemetry when transitioning to idle
+    if (newState === "idle" && sessionDurationMs != null) {
+      recordSessionEnd(meetingId, sessionDurationMs);
+    }
 
     // Return the state we just wrote — no second DB read needed
     return NextResponse.json({

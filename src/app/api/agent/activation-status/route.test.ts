@@ -18,6 +18,9 @@ const { mockDb } = vi.hoisted(() => {
 });
 
 vi.mock("@/lib/db", () => ({ db: mockDb }));
+vi.mock("@/lib/agent/telemetry", () => ({
+  recordSessionEnd: vi.fn(),
+}));
 
 import { POST } from "./route";
 import { createJsonRequest, parseJsonResponse } from "@/test/helpers";

@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { meetings } from "@/lib/db/schema";
 import { and, eq } from "drizzle-orm";
 import { rateLimit, resetRateLimitKey } from "@/lib/rate-limit";
+import { recordActivation } from "@/lib/agent/telemetry";
 
 // Wake words for voice activation
 const VOICE_TRIGGER_KEYWORDS = ["vernix", "agent", "assistant"];
@@ -174,6 +175,7 @@ async function flushVoiceBuffer(
       })
       .where(and(eq(meetings.id, meetingId), eq(meetings.userId, userId)));
 
+    recordActivation(meetingId);
     console.log(`[Voice Activation] Activated for meeting ${meetingId}`);
   } catch (err) {
     resetRateLimitKey(rateLimitKey);

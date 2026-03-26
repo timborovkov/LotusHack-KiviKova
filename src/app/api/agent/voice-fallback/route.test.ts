@@ -195,6 +195,46 @@ describe("POST /api/agent/voice-fallback", () => {
     );
   });
 
+  it("skips chat message when botId is missing", async () => {
+    mockDb.where.mockResolvedValueOnce([
+      activeMeeting({ metadata: { voiceSecret: "valid-secret" } }),
+    ]);
+
+    const req = createJsonRequest(URL, {
+      method: "POST",
+      body: {
+        meetingId: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+        botSecret: "valid-secret",
+        transcriptWindow: "What was discussed?",
+      },
+    });
+    const { status, data } = await parseJsonResponse(await POST(req));
+
+    expect(status).toBe(200);
+    expect(data.success).toBe(true);
+    expect(mockGenerateAgentResponse).toHaveBeenCalled();
+    expect(mockSendChatMessage).not.toHaveBeenCalled();
+  });
+
+  it("skips chat message when response text is empty", async () => {
+    mockDb.where.mockResolvedValueOnce([activeMeeting()]);
+    mockGenerateAgentResponse.mockResolvedValueOnce({ text: "" });
+
+    const req = createJsonRequest(URL, {
+      method: "POST",
+      body: {
+        meetingId: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+        botSecret: "valid-secret",
+        transcriptWindow: "What was discussed?",
+      },
+    });
+    const { status, data } = await parseJsonResponse(await POST(req));
+
+    expect(status).toBe(200);
+    expect(data.success).toBe(true);
+    expect(mockSendChatMessage).not.toHaveBeenCalled();
+  });
+
   it("handles mute_self tool call result", async () => {
     mockDb.where.mockResolvedValueOnce([activeMeeting()]);
     mockGenerateAgentResponse.mockResolvedValueOnce({

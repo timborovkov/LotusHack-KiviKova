@@ -444,4 +444,71 @@ describe("POST /api/webhooks/recall/transcript", () => {
     expect(mockHandleVoiceTranscript).not.toHaveBeenCalled();
     expect(mockHandleSilentTranscript).not.toHaveBeenCalled();
   });
+
+  it("skips both handlers when meeting has no userId", async () => {
+    const meeting = fakeMeeting({
+      status: "active",
+      userId: null,
+      metadata: { botId: "recall-bot-123", silent: false },
+    });
+    mockDb.where
+      .mockResolvedValueOnce([meeting])
+      .mockResolvedValueOnce(undefined);
+
+    const req = createJsonRequest(
+      "http://localhost/api/webhooks/recall/transcript",
+      { method: "POST", body: fakePayload() }
+    );
+    const { status } = await parseJsonResponse(await POST(req));
+    expect(status).toBe(200);
+
+    await vi.dynamicImportSettled();
+
+    expect(mockHandleVoiceTranscript).not.toHaveBeenCalled();
+    expect(mockHandleSilentTranscript).not.toHaveBeenCalled();
+  });
+
+  it("skips both handlers when metadata has no botId", async () => {
+    const meeting = fakeMeeting({
+      status: "active",
+      metadata: { silent: false },
+    });
+    mockDb.where
+      .mockResolvedValueOnce([meeting])
+      .mockResolvedValueOnce(undefined);
+
+    const req = createJsonRequest(
+      "http://localhost/api/webhooks/recall/transcript",
+      { method: "POST", body: fakePayload() }
+    );
+    const { status } = await parseJsonResponse(await POST(req));
+    expect(status).toBe(200);
+
+    await vi.dynamicImportSettled();
+
+    expect(mockHandleVoiceTranscript).not.toHaveBeenCalled();
+    expect(mockHandleSilentTranscript).not.toHaveBeenCalled();
+  });
+
+  it("skips both handlers when meeting is not active", async () => {
+    const meeting = fakeMeeting({
+      status: "processing",
+      metadata: { botId: "recall-bot-123", silent: false },
+    });
+    mockDb.where
+      .mockResolvedValueOnce([meeting])
+      .mockResolvedValueOnce(undefined);
+
+    const req = createJsonRequest(
+      "http://localhost/api/webhooks/recall/transcript",
+      { method: "POST", body: fakePayload() }
+    );
+    const { status } = await parseJsonResponse(await POST(req));
+    expect(status).toBe(200);
+
+    await vi.dynamicImportSettled();
+
+    expect(mockHandleVoiceTranscript).not.toHaveBeenCalled();
+    expect(mockHandleSilentTranscript).not.toHaveBeenCalled();
+  });
 });
