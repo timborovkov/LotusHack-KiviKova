@@ -205,7 +205,7 @@
     <div id="glow"></div>
     <div id="logo-container">
       <div id="logo-ring"></div>
-      <img id="logo" src="/brand/icon/icon-on-dark.png" alt="Vernix" />
+      <img id="logo" alt="Vernix" />
     </div>
     <div id="status">Initializing...</div>
     <div id="indicator"></div>
@@ -807,9 +807,14 @@
       // --- Init ---
       async function init() {
         if (!meetingId || !botSecret) {
-          setStatus("Error: missing meetingId or botSecret", "");
+          // Don't reveal anything to random visitors
+          document.body.innerHTML = "";
           return;
         }
+
+        // Set logo src using appUrl so it works inside Recall bot
+        document.getElementById("logo").src =
+          appUrl + "/brand/icon/icon-on-dark.png";
 
         try {
           await startCapture();
