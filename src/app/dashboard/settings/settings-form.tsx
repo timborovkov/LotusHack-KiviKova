@@ -160,7 +160,12 @@ export function SettingsForm({
         </Card>
 
         {/* Billing */}
-        <BillingCard billing={billing} loading={billingLoading} />
+        <BillingCard
+          billing={billing}
+          loading={billingLoading}
+          userEmail={profile?.email}
+          userId={profile?.id}
+        />
 
         {/* Connected Accounts */}
         <Card>
