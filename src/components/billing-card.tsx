@@ -49,9 +49,16 @@ function UsageBar({
 interface BillingCardProps {
   billing: BillingData | undefined;
   loading: boolean;
+  userEmail?: string;
+  userId?: string;
 }
 
-export function BillingCard({ billing, loading }: BillingCardProps) {
+export function BillingCard({
+  billing,
+  loading,
+  userEmail,
+  userId,
+}: BillingCardProps) {
   if (loading) {
     return (
       <Card>
@@ -180,7 +187,13 @@ export function BillingCard({ billing, loading }: BillingCardProps) {
               size="sm"
               variant="accent"
               onClick={() => {
-                window.location.href = `/api/checkout?products=${process.env.NEXT_PUBLIC_POLAR_PRODUCT_ID_PRO_MONTHLY}`;
+                const params = new URLSearchParams({
+                  products:
+                    process.env.NEXT_PUBLIC_POLAR_PRODUCT_ID_PRO_MONTHLY ?? "",
+                  ...(userId ? { customerExternalId: userId } : {}),
+                  ...(userEmail ? { customerEmail: userEmail } : {}),
+                });
+                window.location.href = `/api/checkout?${params.toString()}`;
               }}
             >
               Upgrade to Pro — €{PRICING[PLANS.PRO].monthly}/mo
