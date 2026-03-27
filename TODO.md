@@ -41,7 +41,7 @@
 
 ## Billing with Polar
 
-- **Pricing as consts in the code** — Pricing tiers as consts in the code, so we can easily change the pricing without having to change the code. Would affect billing, pricing page, and marketing.
+- **Prices as consts in the code** — Pricing tiers, usage overage prices, and use limits as consts in the code, so we can easily change the pricing without having to change the code. Would affect billing, pricing page, and marketing.
 - **Polar integration** — Connect Polar.sh for subscription management
 - **Hard caps** – Fair use hard caps on uploaded context, meeting duration, token usage, embeddings creation etc for each plan
 - **Usage tracking** — Track meeting minutes, API calls, and storage per user
