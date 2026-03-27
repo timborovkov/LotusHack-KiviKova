@@ -28,7 +28,7 @@ describe("getEffectiveLimits", () => {
     const future = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     const limits = getEffectiveLimits("free", future);
     expect(limits.voiceEnabled).toBe(true);
-    expect(limits.meetingMinutesPerMonth).toBeNull(); // unlimited via credits
+    expect(limits.meetingMinutesPerMonth).toBe(90); // 90-minute trial cap
     expect(limits.documentsCount).toBe(200);
     expect(limits.apiEnabled).toBe(false); // trial doesn't include API
   });
