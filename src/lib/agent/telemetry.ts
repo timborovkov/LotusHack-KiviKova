@@ -71,7 +71,7 @@ export async function flushTelemetry(
   userId: string
 ): Promise<FlushedTelemetry | null> {
   const entry = telemetryMap.get(meetingId);
-  if (!entry || entry.activationCount === 0) {
+  if (!entry || (entry.activationCount === 0 && entry.wakeDetectCalls === 0)) {
     // eslint-disable-next-line drizzle/enforce-delete-with-where -- Map.delete
     telemetryMap.delete(meetingId);
     return null;
