@@ -74,9 +74,10 @@ export const LIMITS = {
   },
 } as const;
 
-/** Trial limits (same as Pro except API/MCP) */
+/** Trial limits (same as Pro except API/MCP and capped at 90 total minutes) */
 export const TRIAL_LIMITS = {
   ...LIMITS[PLANS.PRO],
+  meetingMinutesPerMonth: FREE_TRIAL.totalMinutes,
   apiEnabled: false,
   mcpEnabled: false,
   apiRequestsPerDay: 0,
