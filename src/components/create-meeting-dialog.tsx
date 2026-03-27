@@ -13,8 +13,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
-import { isBillingError, type BillingApiError } from "@/lib/billing/errors";
-import { UpgradeDialog } from "@/components/upgrade-dialog";
+import { isBillingError } from "@/lib/billing/errors";
+import {
+  UpgradeDialog,
+  detectPaywallTrigger,
+  type PaywallTrigger,
+} from "@/components/upgrade-dialog";
 
 interface CreateMeetingDialogProps {
   onCreate: (
@@ -32,9 +36,10 @@ export function CreateMeetingDialog({ onCreate }: CreateMeetingDialogProps) {
   const [agenda, setAgenda] = useState("");
   const [silent, setSilent] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [upgradeError, setUpgradeError] = useState<BillingApiError | null>(
+  const [paywallTrigger, setPaywallTrigger] = useState<PaywallTrigger | null>(
     null
   );
+  const [paywallMessage, setPaywallMessage] = useState<string>("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,7 +55,12 @@ export function CreateMeetingDialog({ onCreate }: CreateMeetingDialogProps) {
       setOpen(false);
     } catch (error) {
       if (isBillingError(error)) {
-        setUpgradeError(error);
+        const trigger = detectPaywallTrigger(
+          error.message,
+          error.isFeatureGate
+        );
+        setPaywallTrigger(trigger);
+        setPaywallMessage(error.message);
       } else {
         toast.error("Failed to create meeting");
       }
@@ -128,15 +138,14 @@ export function CreateMeetingDialog({ onCreate }: CreateMeetingDialogProps) {
           </Button>
         </form>
       </DialogContent>
-      <UpgradeDialog
-        open={!!upgradeError}
-        onOpenChange={(v) => !v && setUpgradeError(null)}
-        title={
-          upgradeError?.isFeatureGate ? "Feature requires Pro" : "Limit reached"
-        }
-        description={upgradeError?.message ?? ""}
-        limitType={upgradeError?.isFeatureGate ? "feature" : "quota"}
-      />
+      {paywallTrigger && (
+        <UpgradeDialog
+          open
+          onOpenChange={(v) => !v && setPaywallTrigger(null)}
+          trigger={paywallTrigger}
+          errorMessage={paywallMessage}
+        />
+      )}
     </Dialog>
   );
 }

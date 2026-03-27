@@ -11,11 +11,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Upload } from "lucide-react";
-import { isBillingError, type BillingApiError } from "@/lib/billing/errors";
-import { UpgradeDialog } from "@/components/upgrade-dialog";
+import { isBillingError } from "@/lib/billing/errors";
+import {
+  UpgradeDialog,
+  detectPaywallTrigger,
+  type PaywallTrigger,
+} from "@/components/upgrade-dialog";
 
 const ACCEPTED_TYPES = ".pdf,.docx,.txt,.md";
-const MAX_SIZE_MB = 10;
+const MAX_SIZE_MB = 25; // Upper bound — server enforces per-plan limit
 
 interface UploadDocumentDialogProps {
   onUpload: (file: File) => Promise<void>;
@@ -29,9 +33,10 @@ export function UploadDocumentDialog({
   const [open, setOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [upgradeError, setUpgradeError] = useState<BillingApiError | null>(
+  const [paywallTrigger, setPaywallTrigger] = useState<PaywallTrigger | null>(
     null
   );
+  const [paywallMessage, setPaywallMessage] = useState<string>("");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -56,7 +61,12 @@ export function UploadDocumentDialog({
       setOpen(false);
     } catch (error) {
       if (isBillingError(error)) {
-        setUpgradeError(error);
+        const trigger = detectPaywallTrigger(
+          error.message,
+          error.isFeatureGate
+        );
+        setPaywallTrigger(trigger);
+        setPaywallMessage(error.message);
       }
       // Other errors handled by hook toast
     }
@@ -82,7 +92,7 @@ export function UploadDocumentDialog({
               className="file:bg-primary file:text-primary-foreground block w-full text-sm file:mr-4 file:rounded file:border-0 file:px-4 file:py-2 file:text-sm file:font-medium"
             />
             <p className="text-muted-foreground text-xs">
-              Supported: PDF, DOCX, TXT, Markdown. Max {MAX_SIZE_MB}MB.
+              Supported: PDF, DOCX, TXT, Markdown.
             </p>
           </div>
 
@@ -102,17 +112,14 @@ export function UploadDocumentDialog({
           </Button>
         </form>
       </DialogContent>
-      <UpgradeDialog
-        open={!!upgradeError}
-        onOpenChange={(v) => !v && setUpgradeError(null)}
-        title={
-          upgradeError?.isFeatureGate
-            ? "Upload limit reached"
-            : "Upload quota exhausted"
-        }
-        description={upgradeError?.message ?? ""}
-        limitType={upgradeError?.isFeatureGate ? "feature" : "quota"}
-      />
+      {paywallTrigger && (
+        <UpgradeDialog
+          open
+          onOpenChange={(v) => !v && setPaywallTrigger(null)}
+          trigger={paywallTrigger}
+          errorMessage={paywallMessage}
+        />
+      )}
     </Dialog>
   );
 }

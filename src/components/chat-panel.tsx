@@ -9,7 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChatMessage } from "@/components/chat-message";
 import { SendHorizontal, MessageSquare, Gauge } from "lucide-react";
 import Link from "next/link";
-import { PRICING, PLANS } from "@/lib/billing/constants";
+import { PRICING, PLANS, LIMITS } from "@/lib/billing/constants";
+import { useBilling } from "@/hooks/use-billing";
 
 interface ChatPanelProps {
   meetingId?: string;
@@ -22,6 +23,7 @@ export function ChatPanel({
 }: ChatPanelProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [inputValue, setInputValue] = useState("");
+  const { billing } = useBilling();
 
   const transport = useMemo(
     () =>
@@ -42,6 +44,11 @@ export function ChatPanel({
     error?.message?.includes("RATE_LIMITED") ||
     error?.message?.includes("limit reached");
 
+  const ragUsed = billing?.usage.ragQueries ?? 0;
+  const ragLimit =
+    billing?.limits.ragQueriesPerDay ?? LIMITS[PLANS.FREE].ragQueriesPerDay;
+  const ragPct = Math.min(100, (ragUsed / ragLimit) * 100);
+
   // Auto-scroll after DOM updates
   useLayoutEffect(() => {
     if (scrollRef.current) {
@@ -57,13 +64,25 @@ export function ChatPanel({
     setInputValue("");
   };
 
+  const checkoutUrl = (() => {
+    const productId = process.env.NEXT_PUBLIC_POLAR_PRODUCT_ID_PRO_MONTHLY;
+    return productId ? `/api/checkout?products=${productId}` : "/pricing";
+  })();
+
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <MessageSquare className="h-4 w-4" />
-          Chat with AI
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <MessageSquare className="h-4 w-4" />
+            Chat with AI
+          </CardTitle>
+          {billing && (
+            <span className="text-muted-foreground text-xs">
+              {ragUsed}/{ragLimit} today
+            </span>
+          )}
+        </div>
       </CardHeader>
       <CardContent>
         <div
@@ -84,23 +103,35 @@ export function ChatPanel({
           ))}
           {error &&
             (isBillingLimitError ? (
-              <div className="bg-muted/50 flex flex-col items-center gap-2 rounded-lg p-4 text-center">
+              <div className="bg-muted/50 flex flex-col items-center gap-3 rounded-lg p-4 text-center">
                 <Gauge className="text-muted-foreground h-5 w-5" />
-                <p className="text-sm font-medium">Daily query limit reached</p>
-                <p className="text-muted-foreground text-xs">
-                  Upgrade to Pro for {PLANS.PRO === "pro" ? "200" : "more"}{" "}
-                  queries per day.
-                </p>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium">
+                    Daily question limit reached
+                  </p>
+                  <p className="text-muted-foreground text-xs">
+                    You&apos;ve used all {ragLimit} questions for today. Upgrade
+                    for {LIMITS[PLANS.PRO].ragQueriesPerDay} per day.
+                  </p>
+                </div>
+                {/* Usage bar */}
+                <div className="w-full max-w-48">
+                  <div className="bg-muted h-1.5 overflow-hidden rounded-full">
+                    <div
+                      className="bg-destructive h-full rounded-full"
+                      style={{ width: `${ragPct}%` }}
+                    />
+                  </div>
+                  <p className="text-muted-foreground mt-1 text-[10px]">
+                    {ragUsed} / {ragLimit} queries used
+                  </p>
+                </div>
                 <div className="flex gap-2">
                   <Button
                     size="sm"
                     variant="accent"
                     onClick={() => {
-                      const productId =
-                        process.env.NEXT_PUBLIC_POLAR_PRODUCT_ID_PRO_MONTHLY;
-                      window.location.href = productId
-                        ? `/api/checkout?products=${productId}`
-                        : "/pricing";
+                      window.location.href = checkoutUrl;
                     }}
                   >
                     Upgrade — €{PRICING[PLANS.PRO].monthly}/mo
@@ -110,7 +141,7 @@ export function ChatPanel({
                     variant="ghost"
                     render={<Link href="/pricing" />}
                   >
-                    View plans
+                    Compare plans
                   </Button>
                 </div>
                 <Button
