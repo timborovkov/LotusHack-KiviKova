@@ -38,15 +38,10 @@
 - Voice Mode Rewrite (On-Demand Realtime)
 - Internal Agent System Documentation (`docs/agent-architecture.md`)
 - Fast Wake-Word Detection (Client-Side VAD + gpt-4o-mini-transcribe)
+- Billing with Polar (constants, Polar integration, hard caps, usage tracking, billing UI, webhook handler, limit enforcement)
 
-## Billing with Polar
+## Billing — Remaining
 
-- **Prices as consts in the code** — Pricing tiers, usage overage prices, and use limits as consts in the code, so we can easily change the pricing without having to change the code. Would affect billing, pricing page, and marketing.
-- **Polar integration** — Connect Polar.sh for subscription management
-- **Hard caps** – Fair use hard caps on uploaded context, meeting duration, token usage, embeddings creation etc for each plan
-- **Usage tracking** — Track meeting minutes, API calls, and storage per user
-- **Billing UI** — `/settings/billing` page with current plan, usage, and upgrade options
-- **Webhook handler** — `POST /api/webhooks/polar` for subscription lifecycle events
 - **Configure paywalls** — Configure paywalls for the pricing tiers. Claude Code has a paywall skill that can be used to configure paywalls.
 
 ## SEO & Discoverability
