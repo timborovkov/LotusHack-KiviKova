@@ -34,7 +34,7 @@ Run `pnpm validate` after every change. It formats, lints with autofix, typechec
 
 ### Key Layers
 
-- **`src/lib/db/`** — Drizzle ORM. `users`, `meetings`, `documents`, `tasks`, `apiKeys`, and `mcpServers` tables. `meetings` has status enum (`pending → joining → active → processing → completed | failed`). `documents` tracks knowledge base uploads with optional `meetingId` FK for meeting-scoped docs and status enum (`processing → ready | failed`). `tasks` stores action items per meeting with `autoExtracted` boolean. `meetings.metadata` JSONB stores: `agenda?`, `botId?`, `voiceSecret?` (voice mode only), `summary?`, `silent?` (boolean, enables silent/text agent mode), `voiceActivation?` (`{ state, activatedAt?, transcriptWindow? }` — on-demand voice state machine), `voiceTelemetry?` (`{ activationCount, totalConnectedSeconds, avgSessionSeconds }` — flushed on meeting end). Schema changes → `pnpm db:push`.
+- **`src/lib/db/`** — Drizzle ORM. `users`, `meetings`, `documents`, `tasks`, `apiKeys`, `mcpServers`, and `usageEvents` tables. `users` has billing fields: `plan` (free|pro), `polarCustomerId`, `polarSubscriptionId`, `trialEndsAt`, `currentPeriodStart`, `currentPeriodEnd`. `usageEvents` tracks billable actions (voice/silent meetings, RAG queries, API requests, doc uploads) with quantity and cost. `meetings` has status enum (`pending → joining → active → processing → completed | failed`). `documents` tracks knowledge base uploads with optional `meetingId` FK for meeting-scoped docs and status enum (`processing → ready | failed`). `tasks` stores action items per meeting with `autoExtracted` boolean. `meetings.metadata` JSONB stores: `agenda?`, `botId?`, `voiceSecret?` (voice mode only), `summary?`, `silent?` (boolean, enables silent/text agent mode), `voiceActivation?` (`{ state, activatedAt?, transcriptWindow? }` — on-demand voice state machine), `voiceTelemetry?` (`{ activationCount, totalConnectedSeconds, avgSessionSeconds }` — flushed on meeting end). Schema changes → `pnpm db:push`.
 - **`src/lib/auth/`** — NextAuth v5 with credentials provider (email/password). `config.ts` for edge-compatible config, `index.ts` for full config with DB. `session.ts` has `requireSessionUser()` helper.
 - **`src/lib/meeting-bot/`** — Provider pattern. `MeetingBotProvider` interface (with `joinMeeting(link, id, name?, options?)`, `leaveMeeting()`, `sendChatMessage()`, `onTranscript()`) with `RecallProvider` and `MockProvider`. `joinMeeting` accepts `options.silent` to omit output_media. Selected via `MEETING_BOT_PROVIDER` env var.
 - **`src/lib/vector/`** — Qdrant client singleton. Each meeting gets its own collection (1536-dim Cosine) containing transcripts, meeting-scoped documents (`type:"document"`), and agenda (`type:"agenda"`). `scroll.ts` fetches transcript points only (filtered by `type:"transcript"`). `knowledge.ts` manages per-user knowledge collections. `agenda.ts` upserts/clears agenda text in meeting collections.
@@ -46,6 +46,8 @@ Run `pnpm validate` after every change. It formats, lints with autofix, typechec
 - **`src/lib/storage/`** — S3-compatible client singleton (Minio locally). `operations.ts` for upload, delete, and presigned download URLs.
 - **`src/lib/mcp/`** — `server.ts` creates per-connection MCP servers exposing meeting data tools. `client.ts` manages connections to user-configured external MCP servers with connection caching.
 - **`src/lib/auth/api-key.ts`** — API key generation (bcrypt-hashed) and authentication for MCP server endpoint.
+- **`src/lib/billing/`** — Billing and usage tracking. `constants.ts` defines plans, pricing (€29/mo, €24/mo annual), usage rates (€3/hr voice, €1.50/hr silent), €30 monthly credit, per-plan hard caps, and trial config (14 days, 90 min). `usage.ts` records usage events, queries period summaries, and syncs metered usage to Polar. `limits.ts` resolves effective limits per plan/trial and provides `canStartMeeting()`, `canUploadDocument()`, `canMakeRagQuery()`, `canMakeApiRequest()` checks.
+- **`src/lib/polar.ts`** — Polar SDK singleton client. `isPolarEnabled()` guard for optional billing.
 
 ### API Routes
 
@@ -82,11 +84,15 @@ All under `src/app/api/`:
 - `settings/mcp-servers/[id]/route.ts` — PATCH update, DELETE MCP server config
 - `meetings/[id]/export/route.ts` — GET export meeting as Markdown or PDF (`?format=md|pdf`)
 - `export/route.ts` — GET bulk export all meetings as ZIP archive
+- `billing/route.ts` — GET current plan, usage summary, limits (auth required)
+- `checkout/route.ts` — GET Polar checkout redirect (public, pass `?products=<id>`)
+- `portal/route.ts` — GET Polar customer portal redirect (resolves Polar customer ID from session)
+- `webhooks/polar/route.ts` — POST Polar webhook handler (subscription lifecycle, customer events)
 
 ### Auth & Middleware
 
-- `src/middleware.ts` — Protects `/dashboard/*`, `/api/meetings/*`, `/api/agent/*`, `/api/search/*`, `/api/knowledge/*`, `/api/tasks/*`, `/api/settings/*`, `/api/export`
-- Public endpoints (no auth): `/api/webhooks/*`, `/api/agent/voice-token`, `/api/agent/rag`, `/api/agent/mcp-tool`, `/api/agent/activation-status`, `/api/agent/wake-detect`, `/api/agent/voice-fallback` (all verified by botSecret), `/api/mcp` (API key auth)
+- `src/middleware.ts` — Protects `/dashboard/*`, `/api/meetings/*`, `/api/agent/*`, `/api/search/*`, `/api/knowledge/*`, `/api/tasks/*`, `/api/settings/*`, `/api/billing`, `/api/export`
+- Public endpoints (no auth): `/api/webhooks/*` (incl. Polar), `/api/checkout`, `/api/portal`, `/api/agent/voice-token`, `/api/agent/rag`, `/api/agent/mcp-tool`, `/api/agent/activation-status`, `/api/agent/wake-detect`, `/api/agent/voice-fallback` (all verified by botSecret), `/api/mcp` (API key auth)
 - All meeting API routes check `userId` ownership via `and(eq(meetings.id, id), eq(meetings.userId, user.id))`
 - RAG requires `userId` parameter to prevent cross-user data leakage
 
@@ -170,4 +176,4 @@ Tests must verify **real behavior**, not just confirm that mocks return what you
 
 ## Environment
 
-Copy `.env.example` to `.env.local`. Required: `DATABASE_URL`, `QDRANT_URL`, `OPENAI_API_KEY`, `AUTH_SECRET`, `AUTH_URL`, `NEXT_PUBLIC_APP_URL`, `MEETING_BOT_PROVIDER`. For Recall: `RECALL_API_KEY`, `RECALL_API_URL`. For knowledge base: `S3_ENDPOINT`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_BUCKET`, `S3_REGION`.
+Copy `.env.example` to `.env.local`. Required: `DATABASE_URL`, `QDRANT_URL`, `OPENAI_API_KEY`, `AUTH_SECRET`, `AUTH_URL`, `NEXT_PUBLIC_APP_URL`, `MEETING_BOT_PROVIDER`. For Recall: `RECALL_API_KEY`, `RECALL_API_URL`. For knowledge base: `S3_ENDPOINT`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_BUCKET`, `S3_REGION`. For billing: `POLAR_ACCESS_TOKEN`, `POLAR_WEBHOOK_SECRET`, `POLAR_PRODUCT_ID_PRO_MONTHLY`, `POLAR_PRODUCT_ID_PRO_ANNUAL`, `NEXT_PUBLIC_POLAR_PRODUCT_ID_PRO_MONTHLY`, `NEXT_PUBLIC_POLAR_PRODUCT_ID_PRO_ANNUAL`, `POLAR_SERVER`.
