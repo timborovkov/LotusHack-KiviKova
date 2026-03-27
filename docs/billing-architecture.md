@@ -32,10 +32,10 @@ User uses app → usageEvents table (local) ← limit checks
 
 Create two products in the Polar dashboard:
 
-| Product          | Type         | Price      | Trial          |
-| ---------------- | ------------ | ---------- | -------------- |
-| **Pro Monthly**  | Subscription | €29/month  | 14-day trial   |
-| **Pro Annual**   | Subscription | €288/year  | 14-day trial   |
+| Product         | Type         | Price     | Trial        |
+| --------------- | ------------ | --------- | ------------ |
+| **Pro Monthly** | Subscription | €29/month | 14-day trial |
+| **Pro Annual**  | Subscription | €288/year | 14-day trial |
 
 Enable "Prevent trial abuse" on both products.
 
@@ -43,19 +43,19 @@ Enable "Prevent trial abuse" on both products.
 
 Create two meters for usage-based billing:
 
-| Meter             | Event Name       | Aggregation | Filter |
-| ----------------- | ---------------- | ----------- | ------ |
-| **Voice Minutes** | `voice_minutes`  | Sum of `duration_hours` | — |
-| **Silent Minutes**| `silent_minutes` | Sum of `duration_hours` | — |
+| Meter              | Event Name       | Aggregation             | Filter |
+| ------------------ | ---------------- | ----------------------- | ------ |
+| **Voice Minutes**  | `voice_minutes`  | Sum of `duration_hours` | —      |
+| **Silent Minutes** | `silent_minutes` | Sum of `duration_hours` | —      |
 
 ### 3. Attach Metered Prices
 
 On each product, attach metered prices:
 
-| Meter           | Price per unit (hour) |
-| --------------- | --------------------- |
-| Voice Minutes   | €3.00/hr              |
-| Silent Minutes  | €1.50/hr              |
+| Meter          | Price per unit (hour) |
+| -------------- | --------------------- |
+| Voice Minutes  | €3.00/hr              |
+| Silent Minutes | €1.50/hr              |
 
 The €30 included credit is handled by Polar's credit system — configure a €30/month credit on each product.
 
@@ -129,14 +129,14 @@ We pass the user's UUID as `customerExternalId` in checkout. This links the Pola
 
 `src/app/api/webhooks/polar/route.ts` handles:
 
-| Event                    | Action                                           |
-| ------------------------ | ------------------------------------------------ |
-| `subscription.created`   | Set plan=pro, store polarCustomerId, subscriptionId, period dates |
-| `subscription.active`    | Update period dates (renewal)                    |
-| `subscription.updated`   | Update period dates                              |
-| `subscription.canceled`  | Log (subscription stays active until period end) |
-| `subscription.revoked`   | Set plan=free, clear subscription fields         |
-| `customer.created`       | Store polarCustomerId                            |
+| Event                   | Action                                                            |
+| ----------------------- | ----------------------------------------------------------------- |
+| `subscription.created`  | Set plan=pro, store polarCustomerId, subscriptionId, period dates |
+| `subscription.active`   | Update period dates (renewal)                                     |
+| `subscription.updated`  | Update period dates                                               |
+| `subscription.canceled` | Log (subscription stays active until period end)                  |
+| `subscription.revoked`  | Set plan=free, clear subscription fields                          |
+| `customer.created`      | Store polarCustomerId                                             |
 
 Webhook signature verification is handled by `@polar-sh/nextjs` `Webhooks` helper using `POLAR_WEBHOOK_SECRET`.
 
@@ -179,12 +179,12 @@ getEffectiveLimits(plan, trialEndsAt) → EffectiveLimits
 
 ### Check Functions
 
-| Function              | What it checks                                      |
-| --------------------- | --------------------------------------------------- |
+| Function              | What it checks                                              |
+| --------------------- | ----------------------------------------------------------- |
 | `canStartMeeting()`   | Voice enabled, concurrent meetings, monthly cap, minute cap |
-| `canUploadDocument()`  | Doc count, monthly uploads, file size, storage cap  |
-| `canMakeRagQuery()`    | Daily RAG query limit                               |
-| `canMakeApiRequest()`  | API enabled, daily request limit                    |
+| `canUploadDocument()` | Doc count, monthly uploads, file size, storage cap          |
+| `canMakeRagQuery()`   | Daily RAG query limit                                       |
+| `canMakeApiRequest()` | API enabled, daily request limit                            |
 
 Each returns `{ allowed: boolean, reason?: string }`.
 
