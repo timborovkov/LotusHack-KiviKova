@@ -25,9 +25,9 @@ export async function POST(request: Request) {
   const dailyRag = await getDailyCount(user.id, "rag_query");
   const ragCheck = canMakeRagQuery(limits, dailyRag);
   if (!ragCheck.allowed) return billingError(ragCheck, 429);
-  recordUsageEvent(user.id, "rag_query").catch(() => {});
 
   const { messages, meetingId } = await request.json();
+  recordUsageEvent(user.id, "rag_query").catch(() => {});
 
   // Fetch agenda if scoped to a meeting
   let agenda: string | null = null;
