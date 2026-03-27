@@ -6,8 +6,10 @@ import { signIn } from "next-auth/react";
 import { useApiKeys } from "@/hooks/use-api-keys";
 import { useMcpServers } from "@/hooks/use-mcp-servers";
 import { useProfile } from "@/hooks/use-profile";
+import { useBilling } from "@/hooks/use-billing";
 import { ApiKeyList } from "@/components/api-key-list";
 import { McpServerList } from "@/components/mcp-server-list";
+import { BillingCard } from "@/components/billing-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,6 +27,7 @@ export function SettingsForm({
 }: SettingsFormProps) {
   const { keys, createKey, deleteKey } = useApiKeys();
   const { servers, addServer, toggleServer, deleteServer } = useMcpServers();
+  const { billing, loading: billingLoading } = useBilling();
   const {
     profile,
     loading: profileLoading,
@@ -155,6 +158,9 @@ export function SettingsForm({
             ) : null}
           </CardContent>
         </Card>
+
+        {/* Billing */}
+        <BillingCard billing={billing} loading={billingLoading} />
 
         {/* Connected Accounts */}
         <Card>
