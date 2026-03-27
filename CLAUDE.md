@@ -62,6 +62,7 @@ All under `src/app/api/`:
 - `agent/rag/route.ts` — POST RAG search for voice agent (public, verified by botSecret)
 - `agent/mcp-tool/route.ts` — POST MCP tool execution for voice agent (public, verified by botSecret)
 - `agent/activation-status/route.ts` — POST poll/update voice activation state (public, verified by botSecret, consumes activated→responding on read)
+- `agent/wake-detect/route.ts` — POST fast wake-word detection via gpt-4o-mini-transcribe (public, verified by botSecret, ~500ms latency)
 - `agent/voice-fallback/route.ts` — POST chat fallback when Realtime fails (public, verified by botSecret)
 - `webhooks/recall/transcript/route.ts` — Receives realtime transcript data from Recall
 - `webhooks/recall/status/route.ts` — Receives bot lifecycle events (call_ended, transcript.done)
@@ -85,23 +86,24 @@ All under `src/app/api/`:
 ### Auth & Middleware
 
 - `src/middleware.ts` — Protects `/dashboard/*`, `/api/meetings/*`, `/api/agent/*`, `/api/search/*`, `/api/knowledge/*`, `/api/tasks/*`, `/api/settings/*`, `/api/export`
-- Public endpoints (no auth): `/api/webhooks/*`, `/api/agent/voice-token`, `/api/agent/rag`, `/api/agent/mcp-tool`, `/api/agent/activation-status`, `/api/agent/voice-fallback` (all verified by botSecret), `/api/mcp` (API key auth)
+- Public endpoints (no auth): `/api/webhooks/*`, `/api/agent/voice-token`, `/api/agent/rag`, `/api/agent/mcp-tool`, `/api/agent/activation-status`, `/api/agent/wake-detect`, `/api/agent/voice-fallback` (all verified by botSecret), `/api/mcp` (API key auth)
 - All meeting API routes check `userId` ownership via `and(eq(meetings.id, id), eq(meetings.userId, user.id))`
 - RAG requires `userId` parameter to prevent cross-user data leakage
 
 ### Voice Agent (On-Demand Realtime)
 
 - `public/voice-agent.html` — Static page rendered inside Recall bot via Output Media
-- **On-demand activation**: page captures audio but does NOT connect to OpenAI immediately
-- Polls `/api/agent/activation-status` every 2s for wake-word detection
-- Server-side wake detection in transcript webhook: "Vernix", "Agent", "Assistant" (1.5s debounce, 15s rate limit)
-- On activation: plays acknowledgement → fetches voice token → connects OpenAI Realtime → flushes 10s audio buffer → responds
+- **Dual-path wake detection**: fast path (VAD + gpt-4o-mini-transcribe, ~500ms) and slow fallback (Recall transcript webhook, ~2-4s)
+- Fast path: ScriptProcessor captures audio → RMS VAD detects speech → 0.8s buffer → POST to `/api/agent/wake-detect` → transcribe → keyword match → activate directly
+- Slow path: Recall transcript webhook → `activation.ts` debounce (0.5s) → keyword match → write to DB → poll detects activation
+- Wake words: "vernix" + fuzzy variants (varnix, burnix, fernix, etc.) + "agent" + "assistant" — shared `WAKE_WORDS` constant in `activation.ts`
+- On activation: plays acknowledgement → fetches voice token (pre-cached) → connects OpenAI Realtime → flushes 10s audio buffer → responds
 - Auto-closes Realtime session after 15s idle, returns to polling
-- Fallback: if Realtime fails within 5s, sends text response via `/api/agent/voice-fallback`
+- Fallback: if Realtime fails within 4s, sends text response via `/api/agent/voice-fallback`
 - Activation state consumed on read (activated → responding) to prevent duplicate triggers
 - `voiceSecret` is generated per bot session, stored in meeting metadata, passed in URL
-- `src/lib/agent/activation.ts` — Wake detection state machine (buffer, debounce, rate limit)
-- `src/lib/agent/telemetry.ts` — Per-meeting activation count, session duration tracking
+- `src/lib/agent/activation.ts` — Wake detection state machine, shared `WAKE_WORDS` constant, transcript buffer
+- `src/lib/agent/telemetry.ts` — Per-meeting activation count, session duration, wake-detect call tracking
 
 ### UI
 
