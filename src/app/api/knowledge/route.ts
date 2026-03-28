@@ -96,12 +96,6 @@ export async function POST(request: Request) {
   // Billing check
   const { limits } = await requireLimits(user.id);
   const fileSizeMB = file.size / (1024 * 1024);
-  if (fileSizeMB > limits.maxDocumentSizeMB) {
-    return NextResponse.json(
-      { error: `File exceeds ${limits.maxDocumentSizeMB}MB limit` },
-      { status: 400 }
-    );
-  }
   const [docCount, monthlyUploads, totalStorageMB] = await Promise.all([
     getDocumentCount(user.id),
     getMonthlyDocUploads(user.id),
