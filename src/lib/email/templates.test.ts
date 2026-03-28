@@ -34,7 +34,8 @@ describe("getWelcomeEmailHtml", () => {
     const html = getWelcomeEmailHtml("Alice");
     expect(html).toContain("Hi Alice");
     expect(html).toContain("Welcome to Vernix");
-    expect(html).toContain("Go to Dashboard");
+    expect(html).toContain("Start Your First Meeting");
+    expect(html).toContain("14 days of full Pro access");
   });
 
   it("escapes HTML in user name", () => {
