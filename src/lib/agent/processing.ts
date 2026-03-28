@@ -5,10 +5,7 @@ import { scrollTranscript } from "@/lib/vector/scroll";
 import { generateMeetingSummary } from "@/lib/summary/generate";
 import { extractActionItems } from "@/lib/tasks/extract";
 import { storeExtractedTasks } from "@/lib/tasks/store";
-import {
-  recordMeetingUsage,
-  syncUsageToPolar,
-} from "@/lib/billing/usage";
+import { recordMeetingUsage, syncUsageToPolar } from "@/lib/billing/usage";
 
 /**
  * Shared post-meeting processing: generate summary and extract action items.
@@ -43,7 +40,8 @@ export async function processMeetingEnd(
       const startedAt = metadata.startedAt as Date | undefined;
       const endedAt = metadata.endedAt as Date | undefined;
       if (startedAt && endedAt) {
-        const durationMs = new Date(endedAt).getTime() - new Date(startedAt).getTime();
+        const durationMs =
+          new Date(endedAt).getTime() - new Date(startedAt).getTime();
         const durationMinutes = Math.max(1, Math.round(durationMs / 60000));
         const isSilent = Boolean(metadata.silent);
         const type = isSilent ? "silent_meeting" : "voice_meeting";
