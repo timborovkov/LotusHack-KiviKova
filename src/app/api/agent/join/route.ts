@@ -70,7 +70,8 @@ export async function POST(request: Request) {
     activeMeetings,
     monthlyCount
   );
-  if (!check.allowed) return billingError(check);
+  if (!check.allowed)
+    return billingError(check, !silent && !limits.voiceEnabled ? 403 : 429);
 
   await db
     .update(meetings)
