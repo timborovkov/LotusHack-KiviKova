@@ -12,7 +12,6 @@ interface IntegrationCardProps {
   connected: boolean;
   onConnect: (integration: Integration) => void;
   onDisconnect: (integration: Integration) => void;
-  disabled?: boolean;
 }
 
 export function IntegrationCard({
@@ -20,7 +19,6 @@ export function IntegrationCard({
   connected,
   onConnect,
   onDisconnect,
-  disabled,
 }: IntegrationCardProps) {
   const isComingSoon = integration.status === "coming-soon";
 
@@ -77,7 +75,7 @@ export function IntegrationCard({
             <Button
               size="xs"
               variant={isComingSoon ? "outline" : "default"}
-              disabled={isComingSoon || disabled}
+              disabled={isComingSoon}
               onClick={() => onConnect(integration)}
             >
               {isComingSoon ? "Soon" : "Connect"}

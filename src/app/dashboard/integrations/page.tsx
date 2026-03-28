@@ -154,7 +154,6 @@ export default function IntegrationsPage() {
             connected={connectedIds.has(integration.id)}
             onConnect={handleConnect}
             onDisconnect={handleDisconnect}
-            disabled={!mcpEnabled}
           />
         ))}
       </div>
@@ -181,7 +180,6 @@ export default function IntegrationsPage() {
             <Button
               size="sm"
               variant="outline"
-              disabled={!mcpEnabled}
               onClick={() => {
                 if (!mcpEnabled) {
                   setPaywallTrigger("api_access");
