@@ -117,6 +117,10 @@
 
 - **Add "trialing" plan enum value** — Currently trial state is derived from `plan === "free" && trialEndsAt > now && polarSubscriptionId`. Adding `plan: "trialing"` to the enum makes state explicit, removes derived logic in `isTrialActive`/`getEffectiveLimits`, and simplifies billing queries. Requires: schema migration (new enum value), update webhook handler to set `plan: "trialing"`, update all plan checks.
 
+## Pricing Constants Sweep
+
+- **Use billing constants everywhere** — `src/lib/billing/constants.ts` defines all prices, limits, and rates, but many files hardcode `€29`, `€30`, `200`, `€3/hr`, etc. Affected: pricing page, FAQ, upgrade-dialog trigger copy, trial-prompt-banner, feature pages, email templates, welcome page, SEO meta descriptions. Sweep all hardcoded values and replace with imports from constants. Email templates (HTML strings) need a helper function to inject values since they can't import TS directly.
+
 ## Product Terminology & Time Display
 
 - **Rename "meetings" to "calls" in product UI copy** — Update user-facing labels for consistency while keeping internal API/schema naming unchanged unless explicitly migrated.
