@@ -28,11 +28,13 @@ Call each endpoint on its schedule using any cron runner:
 Add a cron service in `railway.json` or via the Railway dashboard. Each job runs `curl` against the endpoint.
 
 **External (Upstash QStash, cron-job.org, etc.):**
+
 ```bash
 curl -H "Authorization: Bearer $CRON_SECRET" https://vernix.app/api/cron/trial-warnings
 ```
 
 **Local development:**
+
 ```bash
 curl -H "Authorization: Bearer your-cron-secret-here" http://localhost:3000/api/cron/trial-warnings
 ```
@@ -43,18 +45,20 @@ curl -H "Authorization: Bearer your-cron-secret-here" http://localhost:3000/api/
 
 ### Trial Expiry Warnings
 
-| Field | Value |
-|-------|-------|
-| **Endpoint** | `GET /api/cron/trial-warnings` |
-| **Schedule** | Daily (once per day, any time) |
-| **Source** | `src/app/api/cron/trial-warnings/route.ts` |
+| Field        | Value                                      |
+| ------------ | ------------------------------------------ |
+| **Endpoint** | `GET /api/cron/trial-warnings`             |
+| **Schedule** | Daily (once per day, any time)             |
+| **Source**   | `src/app/api/cron/trial-warnings/route.ts` |
 
 **What it does:**
+
 1. Queries users whose `trialEndsAt` falls within the next 3 days or 1 day
 2. Filters to free-plan users without an active Polar subscription (skips users who already upgraded)
 3. Sends a trial expiry warning email via Resend
 
 **Warning schedule:**
+
 - 3 days before trial expires
 - 1 day before trial expires
 
@@ -63,6 +67,7 @@ curl -H "Authorization: Bearer your-cron-secret-here" http://localhost:3000/api/
 **Dependencies:** Requires `CRON_SECRET` and Resend email configuration.
 
 **Response:**
+
 ```json
 {
   "sent": 5,
