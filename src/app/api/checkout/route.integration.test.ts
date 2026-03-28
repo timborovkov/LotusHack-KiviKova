@@ -12,7 +12,8 @@ const HAS_POLAR = !!process.env.POLAR_ACCESS_TOKEN && !!PRODUCT_ID;
 
 describe.skipIf(!HAS_POLAR)("Checkout integration (Polar sandbox)", () => {
   it("creates a checkout session and redirects to Polar", async () => {
-    const url = `http://localhost:3000/api/checkout?products=${PRODUCT_ID}&customerExternalId=test-user-123&customerEmail=test@example.com`;
+    // Polar production validates email domains, so use a real domain
+    const url = `http://localhost:3000/api/checkout?products=${PRODUCT_ID}&customerExternalId=test-user-123&customerEmail=integration-test@vernix.app`;
     const req = new NextRequest(url);
 
     const res = await GET(req);
