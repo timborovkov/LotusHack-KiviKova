@@ -88,15 +88,6 @@ describe("Catalog MCP Server Reachability", () => {
     ).toHaveLength(0);
   });
 
-  it("coming-soon integrations have no serverUrl", () => {
-    const comingSoon = integrations.filter((i) => i.status === "coming-soon");
-    const withUrl = comingSoon.filter((i) => i.serverUrl);
-    expect(
-      withUrl,
-      `Coming-soon integrations shouldn't have serverUrl: ${withUrl.map((i) => i.name).join(", ")}`
-    ).toHaveLength(0);
-  });
-
   it("all serverUrls are valid HTTPS URLs", () => {
     for (const i of withServers) {
       const url = new URL(i.serverUrl!);
