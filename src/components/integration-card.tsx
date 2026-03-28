@@ -88,5 +88,17 @@ export function IntegrationCard({
         </div>
       </CardContent>
     </Card>
+    <ConfirmDialog
+      open={confirmDisconnect}
+      onOpenChange={setConfirmDisconnect}
+      title={`Disconnect ${integration.name}?`}
+      description="The agent will no longer have access to this integration during calls."
+      confirmLabel="Disconnect"
+      onConfirm={() => {
+        setConfirmDisconnect(false);
+        onDisconnect(integration);
+      }}
+    />
+    </>
   );
 }
