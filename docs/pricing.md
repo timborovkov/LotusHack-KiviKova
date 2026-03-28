@@ -263,7 +263,7 @@ All customer-facing prices are in euros. Polar handles currency conversion at ch
 
 **Why not USD:** The company is European (Estonia). Future operating costs (salaries, office, taxes) are EUR-denominated. Pricing in EUR avoids constant FX exposure on the revenue side. Infrastructure COGS (OpenAI, Recall, Railway) are USD, but they scale with usage and are passed through to customers via metered billing, so FX fluctuations on the cost side are absorbed by margins rather than creating revenue volatility.
 
-**Conversion impact:** Assumed negligible. Buyers likely anchor on the number (29) more than the currency symbol. At current rates (€1 ≈ $1.15), €29 is ~$33, which is within normal SaaS pricing range. Polar shows the local equivalent at checkout. No direct evidence that EUR vs USD impacts SaaS conversion rates at this price point. Worth A/B testing if conversion data suggests an issue with non-EU markets.
+**Conversion impact:** No published research compares EUR vs USD as a single displayed currency for SaaS conversion rates. The decision is purely operational. Monitor non-EU conversion rates post-launch and consider geo-based price display if needed. Polar handles currency conversion at checkout, so non-EUR buyers see their local amount during payment. The remaining gap is the marketing site, which shows €29 to all visitors. Consider geo-based price display on the pricing page if conversion data from non-EU markets underperforms.
 
 ---
 
