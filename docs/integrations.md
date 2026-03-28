@@ -64,8 +64,8 @@ Most MCP servers don't support dynamic client registration (RFC 7591). Each OAut
 
 `VernixOAuthProvider` checks `PRE_REGISTERED_CLIENTS` in `src/lib/mcp/oauth-provider.ts` for credentials from env vars before falling back to dynamic registration. Currently registered:
 
-| Service | Env Vars | Status |
-| ------- | -------- | ------ |
+| Service | Env Vars                                   | Status    |
+| ------- | ------------------------------------------ | --------- |
 | GitHub  | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | Available |
 
 ### Adding a new OAuth integration
