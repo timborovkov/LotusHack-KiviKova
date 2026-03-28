@@ -111,8 +111,8 @@ Credits are consumed at these rates. Once exhausted, the same rates apply as met
 | **Meeting-scoped documents**    | 1 per meeting | 10 per meeting                 | 10 per meeting                                                  |
 | **Concurrent active meetings**  | 1             | 5                              | 5                                                               |
 | **API requests/day**            | No            | 1,000                          | 1,000                                                           |
-| **MCP server connections**      | No            | 5                              | 5                                                               |
-| **MCP client connections**      | No            | 10                             | 10                                                              |
+| **MCP server connections**      | No            | Unlimited                      | Unlimited                                                       |
+| **MCP client connections**      | No            | Unlimited                      | Unlimited                                                       |
 | **Monthly spending cap**        | N/A           | N/A                            | Optional                                                        |
 | **Meetings/month (anti-abuse)** | 5             | 500                            | 500                                                             |
 
