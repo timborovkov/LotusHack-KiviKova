@@ -22,7 +22,6 @@ import {
 } from "lucide-react";
 import { PRICING, PLANS, LIMITS } from "@/lib/billing/constants";
 import { useBilling } from "@/hooks/use-billing";
-import { useProfile } from "@/hooks/use-profile";
 import { getCheckoutUrl } from "@/lib/billing/checkout-url";
 
 // ---------------------------------------------------------------------------
@@ -204,14 +203,10 @@ export function UpgradeDialog({
   errorMessage,
 }: UpgradeDialogProps) {
   const { billing } = useBilling();
-  const { profile } = useProfile();
   const copy = TRIGGER_COPY[trigger];
   const Icon = copy.icon;
 
-  const checkoutUrl = getCheckoutUrl({
-    userId: profile?.id,
-    email: profile?.email,
-  });
+  const checkoutUrl = getCheckoutUrl();
 
   const isPro = billing?.plan === PLANS.PRO;
   const isTrialing = billing?.trialing;

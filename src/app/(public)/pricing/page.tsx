@@ -48,11 +48,7 @@ export default function PricingPage() {
     ? process.env.NEXT_PUBLIC_POLAR_PRODUCT_ID_PRO_ANNUAL
     : process.env.NEXT_PUBLIC_POLAR_PRODUCT_ID_PRO_MONTHLY;
   const checkoutUrl = session?.user
-    ? getCheckoutUrl({
-        userId: session.user.id,
-        email: session.user.email ?? undefined,
-        productId: proProductId ?? undefined,
-      })
+    ? getCheckoutUrl({ productId: proProductId ?? undefined })
     : null;
 
   return (

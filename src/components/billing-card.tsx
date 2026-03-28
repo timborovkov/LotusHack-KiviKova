@@ -50,16 +50,9 @@ function UsageBar({
 interface BillingCardProps {
   billing: BillingData | undefined;
   loading: boolean;
-  userEmail?: string;
-  userId?: string;
 }
 
-export function BillingCard({
-  billing,
-  loading,
-  userEmail,
-  userId,
-}: BillingCardProps) {
+export function BillingCard({ billing, loading }: BillingCardProps) {
   if (loading) {
     return (
       <Card>
@@ -187,10 +180,7 @@ export function BillingCard({
               size="sm"
               variant="accent"
               onClick={() => {
-                window.location.href = getCheckoutUrl({
-                  userId,
-                  email: userEmail,
-                });
+                window.location.href = getCheckoutUrl();
               }}
             >
               Upgrade to Pro — €{PRICING[PLANS.PRO].monthly}/mo

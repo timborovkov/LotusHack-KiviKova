@@ -11,7 +11,6 @@ import { SendHorizontal, MessageSquare, Gauge } from "lucide-react";
 import Link from "next/link";
 import { PRICING, PLANS, LIMITS } from "@/lib/billing/constants";
 import { useBilling } from "@/hooks/use-billing";
-import { useProfile } from "@/hooks/use-profile";
 import { getCheckoutUrl } from "@/lib/billing/checkout-url";
 
 interface ChatPanelProps {
@@ -26,7 +25,6 @@ export function ChatPanel({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [inputValue, setInputValue] = useState("");
   const { billing } = useBilling();
-  const { profile } = useProfile();
 
   const transport = useMemo(
     () =>
@@ -66,10 +64,7 @@ export function ChatPanel({
     setInputValue("");
   };
 
-  const checkoutUrl = getCheckoutUrl({
-    userId: profile?.id,
-    email: profile?.email,
-  });
+  const checkoutUrl = getCheckoutUrl();
 
   return (
     <Card>

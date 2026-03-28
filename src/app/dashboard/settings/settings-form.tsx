@@ -161,12 +161,7 @@ export function SettingsForm({
         </Card>
 
         {/* Billing */}
-        <BillingCard
-          billing={billing}
-          loading={billingLoading}
-          userEmail={profile?.email}
-          userId={profile?.id}
-        />
+        <BillingCard billing={billing} loading={billingLoading} />
 
         {/* Connected Accounts */}
         <Card>
@@ -340,10 +335,7 @@ export function SettingsForm({
                   size="sm"
                   variant="accent"
                   onClick={() => {
-                    window.location.href = getCheckoutUrl({
-                      userId: profile?.id,
-                      email: profile?.email,
-                    });
+                    window.location.href = getCheckoutUrl();
                   }}
                 >
                   Upgrade to Pro for API access
@@ -400,10 +392,7 @@ export function SettingsForm({
                   size="sm"
                   variant="accent"
                   onClick={() => {
-                    window.location.href = getCheckoutUrl({
-                      userId: profile?.id,
-                      email: profile?.email,
-                    });
+                    window.location.href = getCheckoutUrl();
                   }}
                 >
                   Upgrade to Pro to connect integrations

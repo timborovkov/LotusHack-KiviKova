@@ -61,10 +61,7 @@ function getConsentSnapshot(): ConsentChoice | null {
 }
 
 function getConsentServerSnapshot(): ConsentChoice | null {
-  // Return "accepted" on the server to prevent the banner from flashing
-  // during SSR/hydration. The client snapshot reads the real value from
-  // localStorage immediately after hydration.
-  return "accepted";
+  return null;
 }
 
 type CookieConsentBannerProps = {

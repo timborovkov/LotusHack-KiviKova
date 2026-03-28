@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { Polar } from "@polar-sh/sdk";
 import { SDKError } from "@polar-sh/sdk/models/errors/sdkerror.js";
+import { auth } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   const accessToken = process.env.POLAR_ACCESS_TOKEN;
@@ -9,6 +10,13 @@ export async function GET(request: NextRequest) {
       { error: "Billing is not configured" },
       { status: 503 }
     );
+  }
+
+  // Authenticate: use session user, not query params, to prevent impersonation
+  const session = await auth();
+  if (!session?.user?.id) {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://vernix.app";
+    return NextResponse.redirect(new URL("/login", appUrl));
   }
 
   const url = new URL(request.url);
@@ -30,9 +38,8 @@ export async function GET(request: NextRequest) {
     const result = await polar.checkouts.create({
       products,
       successUrl: `${appUrl}/dashboard/settings?billing=success&checkout_id={CHECKOUT_ID}`,
-      externalCustomerId:
-        url.searchParams.get("customerExternalId") ?? undefined,
-      customerEmail: url.searchParams.get("customerEmail") ?? undefined,
+      externalCustomerId: session.user.id,
+      customerEmail: session.user.email ?? undefined,
     });
 
     return NextResponse.redirect(result.url);
