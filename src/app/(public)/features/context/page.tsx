@@ -48,9 +48,9 @@ const SUPPORTED_FORMATS = [
 
 export default function ContextPage() {
   return (
-    <div className="mx-auto max-w-5xl px-4 pt-10 pb-28 lg:pt-12 lg:pb-32">
+    <div className="mx-auto max-w-5xl px-4 pb-28 lg:pb-32">
       {/* Hero */}
-      <div className="relative mb-24 px-6 py-10 text-center lg:mb-28">
+      <div className="relative mb-24 py-28 text-center lg:mb-28 lg:py-32">
         <HeroBg />
         <div className="relative z-10">
           <div className="bg-ring/10 mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-full">
