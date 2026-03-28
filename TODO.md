@@ -108,6 +108,7 @@
 ## Product Terminology & Time Display
 
 - **Rename "meetings" to "calls" in product UI copy** — Update user-facing labels for consistency while keeping internal API/schema naming unchanged unless explicitly migrated.
+- **Call route naming consistency (`/dashboard/call/[id]`)** — Migrate call detail routing from `/dashboard/[id]` to `/dashboard/call/[id]`, add redirects/backward compatibility for old links, and update all internal navigation/deep links.
 - **Add timezone preference + global formatting** — Introduce a user timezone setting (UTC/local/custom) and ensure all call timestamps honor it consistently.
 
 ## SEO & Discoverability
