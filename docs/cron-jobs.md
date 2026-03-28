@@ -50,13 +50,13 @@ curl -H "Authorization: Bearer your-cron-secret-here" http://localhost:3000/api/
 
 ### Trial Expiry Warnings
 
-| Field             | Value                                                                               |
-| ----------------- | ----------------------------------------------------------------------------------- |
-| **Endpoint**      | `GET /api/cron/trial-warnings`                                                      |
-| **Schedule**      | Daily (`0 9 * * *`)                                                                 |
-| **Start command** | `curl -sf -H "Authorization: Bearer $CRON_SECRET" $APP_URL/api/cron/trial-warnings` |
-| **Variables**     | `CRON_SECRET`, `APP_URL` (e.g. `https://vernix.app`)                                |
-| **Source**        | `src/app/api/cron/trial-warnings/route.ts`                                          |
+| Field             | Value                                                                                       |
+| ----------------- | ------------------------------------------------------------------------------------------- |
+| **Endpoint**      | `GET /api/cron/trial-warnings`                                                              |
+| **Schedule**      | Daily (`0 9 * * *`)                                                                         |
+| **Start command** | `sh -c 'curl -sf -H "Authorization: Bearer $CRON_SECRET" $APP_URL/api/cron/trial-warnings'` |
+| **Variables**     | `CRON_SECRET`, `APP_URL` (e.g. `https://vernix.app`)                                        |
+| **Source**        | `src/app/api/cron/trial-warnings/route.ts`                                                  |
 
 **What it does:**
 
