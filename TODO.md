@@ -117,6 +117,10 @@
 
 - **Add "trialing" plan enum value** — Currently trial state is derived from `plan === "free" && trialEndsAt > now && polarSubscriptionId`. Adding `plan: "trialing"` to the enum makes state explicit, removes derived logic in `isTrialActive`/`getEffectiveLimits`, and simplifies billing queries. Requires: schema migration (new enum value), update webhook handler to set `plan: "trialing"`, update all plan checks.
 
+## New users should accept the terms
+
+- Users should be required to accept the terms of use and the privacy policy
+
 ## Product Terminology & Time Display
 
 - **Rename "meetings" to "calls" in product UI copy** — Update user-facing labels for consistency while keeping internal API/schema naming unchanged unless explicitly migrated.
