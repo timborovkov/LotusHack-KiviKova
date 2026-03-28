@@ -256,7 +256,7 @@ Current emails: welcome (signup), free plan upgrade reminder (weekly cron), last
 - **Admin UX + status tracking** — Add admin UI/API for "queued/running/failed/completed" states with failure reasons and retry action.
 - **Tests + docs** — Add integration tests for full purge and partial-failure recovery; document operational runbook and expected timings.
 
-## Data access scoping
+## Scoped context, tools and data access
 
 - **Data access scoping via Groups/Tags/Buckets/Topics (naming TBD)** — Add a grouping model for knowledge documents, calls, and MCP tool connections, then scope agent access by selected group(s) per call (e.g. call in `outbound` can only access `outbound` data/connections). Support multi-select groups. `No group` / `all` should preserve current full-access behavior. Primary goal is preventing context leakage and accidental private-data exposure. Mention this on the landing page and likely ship a dedicated feature page since leakage prevention is a major user concern.
 - **Naming + product language decision** — Decide final term (`Groups`, `Tags`, `Buckets`, `Topics`) based on clarity, security connotation, and future extensibility.
