@@ -31,7 +31,7 @@ export function IntegrationCard({
         className={`transition-colors ${connected ? "border-ring/30" : ""}`}
       >
         <CardContent className="flex items-start gap-3 p-4">
-          <div className="bg-muted flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm">
             <Image
               src={integration.logo}
               alt={integration.name}
