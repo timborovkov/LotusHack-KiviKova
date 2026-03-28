@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollReveal } from "@/components/scroll-reveal";
+import { IntegrationCloud } from "@/components/integration-cloud";
 import { HeroBg } from "@/components/hero-bg";
 import {
   Mic,
@@ -242,6 +243,20 @@ export default function LandingPage() {
               See Pricing
             </Button>
           </div>
+        </div>
+      </section>
+
+      {/* Integration Cloud */}
+      <section className="border-border border-t py-24">
+        <div className="mx-auto max-w-4xl px-4">
+          <h2 className="mb-4 text-center text-2xl font-bold">
+            Connect your tools. Ask during calls.
+          </h2>
+          <p className="text-muted-foreground mx-auto mb-12 max-w-md text-center">
+            Vernix connects to the tools your team already uses. Ask questions
+            and get live answers without leaving the call.
+          </p>
+          <IntegrationCloud />
         </div>
       </section>
 

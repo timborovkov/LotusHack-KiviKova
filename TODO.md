@@ -113,6 +113,10 @@
 - **Cron: orphaned Qdrant collection cleanup** — Delete dangling `meeting_*` or stale per-user knowledge collections that no longer map to active DB records/retention policy.
 - **Cron: dead-user data purge (S3 + Qdrant + Recall)** — For deleted/expired accounts, remove all remaining object storage files, user/meeting vector collections, and Recall call/bot artifacts to enforce retention and control storage costs.
 
+## Billing Schema Cleanup
+
+- **Add "trialing" plan enum value** — Currently trial state is derived from `plan === "free" && trialEndsAt > now && polarSubscriptionId`. Adding `plan: "trialing"` to the enum makes state explicit, removes derived logic in `isTrialActive`/`getEffectiveLimits`, and simplifies billing queries. Requires: schema migration (new enum value), update webhook handler to set `plan: "trialing"`, update all plan checks.
+
 ## Product Terminology & Time Display
 
 - **Rename "meetings" to "calls" in product UI copy** — Update user-facing labels for consistency while keeping internal API/schema naming unchanged unless explicitly migrated.
@@ -240,6 +244,28 @@ Current emails: welcome (signup), free plan upgrade reminder (weekly cron), last
 
 - **2FA support (optional)** — Add opt-in app-level 2FA (TOTP authenticator app first; SMS only if required), backup codes, recovery UX, and step-up auth for sensitive actions.
 
-## Low Priority Ops
+## Account removal by admins
 
 - **Admin account data purge (full hard delete)** — Add an admin operation to fully remove all data for a user account across DB records, object storage bucket data, vector stores, and Recall resources (calls/bots/recordings/transcripts).
+- **Define deletion contract + safeguards** — Document exactly what "hard delete" removes, require explicit admin confirmation (`type email + userId`), and add audit logs for who initiated deletion and when.
+- **Build dry-run mode** — Before execution, show a deletion preview (row counts, storage objects, vector collections, Recall assets) so admins can validate blast radius.
+- **Implement orchestrated purge job** — Create a background workflow that deletes in deterministic order (API keys/sessions -> meetings/tasks/docs -> storage -> vectors -> Recall artifacts -> user row).
+- **Idempotency + retries** — Make purge re-runnable with step checkpoints, retries, and compensating behavior so partial failures can recover safely.
+- **Provider cleanup adapters** — Add explicit cleanup modules for S3/Minio, Qdrant, and Recall with robust error reporting and rate-limit handling.
+- **Post-delete verification** — Run a final integrity check that confirms no remaining user-linked DB records, storage keys, or vector collections.
+- **Admin UX + status tracking** — Add admin UI/API for "queued/running/failed/completed" states with failure reasons and retry action.
+- **Tests + docs** — Add integration tests for full purge and partial-failure recovery; document operational runbook and expected timings.
+
+## Data access scoping
+
+- **Data access scoping via Groups/Tags/Buckets/Topics (naming TBD)** — Add a grouping model for knowledge documents, calls, and MCP tool connections, then scope agent access by selected group(s) per call (e.g. call in `outbound` can only access `outbound` data/connections). Support multi-select groups. `No group` / `all` should preserve current full-access behavior. Primary goal is preventing context leakage and accidental private-data exposure. Mention this on the landing page and likely ship a dedicated feature page since leakage prevention is a major user concern.
+- **Naming + product language decision** — Decide final term (`Groups`, `Tags`, `Buckets`, `Topics`) based on clarity, security connotation, and future extensibility.
+- **Data model + migration** — Add group entities and many-to-many mappings for knowledge docs, calls, and MCP server connections; include ownership constraints and indexes.
+- **Default behavior policy** — Define exact semantics for `No group` / `All access` and avoid accidental overexposure when new resources are created.
+- **Call-level access resolver** — Build shared resolver logic that computes allowed resources for a call from selected group set (including multi-select union behavior).
+- **Enforce in every retrieval path** — Apply scope filters to RAG context fetch, transcript/document search, MCP tool invocation, and any agent-side context APIs.
+- **Creation/edit UI flows** — Add group assignment controls on knowledge upload, call setup/edit, and integration connection settings, including multi-select UX.
+- **Backfill + rollout plan** — Migrate existing data safely (e.g. ungrouped -> `All access`), with staged rollout and feature flag for incremental adoption.
+- **Guardrail tests** — Add negative tests proving cross-group leakage is blocked (especially for public agent endpoints and tool calls).
+- **Observability + auditability** — Log scope decisions (`why resource was allowed/blocked`) for debugging trust and compliance reviews.
+- **Marketing surface area** — Add landing page messaging and a dedicated feature page focused on "context leakage prevention" with concrete enterprise/security examples.
