@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 const QUESTIONS = [
   {
     q: "What is Vernix?",
-    a: "Vernix is an AI meeting agent that joins your video calls as a participant. It transcribes conversations in real time, generates summaries, extracts action items, and provides a voice agent that can answer questions using context from your meetings and uploaded documents.",
+    a: "Vernix is an AI assistant that joins your video calls. It connects to your tools (Slack, Linear, GitHub, CRM) and answers questions with live business data during the call. It also transcribes conversations, generates summaries, and extracts action items automatically.",
   },
   {
     q: "Which video platforms are supported?",
