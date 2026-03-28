@@ -55,11 +55,13 @@ export function TrialPromptBanner() {
     }
 
     // Show every Nth visit
-    if (newVisits % SHOW_EVERY_N_VISITS === 0) {
-      setVisible(true);
-    }
-
+    const shouldShow = newVisits % SHOW_EVERY_N_VISITS === 0;
     setState({ ...state, visits: newVisits, dismissedAt: null });
+
+    if (shouldShow) {
+      const id = requestAnimationFrame(() => setVisible(true));
+      return () => cancelAnimationFrame(id);
+    }
   }, [billing, loading]);
 
   if (!visible) return null;
