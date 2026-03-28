@@ -24,7 +24,6 @@ vi.mock("@/lib/db", () => ({ db: mockDb }));
 
 // Capture the handler callbacks passed to Webhooks() — must be hoisted
 // since vi.mock is hoisted above const declarations
- 
 const { capturedHandlers } = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const capturedHandlers: Record<string, (...args: any[]) => any> = {};
