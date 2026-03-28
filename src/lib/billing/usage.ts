@@ -137,6 +137,8 @@ export async function getDailyCount(
 // ---------------------------------------------------------------------------
 
 export async function getMonthlyMeetingCount(userId: string): Promise<number> {
+  // Count from the meetings table (not usageEvents) so in-progress meetings
+  // that haven't ended yet are included in the anti-abuse cap.
   const startOfMonth = new Date();
   startOfMonth.setDate(1);
   startOfMonth.setHours(0, 0, 0, 0);
@@ -145,13 +147,9 @@ export async function getMonthlyMeetingCount(userId: string): Promise<number> {
     .select({
       count: sql<string>`count(*)`,
     })
-    .from(usageEvents)
+    .from(meetings)
     .where(
-      and(
-        eq(usageEvents.userId, userId),
-        sql`${usageEvents.type} in ('voice_meeting', 'silent_meeting')`,
-        gte(usageEvents.createdAt, startOfMonth)
-      )
+      and(eq(meetings.userId, userId), gte(meetings.createdAt, startOfMonth))
     );
 
   return Number(row?.count ?? 0);
