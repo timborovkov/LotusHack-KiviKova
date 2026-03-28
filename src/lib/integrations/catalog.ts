@@ -44,52 +44,7 @@ export type IntegrationCategory = z.infer<typeof categoryEnum>;
 // ---------------------------------------------------------------------------
 
 const CATALOG: Integration[] = [
-  {
-    id: "slack",
-    name: "Slack",
-    description:
-      "Search messages, channels, and users. Send follow-ups after meetings.",
-    logo: "/integrations/slack.svg",
-    category: "communication",
-    tags: ["messaging", "notifications", "team-chat"],
-    featured: true,
-    status: "available",
-    serverUrl: "https://mcp.slack.com/mcp",
-    authMode: "oauth",
-    docsUrl: "https://docs.slack.dev/ai/slack-mcp-server/",
-    setupInstructions:
-      "Click Connect to authorize Vernix with your Slack workspace.",
-    examplePrompts: [
-      "What did the team discuss in #engineering today?",
-      "Send a follow-up to #product-updates about what we decided",
-    ],
-    sampleResponses: [
-      "The team discussed the Q3 roadmap and agreed to prioritize the API redesign.",
-    ],
-  },
-  {
-    id: "linear",
-    name: "Linear",
-    description:
-      "Check sprint status, look up issues, and create tasks from meetings.",
-    logo: "/integrations/linear.svg",
-    category: "project-management",
-    tags: ["issues", "sprints", "project-tracking"],
-    featured: true,
-    status: "available",
-    serverUrl: "https://mcp.linear.app/mcp",
-    authMode: "oauth",
-    docsUrl: "https://linear.app/docs/mcp",
-    setupInstructions:
-      "Click Connect to authorize Vernix with your Linear workspace.",
-    examplePrompts: [
-      "What's left in the current sprint?",
-      "Create a ticket for the bug we just discussed",
-    ],
-    sampleResponses: [
-      "There are 5 open issues in Sprint 24: 2 high priority, 3 medium.",
-    ],
-  },
+  // ── Available (connectable now) ──────────────────────────────────────
   {
     id: "github",
     name: "GitHub",
@@ -114,6 +69,71 @@ const CATALOG: Integration[] = [
     ],
   },
   {
+    id: "airtable",
+    name: "Airtable",
+    description: "Query bases, tables, and records.",
+    logo: "/integrations/airtable.svg",
+    category: "productivity",
+    tags: ["databases", "spreadsheets", "records"],
+    featured: true,
+    status: "available",
+    serverUrl: "https://mcp.airtable.com/mcp",
+    authMode: "token",
+    docsUrl: "https://support.airtable.com/docs/using-the-airtable-mcp-server",
+    setupInstructions:
+      "Enter your Airtable Personal Access Token. Create one at airtable.com/create/tokens with Data.records and schema.bases scopes.",
+    examplePrompts: ["How many leads did we add this week?"],
+    sampleResponses: ["12 new leads added, 4 from the webinar campaign."],
+  },
+
+  // ── Coming soon (OAuth app registration needed) ──────────────────────
+  {
+    id: "slack",
+    name: "Slack",
+    description:
+      "Search messages, channels, and users. Send follow-ups after meetings.",
+    logo: "/integrations/slack.svg",
+    category: "communication",
+    tags: ["messaging", "notifications", "team-chat"],
+    featured: true,
+    status: "coming-soon",
+    serverUrl: "https://mcp.slack.com/mcp",
+    authMode: "oauth",
+    docsUrl: "https://docs.slack.dev/ai/slack-mcp-server/",
+    setupInstructions:
+      "Click Connect to authorize Vernix with your Slack workspace.",
+    examplePrompts: [
+      "What did the team discuss in #engineering today?",
+      "Send a follow-up to #product-updates about what we decided",
+    ],
+    sampleResponses: [
+      "The team discussed the Q3 roadmap and agreed to prioritize the API redesign.",
+    ],
+  },
+  {
+    id: "linear",
+    name: "Linear",
+    description:
+      "Check sprint status, look up issues, and create tasks from meetings.",
+    logo: "/integrations/linear.svg",
+    category: "project-management",
+    tags: ["issues", "sprints", "project-tracking"],
+    featured: true,
+    status: "coming-soon",
+    serverUrl: "https://mcp.linear.app/mcp",
+    authMode: "oauth",
+    docsUrl: "https://linear.app/docs/mcp",
+    setupInstructions:
+      "Click Connect to authorize Vernix with your Linear workspace.",
+    examplePrompts: [
+      "What's left in the current sprint?",
+      "Create a ticket for the bug we just discussed",
+    ],
+    sampleResponses: [
+      "There are 5 open issues in Sprint 24: 2 high priority, 3 medium.",
+    ],
+  },
+  {
     id: "notion",
     name: "Notion",
     description:
@@ -122,7 +142,7 @@ const CATALOG: Integration[] = [
     category: "productivity",
     tags: ["wiki", "docs", "databases"],
     featured: true,
-    status: "available",
+    status: "coming-soon",
     serverUrl: "https://mcp.notion.com/mcp",
     authMode: "oauth",
     docsUrl: "https://developers.notion.com/docs/mcp",
@@ -145,7 +165,7 @@ const CATALOG: Integration[] = [
     category: "project-management",
     tags: ["issues", "sprints", "agile"],
     featured: true,
-    status: "available",
+    status: "coming-soon",
     serverUrl: "https://mcp.atlassian.com/v1/mcp",
     authMode: "oauth",
     docsUrl:
@@ -168,7 +188,7 @@ const CATALOG: Integration[] = [
     category: "productivity",
     tags: ["wiki", "docs", "knowledge-base"],
     featured: true,
-    status: "available",
+    status: "coming-soon",
     serverUrl: "https://mcp.atlassian.com/v1/mcp",
     authMode: "oauth",
     docsUrl:
@@ -189,7 +209,7 @@ const CATALOG: Integration[] = [
     category: "crm",
     tags: ["contacts", "deals", "sales"],
     featured: true,
-    status: "available",
+    status: "coming-soon",
     serverUrl: "https://mcp.hubspot.com",
     authMode: "oauth",
     docsUrl:
@@ -212,7 +232,7 @@ const CATALOG: Integration[] = [
     category: "project-management",
     tags: ["tasks", "projects", "teams"],
     featured: true,
-    status: "available",
+    status: "coming-soon",
     serverUrl: "https://mcp.asana.com/v2/mcp",
     authMode: "oauth",
     docsUrl: "https://developers.asana.com/docs/mcp-server",
@@ -229,7 +249,7 @@ const CATALOG: Integration[] = [
     category: "dev-tools",
     tags: ["design", "prototyping", "ui"],
     featured: true,
-    status: "available",
+    status: "coming-soon",
     serverUrl: "https://mcp.figma.com/mcp",
     authMode: "oauth",
     docsUrl:
@@ -247,7 +267,7 @@ const CATALOG: Integration[] = [
     category: "dev-tools",
     tags: ["code", "ci-cd", "merge-requests"],
     featured: true,
-    status: "available",
+    status: "coming-soon",
     serverUrl: "https://gitlab.com/api/v4/mcp",
     authMode: "oauth",
     docsUrl:
@@ -265,7 +285,7 @@ const CATALOG: Integration[] = [
     category: "crm",
     tags: ["support", "messaging", "customer-success"],
     featured: true,
-    status: "available",
+    status: "coming-soon",
     serverUrl: "https://mcp.intercom.com/mcp",
     authMode: "oauth",
     docsUrl: "https://developers.intercom.com/docs/guides/mcp",
@@ -282,7 +302,7 @@ const CATALOG: Integration[] = [
     category: "project-management",
     tags: ["workflows", "boards", "automation"],
     featured: true,
-    status: "available",
+    status: "coming-soon",
     serverUrl: "https://mcp.monday.com/mcp",
     authMode: "oauth",
     docsUrl:
@@ -293,23 +313,6 @@ const CATALOG: Integration[] = [
     sampleResponses: ["3 of 8 items are complete, 2 are stuck."],
   },
   {
-    id: "airtable",
-    name: "Airtable",
-    description: "Query bases, tables, and records.",
-    logo: "/integrations/airtable.svg",
-    category: "productivity",
-    tags: ["databases", "spreadsheets", "records"],
-    featured: true,
-    status: "available",
-    serverUrl: "https://mcp.airtable.com/mcp",
-    authMode: "token",
-    docsUrl: "https://support.airtable.com/docs/using-the-airtable-mcp-server",
-    setupInstructions:
-      "Enter your Airtable Personal Access Token. Create one at airtable.com/create/tokens with Data.records and schema.bases scopes.",
-    examplePrompts: ["How many leads did we add this week?"],
-    sampleResponses: ["12 new leads added, 4 from the webinar campaign."],
-  },
-  {
     id: "dropbox",
     name: "Dropbox",
     description: "Search files and shared folders.",
@@ -317,7 +320,7 @@ const CATALOG: Integration[] = [
     category: "productivity",
     tags: ["files", "storage", "sharing"],
     featured: true,
-    status: "available",
+    status: "coming-soon",
     serverUrl: "https://mcp.dropbox.com/mcp",
     authMode: "oauth",
     docsUrl: "https://help.dropbox.com/integrations/connect-dropbox-mcp-server",
