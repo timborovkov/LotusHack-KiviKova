@@ -1,0 +1,34 @@
+# Vernix - Allow all search engines and AI bots
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://vernix.app/sitemap.xml
+
+# AI search engine bots (explicitly allowed)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Block dashboard and API from crawling
+User-agent: *
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /welcome
