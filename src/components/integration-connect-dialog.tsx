@@ -40,23 +40,28 @@ export function IntegrationConnectDialog({
 
   if (!integration) return null;
 
+  const hasPrefilledUrl = !!integration.serverUrl;
+  const needsCredentials =
+    integration.authMode === "api_key" || integration.authMode === "token";
+
   const authLabel =
-    integration.authMode === "api_key"
-      ? "API Key"
-      : integration.authMode === "token"
-        ? "Access Token"
-        : "Credentials";
+    integration.authMode === "api_key" ? "API Key" : "Access Token";
 
   const handleConnect = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!serverUrl) {
+    const url = hasPrefilledUrl ? integration.serverUrl! : serverUrl;
+    if (!url) {
       toast.error("Server URL is required");
       return;
     }
 
     setLoading(true);
     try {
-      await onConnect(integration.name, serverUrl, apiKey || undefined);
+      await onConnect(
+        integration.name,
+        url,
+        needsCredentials ? apiKey || undefined : undefined
+      );
       onOpenChange(false);
       setServerUrl("");
       setApiKey("");
@@ -79,19 +84,21 @@ export function IntegrationConnectDialog({
         </p>
 
         <form onSubmit={handleConnect} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="server-url">MCP Server URL</Label>
-            <Input
-              id="server-url"
-              type="url"
-              placeholder={integration.serverUrl ?? "https://mcp.example.com"}
-              value={serverUrl}
-              onChange={(e) => setServerUrl(e.target.value)}
-              required
-            />
-          </div>
+          {!hasPrefilledUrl && (
+            <div className="space-y-2">
+              <Label htmlFor="server-url">MCP Server URL</Label>
+              <Input
+                id="server-url"
+                type="url"
+                placeholder="https://mcp.example.com"
+                value={serverUrl}
+                onChange={(e) => setServerUrl(e.target.value)}
+                required
+              />
+            </div>
+          )}
 
-          {integration.authMode !== "none" && (
+          {needsCredentials && (
             <div className="space-y-2">
               <Label htmlFor="api-key">{authLabel}</Label>
               <Input
