@@ -21,6 +21,7 @@ import {
   Search,
   Zap,
   X,
+  Plug,
 } from "lucide-react";
 import { PLANS, PRICING } from "@/lib/billing/constants";
 
@@ -171,6 +172,10 @@ export default function DashboardPage() {
                   <span className="flex items-center gap-1">
                     <MessageSquare className="h-3 w-3" />
                     200 queries/day
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Plug className="h-3 w-3" />
+                    MCP integrations
                   </span>
                 </div>
               </div>
