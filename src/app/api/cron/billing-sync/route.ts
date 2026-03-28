@@ -17,11 +17,11 @@ export async function GET(request: Request) {
   }
 
   const now = new Date();
-  const synced: string[] = [];
+  let syncedCount = 0;
 
   // Find Pro users whose billing period has ended (potential missed revoke)
   const staleProUsers = await db
-    .select({ id: users.id, email: users.email })
+    .select({ id: users.id })
     .from(users)
     .where(
       and(
@@ -34,12 +34,12 @@ export async function GET(request: Request) {
 
   for (const user of staleProUsers) {
     await syncBillingFromPolar(user.id);
-    synced.push(user.email);
+    syncedCount++;
   }
 
   // Find free users with stale trialEndsAt (trial expired, needs cleanup)
   const staleTrialUsers = await db
-    .select({ id: users.id, email: users.email })
+    .select({ id: users.id })
     .from(users)
     .where(
       and(
@@ -52,13 +52,10 @@ export async function GET(request: Request) {
 
   for (const user of staleTrialUsers) {
     await syncBillingFromPolar(user.id);
-    synced.push(user.email);
+    syncedCount++;
   }
 
-  console.log(
-    `[Billing Sync Cron] Synced ${synced.length} users:`,
-    synced.join(", ") || "none"
-  );
+  console.log(`[Billing Sync Cron] Synced ${syncedCount} users`);
 
-  return NextResponse.json({ synced: synced.length, users: synced });
+  return NextResponse.json({ synced: syncedCount });
 }

@@ -247,7 +247,7 @@ export function getEffectivePeriod(user: {
   start.setUTCDate(1);
   start.setUTCHours(0, 0, 0, 0);
   const end = new Date(start);
-  end.setMonth(end.getMonth() + 1);
+  end.setUTCMonth(end.getUTCMonth() + 1);
   return { start, end };
 }
 

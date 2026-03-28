@@ -43,11 +43,13 @@ export async function GET() {
     period.start,
     period.end
   );
-  const limits = getEffectiveLimits(plan, user.trialEndsAt);
   // Trial is Polar-only: requires both trialEndsAt and an active subscription
-  const trialing =
-    isTrialActive(plan, user.trialEndsAt) && !!user.polarSubscriptionId;
-  const trialDaysRemaining = getTrialDaysRemaining(user.trialEndsAt);
+  const effectiveTrialEndsAt = user.polarSubscriptionId
+    ? user.trialEndsAt
+    : null;
+  const limits = getEffectiveLimits(plan, effectiveTrialEndsAt);
+  const trialing = isTrialActive(plan, effectiveTrialEndsAt);
+  const trialDaysRemaining = getTrialDaysRemaining(effectiveTrialEndsAt);
 
   return NextResponse.json({
     plan,
