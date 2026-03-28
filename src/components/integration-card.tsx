@@ -37,7 +37,7 @@ export function IntegrationCard({
               alt={integration.name}
               width={24}
               height={24}
-              className="dark:invert"
+              className="opacity-80"
             />
           </div>
           <div className="min-w-0 flex-1">

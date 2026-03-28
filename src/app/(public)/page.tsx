@@ -288,24 +288,20 @@ export default function LandingPage() {
       </section>
 
       {/* CTA — Loss aversion + Regret aversion + Present bias */}
-      <section className="bg-[oklch(0.145_0_0)] py-24 text-white">
+      <section className="bg-ring/10 border-border border-t border-b py-24">
         <div className="mx-auto max-w-3xl px-4 text-center">
           <h2 className="mb-4 text-2xl font-bold">
             Your next meeting could be the first one you never have to
             summarize.
           </h2>
-          <p className="mb-8 opacity-80">
+          <p className="text-muted-foreground mb-8">
             14-day free trial. No credit card. Cancel anytime.
           </p>
-          <Button
-            size="lg"
-            variant="secondary"
-            render={<Link href="/register" />}
-          >
+          <Button size="lg" variant="accent" render={<Link href="/register" />}>
             Try Vernix on Your Next Call
             <ArrowRight className="ml-1 h-4 w-4" />
           </Button>
-          <p className="mt-4 text-xs opacity-60">
+          <p className="text-muted-foreground mt-4 text-xs">
             Set up in under 60 seconds. Your data stays after the trial.
           </p>
         </div>

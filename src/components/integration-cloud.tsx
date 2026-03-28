@@ -18,17 +18,16 @@ export function IntegrationCloud({
   ctaHref = "/register",
   ctaText = "Try free for 14 days",
 }: IntegrationCloudProps) {
-  const featured = getFeaturedIntegrations();
-  const all = getIntegrations();
-
   // Collect example prompts from all integrations
-  const prompts = all.flatMap((i) => i.examplePrompts).slice(0, 4);
+  const prompts = getIntegrations()
+    .flatMap((i) => i.examplePrompts)
+    .slice(0, 4);
 
   return (
     <div className="space-y-8">
       {/* Logo cloud */}
       <div className="flex flex-wrap items-center justify-center gap-6">
-        {featured.map((integration) => (
+        {getFeaturedIntegrations().map((integration) => (
           <div
             key={integration.id}
             className="flex flex-col items-center gap-1.5"
@@ -39,7 +38,7 @@ export function IntegrationCloud({
                 alt={integration.name}
                 width={28}
                 height={28}
-                className="dark:invert"
+                className="opacity-80"
               />
             </div>
             <span className="text-muted-foreground text-xs">
