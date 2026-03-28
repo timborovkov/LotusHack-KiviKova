@@ -46,6 +46,7 @@
 - **Move MCPs from Settings to separate Integrations page**
 - **MCP Client OAuth** - Implement OAuth-based authentication for the MCP server endpoint per the [MCP auth spec](https://modelcontextprotocol.io/specification/2025-03-26/basic/authorization). Allow tools like Claude Desktop and Cursor to authenticate via OAuth flow instead of manually copying API keys. Requires authorization server endpoints (authorize, token, register), PKCE support, and dynamic client registration.
 - **Integration Library** - Quickly connect to predefined MCP servers like Linear, Calendar, Notion, Jira, Github, Slack, etc.
+- **Pro users only** - Only Pro users should be able to connect to MCP servers. This is our key selling point, so we should make sure we have proper CTA and messaging around it.
 
 ## SEO & Discoverability
 
