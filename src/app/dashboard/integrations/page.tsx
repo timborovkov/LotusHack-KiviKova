@@ -181,13 +181,13 @@ export default function IntegrationsPage() {
       </Card>
 
       {/* Search + filters */}
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div className="mb-6 space-y-3">
         <Input
           placeholder="Search integrations..."
           aria-label="Search integrations"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="sm:max-w-xs"
+          className="max-w-xs"
         />
         <div
           className="flex flex-wrap gap-1"
