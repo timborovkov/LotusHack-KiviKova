@@ -1,7 +1,7 @@
 import { vi } from "vitest";
 
 // Chainable DB mock
-const { mockDb } = vi.hoisted(() => {
+const { mockDb, mockSendEmail, mockLastChanceTemplate } = vi.hoisted(() => {
   const db: Record<string, ReturnType<typeof vi.fn>> = {};
   for (const m of [
     "select",
@@ -17,10 +17,18 @@ const { mockDb } = vi.hoisted(() => {
   ]) {
     db[m] = vi.fn().mockImplementation(() => db);
   }
-  return { mockDb: db };
+  return {
+    mockDb: db,
+    mockSendEmail: vi.fn().mockResolvedValue({ success: true }),
+    mockLastChanceTemplate: vi.fn().mockReturnValue("<html>retention</html>"),
+  };
 });
 
 vi.mock("@/lib/db", () => ({ db: mockDb }));
+vi.mock("@/lib/email/send", () => ({ sendEmail: mockSendEmail }));
+vi.mock("@/lib/email/templates", () => ({
+  getLastChanceRetentionHtml: mockLastChanceTemplate,
+}));
 
 // Capture the handler callbacks passed to Webhooks() — must be hoisted
 // since vi.mock is hoisted above const declarations
@@ -47,6 +55,7 @@ import "./route";
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockDb.where.mockImplementation(() => mockDb);
 });
 
 const USER_ID = "b1ffcd00-1a2b-4ef8-bb6d-7cc0ce491b22";
@@ -160,26 +169,81 @@ describe("Polar webhook: onSubscriptionUpdated", () => {
 });
 
 describe("Polar webhook: onSubscriptionCanceled", () => {
-  it("does not downgrade plan (stays active until period end)", async () => {
+  it("sends one retention email and does not downgrade plan", async () => {
+    mockDb.where
+      .mockResolvedValueOnce([
+        {
+          email: "user@example.com",
+          name: "Test User",
+          lastRetentionEmailSentAt: null,
+        },
+      ])
+      .mockImplementation(() => mockDb);
+
     await capturedHandlers.onSubscriptionCanceled(subscriptionPayload());
 
-    // Should NOT update the DB — plan stays pro until revoked
-    expect(mockDb.update).not.toHaveBeenCalled();
+    expect(mockSendEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: "user@example.com",
+        subject: "Last chance to keep your Vernix Pro benefits",
+      })
+    );
+    expect(mockLastChanceTemplate).toHaveBeenCalledWith(
+      "Test User",
+      new Date(PERIOD_END)
+    );
+
+    expect(mockDb.set).toHaveBeenCalledWith(
+      expect.objectContaining({
+        lastRetentionEmailSentAt: expect.any(Date),
+      })
+    );
+
+    const setCall = mockDb.set.mock.calls[0][0];
+    expect(setCall.plan).toBeUndefined();
+  });
+
+  it("respects cooldown and skips sending duplicate retention email", async () => {
+    mockDb.where.mockResolvedValueOnce([
+      {
+        email: "user@example.com",
+        name: "Test User",
+        lastRetentionEmailSentAt: new Date(),
+      },
+    ]);
+
+    await capturedHandlers.onSubscriptionCanceled(subscriptionPayload());
+
+    expect(mockSendEmail).not.toHaveBeenCalled();
   });
 });
 
 describe("Polar webhook: onSubscriptionRevoked", () => {
   it("downgrades to free and clears subscription fields", async () => {
-    await capturedHandlers.onSubscriptionRevoked(subscriptionPayload());
+    await capturedHandlers.onSubscriptionRevoked(
+      subscriptionPayload({ currentPeriodEnd: "2020-01-01T00:00:00Z" })
+    );
 
     expect(mockDb.set).toHaveBeenCalledWith(
       expect.objectContaining({
         plan: "free",
         polarSubscriptionId: null,
+        trialEndsAt: null,
         currentPeriodStart: null,
         currentPeriodEnd: null,
       })
     );
+  });
+
+  it("does not downgrade early when period end is in the future", async () => {
+    const futureEnd = new Date(Date.now() + 1000 * 60 * 60).toISOString();
+
+    await capturedHandlers.onSubscriptionRevoked(
+      subscriptionPayload({ currentPeriodEnd: futureEnd })
+    );
+
+    expect(mockDb.update).not.toHaveBeenCalled();
+    expect(mockDb.set).not.toHaveBeenCalled();
   });
 
   it("skips when no externalId", async () => {

@@ -138,25 +138,18 @@ export function BillingCard({ billing, loading }: BillingCardProps) {
 
         {/* Meeting usage */}
         <div className="space-y-3">
-          {billing.limits.voiceEnabled ? (
-            <UsageBar
-              label="Voice minutes"
-              used={billing.usage.voiceMinutes}
-              limit={billing.limits.meetingMinutesPerMonth}
-              unit="min"
-            />
-          ) : (
-            <div className="flex justify-between text-xs">
-              <span className="text-muted-foreground">Voice minutes</span>
-              <span className="text-muted-foreground">Pro only</span>
-            </div>
-          )}
           <UsageBar
-            label="Silent minutes"
-            used={billing.usage.silentMinutes}
+            label="Meeting minutes"
+            used={billing.usage.voiceMinutes + billing.usage.silentMinutes}
             limit={billing.limits.meetingMinutesPerMonth}
             unit="min"
           />
+          {!billing.limits.voiceEnabled && (
+            <div className="flex justify-between text-xs">
+              <span className="text-muted-foreground">Voice agent</span>
+              <span className="text-muted-foreground">Pro only</span>
+            </div>
+          )}
           <UsageBar
             label="RAG queries today"
             used={billing.usage.ragQueries}

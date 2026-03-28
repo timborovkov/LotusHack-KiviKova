@@ -19,9 +19,9 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Vernix — AI Meeting Assistant with Tool Integrations",
+  title: "Vernix — AI Assistant for Video Calls | Live Data from Your Tools",
   description:
-    "Vernix joins your video calls, connects to your tools, and answers questions with live business data. Transcripts, summaries, and action items included. Works with Zoom, Meet, Teams, and Webex.",
+    "An AI agent that joins Zoom, Meet, Teams, and Webex. Connects to Slack, Linear, GitHub. Answers questions with live data during calls. Free to start.",
 };
 
 const FEATURES = [

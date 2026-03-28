@@ -3,6 +3,10 @@ import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { PLANS, FREE_TRIAL } from "@/lib/billing/constants";
+import { sendEmail } from "@/lib/email/send";
+import { getLastChanceRetentionHtml } from "@/lib/email/templates";
+
+const RETENTION_EMAIL_COOLDOWN_DAYS = 30;
 
 export const POST = Webhooks({
   webhookSecret: process.env.POLAR_WEBHOOK_SECRET!,
@@ -99,7 +103,47 @@ export const POST = Webhooks({
     const externalId = payload.data.customer?.externalId;
     if (!externalId) return;
 
-    // Subscription remains active until period end, then revoked
+    const [user] = await db
+      .select({
+        email: users.email,
+        name: users.name,
+        lastRetentionEmailSentAt: users.lastRetentionEmailSentAt,
+      })
+      .from(users)
+      .where(eq(users.id, externalId));
+
+    if (!user) return;
+
+    const now = new Date();
+    const cooldownBoundary = new Date(now);
+    cooldownBoundary.setDate(
+      cooldownBoundary.getDate() - RETENTION_EMAIL_COOLDOWN_DAYS
+    );
+    const shouldSendRetentionEmail =
+      !user.lastRetentionEmailSentAt ||
+      user.lastRetentionEmailSentAt <= cooldownBoundary;
+
+    if (shouldSendRetentionEmail) {
+      const periodEnd = payload.data.currentPeriodEnd
+        ? new Date(payload.data.currentPeriodEnd)
+        : null;
+
+      await sendEmail({
+        to: user.email,
+        subject: "Last chance to keep your Vernix Pro benefits",
+        html: getLastChanceRetentionHtml(user.name, periodEnd),
+      });
+
+      await db
+        .update(users)
+        .set({
+          lastRetentionEmailSentAt: now,
+          updatedAt: now,
+        })
+        .where(eq(users.id, externalId));
+    }
+
+    // Subscription remains active until period end (or trial end), then revoked.
     console.log(
       `[Polar Webhook] Subscription canceled for user ${externalId}, active until ${payload.data.currentPeriodEnd}`
     );
@@ -109,14 +153,28 @@ export const POST = Webhooks({
     const externalId = payload.data.customer?.externalId;
     if (!externalId) return;
 
+    const now = new Date();
+    const periodEnd = payload.data.currentPeriodEnd
+      ? new Date(payload.data.currentPeriodEnd)
+      : null;
+
+    // Defensive guard: don't downgrade before access period actually ends.
+    if (periodEnd && periodEnd > now) {
+      console.log(
+        `[Polar Webhook] Skipping early revoke for user ${externalId}, current period ends ${periodEnd.toISOString()}`
+      );
+      return;
+    }
+
     await db
       .update(users)
       .set({
         plan: PLANS.FREE,
         polarSubscriptionId: null,
+        trialEndsAt: null,
         currentPeriodStart: null,
         currentPeriodEnd: null,
-        updatedAt: new Date(),
+        updatedAt: now,
       })
       .where(eq(users.id, externalId));
 

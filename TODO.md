@@ -39,6 +39,10 @@
 - Internal Agent System Documentation (`docs/agent-architecture.md`)
 - Fast Wake-Word Detection (Client-Side VAD + gpt-4o-mini-transcribe)
 - Billing with Polar (constants, Polar integration, hard caps, usage tracking, billing UI, webhook handler, limit enforcement, paywalls)
+- Billing lifecycle emails (disable trial-expiry reminders, weekly free-user upgrade reminders, cancellation retention emails)
+- Cron job upgrade reminders for free users every week, email them to let them know about the upgrade options.
+- Subscription cancellation access policy (keep access until period/trial end)
+- Cron documentation sync (`docs/cron-jobs.md` aligned with active jobs)
 
 ## Integrations
 
@@ -65,6 +69,8 @@
 
 ## Empty States & Onboarding UX
 
+- **Show dashboard-first navigation for logged-in users on public pages** — On landing and other public pages, replace Login/Sign up CTAs with a primary "Go to dashboard" action when a session exists.
+- **Redirect authenticated users away from auth pages** — If a logged-in user visits `/login` or `/register`, immediately redirect them to `/dashboard`.
 - **Dashboard calls empty state** — Add a primary "Start your first call" card when the user has no calls.
 - **Knowledge page empty state** — Add a primary "Upload your first document" card when there are no knowledge files.
 - **Integrations page empty state** — Add a primary "Connect your first integration" card when no integrations are configured.
@@ -83,6 +89,21 @@
 
 - **Expand call export completeness** — Include transcript, knowledge, tasks, and recording references in exports; ship media as separate files where applicable.
 - **Add missing-summary recovery flow** — Detect missing post-call artifacts and allow re-running summary/task/knowledge post-processing from the call view.
+- **Cron: recover stale `active` / `processing` calls** — Add scheduled reconciliation that finds calls stuck in `active` or `processing` (missed Recall webhooks) and re-drives status/artifact processing.
+- **Cron: recover stale `joining` calls** — Mark calls stuck in `joining` beyond a safe timeout as `failed` so they don’t block concurrency limits.
+
+## Cron Jobs & Background Reconciliation
+
+- **Cron: Polar subscription reconciliation** — Run periodic `syncBillingFromPolar` for users with Polar customer IDs so plan/period state self-heals even if webhooks are delayed or missed.
+- **Cron: billing meter retry/backfill** — Add scheduled retry/backfill for failed Polar metered usage ingests to prevent under/over-billing drift.
+- **Cron: usage integrity audit** — Detect completed calls missing `usage_events` (or duplicate usage rows) and repair/report discrepancies.
+- **Cron: inactive account cleanup policy** — Define inactivity windows + warning flow, then archive/deactivate/delete truly inactive accounts on schedule.
+- **Cron: purge expired password reset tokens** — Delete expired rows from `password_reset_tokens` on a schedule instead of only cleaning during reset creation.
+- **Cron: document processing watchdog** — Detect documents stuck in `processing` for too long; mark `failed` or retry parsing/embedding pipeline safely.
+- **Cron: orphan DB record sweeper** — Periodically remove/repair records that lost parents (or should have cascaded) and reconcile mismatches between DB state and external artifacts.
+- **Cron: orphaned storage cleanup** — Remove orphaned knowledge files in S3/Minio that no longer have a matching DB document row.
+- **Cron: orphaned Qdrant collection cleanup** — Delete dangling `meeting_*` or stale per-user knowledge collections that no longer map to active DB records/retention policy.
+- **Cron: dead-user data purge (S3 + Qdrant + Recall)** — For deleted/expired accounts, remove all remaining object storage files, user/meeting vector collections, and Recall call/bot artifacts to enforce retention and control storage costs.
 
 ## Product Terminology & Time Display
 
@@ -91,13 +112,15 @@
 
 ## SEO & Discoverability
 
-- **robots.txt** — Add `public/robots.txt` allowing all crawlers, pointing to sitemap
-- **sitemap.xml** — Generate `src/app/sitemap.ts` listing all public pages (landing, pricing, faq, about, contact, terms, privacy)
-- **llms.txt** — Add `public/llms.txt` describing Vernix for AI search engines (ChatGPT, Perplexity, Gemini, Claude)
+- ~~**robots.txt**~~ — Done. `public/robots.txt` allows all crawlers + AI bots, blocks `/dashboard` and `/api/`
+- ~~**sitemap.xml**~~ — Done. `src/app/sitemap.ts` with all public pages including feature pages
+- ~~**llms.txt**~~ — Done. `public/llms.txt` for AI search engines
+- ~~**Meta tags audit**~~ — Done. All pages have unique SEO titles, descriptions, and OG tags optimized for click-through
 - **Google Search Console** — Verify domain, submit sitemap, monitor indexing
 - **Schema markup** — Add JSON-LD structured data: Organization, SoftwareApplication, FAQ schema on the FAQ page
-- **Meta tags audit** — Verify all pages have unique title, description, and OG images
 - **Canonical URLs** — Ensure all pages have proper canonical tags via metadataBase
+- **Dynamic robots.txt and sitemap** — Move `robots.txt` from static `public/` to a Next.js route handler (`src/app/robots.ts`) so it generates at build time from config. Same for `llms.txt`. Sitemap already generates dynamically. All should auto-include new pages without manual updates.
+- **Search indexing kill switch** — Add `NEXT_PUBLIC_DISABLE_INDEXING=true` env var. When set, `robots.txt` returns `Disallow: /` for all bots and all pages get `<meta name="robots" content="noindex">`. For staging/preview environments.
 
 ## Meeting Recordings & Recall Data Sync
 
@@ -141,7 +164,28 @@
 - **Enforce hard product usage caps** — Enforce hard caps for storage, embeddings, and meetings.
 - **Restrict knowledge base uploads** — Enforce strict file type allowlist and size limits for uploaded knowledge base documents.
 - **Validate and sanitize all user input** — Enforce max length limits and strict schema validation on all user-provided fields, and sanitize inputs before storage/use.
-- **Admin account data purge** — Add an admin operation to fully remove all data for a user account across DB records, object storage bucket data, and Recall resources.
+
+## Account Verification
+
+- **Email verification flow** — Add verification tokens + email template + `/api/auth/verify-email` route and enforce verified email for credentials sign-ins before allowing full app access.
+- **Optional profile enrichment fields in Settings** — Add optional `phone` and `company` fields to user profiles (DB + API + settings UI), without requiring them during signup.
+- **Phone field UX + validation (non-blocking)** — Keep phone optional, validate/normalize format (E.164-style), and add a prebuilt country code dropdown input component in Settings.
+- **Future-proof phone verification schema** — Add nullable `phoneVerifiedAt` now (without implementing phone OTP flow yet) to avoid later migration churn if verification is introduced.
+- **Profile enrichment tests** — Add API/UI tests for optional `phone` and `company` updates, including validation edge cases and persistence checks.
+
+## Email Communication & Conversion
+
+Current emails: welcome (signup), free plan upgrade reminder (weekly cron), last chance retention (on cancel webhook), password reset.
+
+- **Post-first-meeting email** — After a user's first meeting completes, email the summary link and nudge Pro trial. "Your first meeting summary is ready. With Pro, the agent pulls live data from your tools." Trigger from `processMeetingEnd` when meeting count = 1.
+- **Trial started confirmation** — When Polar trial begins (subscription.created + trialing), confirm what they unlocked. "Your Pro trial is active. Connect your tools to get the most out of it." Include setup steps for integrations.
+- **Mid-trial check-in (day 7)** — Cron job: find users 7 days into trial. "Halfway through your trial. Have you connected your tools yet?" with integration setup CTA.
+- **Trial ending warning (day 11, 13)** — Cron job: find users whose trial ends in 3 or 1 days. "Your trial expires in X days. Here's what you'll lose." List features, show upgrade CTA. (Was implemented then removed, needs re-adding.)
+- **Trial expired / downgraded email** — On subscription.revoked webhook, email what they lost. "Your Pro access has ended. You keep your meetings and transcripts. Upgrade anytime to restore voice agent and integrations."
+- **Win-back email (30 days post-churn)** — Cron job: find users who churned 30 days ago. One final re-engagement. "A lot has changed since you left. Here's what's new." Only send once.
+- **Email preference management** — Add unsubscribe links to all marketing/reminder emails. Respect opt-outs in a DB flag.
+- **Email communication docs** — Maintain `docs/emails.md` documenting every email we send: trigger, timing, subject line, template function, and purpose. Keep this up to date as emails are added or changed.
+- **Email template quality** — All templates should be clean, mobile-friendly HTML with consistent branding. Every email should have a clear single CTA, benefit-led copy, and convert toward the next step in the funnel. No generic copy. Review templates against conversion best practices before shipping.
 
 ## Blog & Content
 
@@ -192,3 +236,11 @@
 - **Public changelog page** — `/changelog` page on the website rendering the changelog with dates, version tags, and descriptions
 - **Service uptime monitoring** — Monitor all critical dependencies: Vernix app, Recall.ai, OpenAI API, Polar, Railway, Qdrant, S3/Minio. Alert on downtime.
 - **Public status page** — Host a public status page (e.g. Openstatus, Instatus, or BetterStack) showing real-time uptime for all services. Link from footer.
+
+## 2FA Support
+
+- **2FA support (optional)** — Add opt-in app-level 2FA (TOTP authenticator app first; SMS only if required), backup codes, recovery UX, and step-up auth for sensitive actions.
+
+## Low Priority Ops
+
+- **Admin account data purge (full hard delete)** — Add an admin operation to fully remove all data for a user account across DB records, object storage bucket data, vector stores, and Recall resources (calls/bots/recordings/transcripts).

@@ -33,6 +33,12 @@ export const users = pgTable("users", {
   polarCustomerId: text("polar_customer_id"),
   polarSubscriptionId: text("polar_subscription_id"),
   trialEndsAt: timestamp("trial_ends_at", { withTimezone: true }),
+  lastUpgradeReminderSentAt: timestamp("last_upgrade_reminder_sent_at", {
+    withTimezone: true,
+  }),
+  lastRetentionEmailSentAt: timestamp("last_retention_email_sent_at", {
+    withTimezone: true,
+  }),
   currentPeriodStart: timestamp("current_period_start", {
     withTimezone: true,
   }),
