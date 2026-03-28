@@ -23,6 +23,7 @@ import {
   Plug,
 } from "lucide-react";
 import { PLANS, PRICING } from "@/lib/billing/constants";
+import { TrialPromptBanner } from "@/components/trial-prompt-banner";
 
 const STATUS_FILTERS = [
   "all",
@@ -143,6 +144,9 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Periodic trial prompt for free users */}
+      <TrialPromptBanner />
 
       {/* Post-first-meeting upgrade nudge */}
       {!dismissedNudge &&
