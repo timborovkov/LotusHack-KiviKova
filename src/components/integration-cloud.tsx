@@ -32,7 +32,7 @@ export function IntegrationCloud({
             key={integration.id}
             className="flex flex-col items-center gap-1.5"
           >
-            <div className="bg-muted flex h-12 w-12 items-center justify-center rounded-xl">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm">
               <Image
                 src={integration.logo}
                 alt={integration.name}
@@ -47,7 +47,7 @@ export function IntegrationCloud({
           </div>
         ))}
         <div className="flex flex-col items-center gap-1.5">
-          <div className="bg-muted flex h-12 w-12 items-center justify-center rounded-xl">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm">
             <Plug className="text-muted-foreground h-6 w-6" />
           </div>
           <span className="text-muted-foreground text-xs">+ more</span>
