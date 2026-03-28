@@ -276,16 +276,22 @@ export async function syncUsageToPolar(
 
     const polar = getPolar();
     const hours = durationMinutes / 60;
+    const rate =
+      type === "voice_meeting" ? USAGE_RATES.voice : USAGE_RATES.silent;
+    const costEur = hours * rate;
 
+    // Single "meeting_usage" meter — Polar aggregates cost_eur, applies €30 credit
     await polar.events.ingest({
       events: [
         {
-          name: type === "voice_meeting" ? "voice_minutes" : "silent_minutes",
+          name: "meeting_usage",
           externalCustomerId: userId,
           metadata: {
             meeting_id: meetingId,
+            meeting_type: type === "voice_meeting" ? "voice" : "silent",
             duration_minutes: durationMinutes,
             duration_hours: hours,
+            cost_eur: costEur,
           },
         },
       ],
