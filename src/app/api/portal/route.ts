@@ -1,37 +1,25 @@
 import { NextResponse } from "next/server";
 import { CustomerPortal } from "@polar-sh/nextjs";
-import { getEnv } from "@/lib/env";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import type { NextRequest } from "next/server";
 
-const env = getEnv();
-
-const portalHandler = CustomerPortal({
-  accessToken: env.POLAR_ACCESS_TOKEN!,
-  returnUrl: `${env.NEXT_PUBLIC_APP_URL}/dashboard/settings`,
-  server: env.POLAR_SERVER as "sandbox" | "production",
-  getCustomerId: async () => {
-    // This is only called when we've already verified the customer exists
-    const session = await auth();
-    if (!session?.user?.id) return "";
-
-    const [user] = await db
-      .select({ polarCustomerId: users.polarCustomerId })
-      .from(users)
-      .where(eq(users.id, session.user.id));
-
-    return user?.polarCustomerId ?? "";
-  },
-});
-
 export async function GET(req: NextRequest) {
-  // Pre-check: redirect gracefully if user has no Polar subscription
+  const accessToken = process.env.POLAR_ACCESS_TOKEN;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://vernix.app";
+
+  if (!accessToken) {
+    return NextResponse.json(
+      { error: "Billing is not configured" },
+      { status: 503 }
+    );
+  }
+
   const session = await auth();
   if (!session?.user?.id) {
-    return NextResponse.redirect(new URL("/login", env.NEXT_PUBLIC_APP_URL));
+    return NextResponse.redirect(new URL("/login", appUrl));
   }
 
   const [user] = await db
@@ -41,12 +29,16 @@ export async function GET(req: NextRequest) {
 
   if (!user?.polarCustomerId) {
     return NextResponse.redirect(
-      new URL(
-        "/dashboard/settings?billing=no_subscription",
-        env.NEXT_PUBLIC_APP_URL
-      )
+      new URL("/dashboard/settings?billing=no_subscription", appUrl)
     );
   }
 
-  return portalHandler(req);
+  const handler = CustomerPortal({
+    accessToken,
+    returnUrl: `${appUrl}/dashboard/settings`,
+    server: (process.env.POLAR_SERVER as "sandbox" | "production") ?? "sandbox",
+    getCustomerId: async () => user.polarCustomerId ?? "",
+  });
+
+  return handler(req);
 }
