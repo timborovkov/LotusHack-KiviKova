@@ -39,15 +39,14 @@ export function ChatPanel({
   });
 
   const isLoading = status === "streaming" || status === "submitted";
-  const isBillingLimitError =
-    error?.message?.includes("RAG query limit") ||
-    error?.message?.includes("RATE_LIMITED") ||
-    error?.message?.includes("limit reached");
 
   const ragUsed = billing?.usage.ragQueries ?? 0;
   const ragLimit =
     billing?.limits.ragQueriesPerDay ?? LIMITS[PLANS.FREE].ragQueriesPerDay;
   const ragPct = Math.min(100, (ragUsed / ragLimit) * 100);
+
+  // Detect billing limit from usage data rather than fragile string matching
+  const isBillingLimitError = error && ragUsed >= ragLimit;
 
   // Auto-scroll after DOM updates
   useLayoutEffect(() => {
