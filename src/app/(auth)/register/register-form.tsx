@@ -56,7 +56,7 @@ export function RegisterForm({
       if (result?.error) {
         setError("Account created but sign-in failed. Try logging in.");
       } else {
-        router.push("/dashboard");
+        router.push("/welcome");
         router.refresh();
       }
     } catch {
@@ -75,7 +75,11 @@ export function RegisterForm({
 
       {hasSso && (
         <>
-          <SsoButtons enableGoogle={enableGoogle} enableGithub={enableGithub} />
+          <SsoButtons
+            enableGoogle={enableGoogle}
+            enableGithub={enableGithub}
+            callbackUrl="/welcome"
+          />
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="border-border w-full border-t" />
