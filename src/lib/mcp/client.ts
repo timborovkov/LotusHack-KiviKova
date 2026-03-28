@@ -1,6 +1,7 @@
 import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { jsonSchema } from "ai";
 import { connectMcpClient } from "./transport";
+import { buildAuthHeaders } from "./auth";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { mcpServers } from "@/lib/db/schema";
@@ -129,11 +130,9 @@ export class McpClientManager {
   }
 
   private async connectToServer(server: McpServer): Promise<void> {
-    const headers: Record<string, string> = {};
-    if (server.apiKey) {
-      headers["Authorization"] = `Bearer ${server.apiKey}`;
-    }
+    const headers = buildAuthHeaders(server);
 
+    // TODO: OAuth servers should pass authProvider instead of raw headers
     const client = await connectMcpClient(server.url, headers);
 
     const { tools } = await client.listTools();

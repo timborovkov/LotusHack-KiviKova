@@ -4,13 +4,30 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { queryKeys } from "@/lib/query-keys";
 
+export type McpAuthType = "none" | "bearer" | "header" | "basic" | "oauth";
+
 interface McpServerInfo {
   id: string;
   name: string;
   url: string;
+  authType: McpAuthType;
+  catalogIntegrationId: string | null;
   enabled: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface AddServerParams {
+  name: string;
+  url: string;
+  authType?: McpAuthType;
+  authHeaderName?: string;
+  authHeaderValue?: string;
+  authUsername?: string;
+  authPassword?: string;
+  catalogIntegrationId?: string;
+  // Legacy
+  apiKey?: string;
 }
 
 async function fetchServers(): Promise<McpServerInfo[]> {
@@ -30,11 +47,7 @@ export function useMcpServers() {
   });
 
   const addMutation = useMutation({
-    mutationFn: async (params: {
-      name: string;
-      url: string;
-      apiKey?: string;
-    }) => {
+    mutationFn: async (params: AddServerParams) => {
       const res = await fetch("/api/settings/mcp-servers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -83,8 +96,8 @@ export function useMcpServers() {
   return {
     servers,
     loading,
-    addServer: async (name: string, url: string, apiKey?: string) => {
-      await addMutation.mutateAsync({ name, url, apiKey });
+    addServer: async (params: AddServerParams) => {
+      await addMutation.mutateAsync(params);
     },
     toggleServer: (id: string, enabled: boolean) =>
       toggleMutation.mutate({ id, enabled }),

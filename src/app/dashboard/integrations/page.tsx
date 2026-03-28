@@ -96,12 +96,8 @@ export default function IntegrationsPage() {
     if (server) deleteServer(server.id);
   };
 
-  const handleAddServer = async (
-    name: string,
-    url: string,
-    apiKey?: string
-  ) => {
-    await addServer(name, url, apiKey);
+  const handleAddServer = async (params: Parameters<typeof addServer>[0]) => {
+    await addServer(params);
   };
 
   return (
@@ -146,10 +142,10 @@ export default function IntegrationsPage() {
                 featured: false,
                 status: "available",
                 serverUrl: null,
-                authMode: "api_key",
+                authMode: "none",
                 docsUrl: "https://modelcontextprotocol.io/introduction",
                 setupInstructions:
-                  "Enter the MCP server URL and optional API key or token.",
+                  "Enter the MCP server URL and choose an authentication method.",
                 examplePrompts: [],
                 sampleResponses: [],
               });
