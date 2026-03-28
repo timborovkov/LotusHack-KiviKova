@@ -27,11 +27,11 @@ Each cron job runs as a **separate Railway service** that starts on a schedule, 
 **Setup per job:**
 
 1. In your Railway project canvas, click **"+ Add"** > **"Empty Service"**
-2. Name it (e.g. "trial-warnings-cron-job")
+2. Name it (e.g. "upgrade-reminders-cron-job")
 3. In the service **Settings > Source**: click **"Connect Image"** and enter `curlimages/curl:latest` (a minimal ~5MB image with just curl)
 4. In **Settings > Deploy**:
    - **Start Command**: the `curl` command for that job (see job table below)
-   - **Cron Schedule**: set to the job's schedule (e.g. Daily / `0 9 * * *`)
+   - **Cron Schedule**: set to the job's schedule (e.g. Weekly / `0 9 * * 1`)
 5. In the service **Variables**: add `CRON_SECRET` and `APP_URL` (e.g. `https://vernix.app`)
 
 The cron service spins up, makes one HTTP request to the main Vernix app, and exits. Railway only charges for the seconds it runs.
@@ -41,35 +41,31 @@ The cron service spins up, makes one HTTP request to the main Vernix app, and ex
 **Local development:**
 
 ```bash
-curl -H "Authorization: Bearer your-cron-secret-here" http://localhost:3000/api/cron/trial-warnings
+curl -H "Authorization: Bearer your-cron-secret-here" http://localhost:3000/api/cron/upgrade-reminders
 ```
 
 ---
 
 ## Jobs
 
-### Trial Expiry Warnings
+### Free Plan Upgrade Reminders
 
-| Field             | Value                                                                                       |
-| ----------------- | ------------------------------------------------------------------------------------------- |
-| **Endpoint**      | `GET /api/cron/trial-warnings`                                                              |
-| **Schedule**      | Daily (`0 9 * * *`)                                                                         |
-| **Start command** | `sh -c 'curl -sf -H "Authorization: Bearer $CRON_SECRET" $APP_URL/api/cron/trial-warnings'` |
-| **Variables**     | `CRON_SECRET`, `APP_URL` (e.g. `https://vernix.app`)                                        |
-| **Source**        | `src/app/api/cron/trial-warnings/route.ts`                                                  |
+| Field             | Value                                                                                          |
+| ----------------- | ---------------------------------------------------------------------------------------------- |
+| **Endpoint**      | `GET /api/cron/upgrade-reminders`                                                              |
+| **Schedule**      | Weekly (`0 9 * * 1`)                                                                           |
+| **Start command** | `sh -c 'curl -sf -H "Authorization: Bearer $CRON_SECRET" $APP_URL/api/cron/upgrade-reminders'` |
+| **Variables**     | `CRON_SECRET`, `APP_URL` (e.g. `https://vernix.app`)                                           |
+| **Source**        | `src/app/api/cron/upgrade-reminders/route.ts`                                                  |
 
 **What it does:**
 
-1. Queries users whose `trialEndsAt` falls within the next 3 days or 1 day
-2. Filters to free-plan users without an active Polar subscription (skips users who already upgraded)
-3. Sends a trial expiry warning email via Resend
+1. Queries users on the Free plan who are not currently in trial
+2. Skips users who already received an upgrade reminder in the last 7 days
+3. Sends an upgrade-to-Pro reminder via Resend
+4. Updates `lastUpgradeReminderSentAt` for idempotency
 
-**Warning schedule:**
-
-- 3 days before trial expires
-- 1 day before trial expires
-
-**Idempotency:** Safe to run multiple times per day. Uses date-window queries (midnight to midnight), so the same user gets at most one email per warning tier per day. However, there's no "email already sent" tracking, so if the job runs twice in a day, users could get duplicate emails. For production, consider adding a `lastTrialWarningAt` field to the users table.
+**Idempotency:** Safe to run multiple times; users are throttled by `lastUpgradeReminderSentAt`.
 
 **Dependencies:** Requires `CRON_SECRET` and Resend email configuration.
 
@@ -78,11 +74,9 @@ curl -H "Authorization: Bearer your-cron-secret-here" http://localhost:3000/api/
 ```json
 {
   "sent": 5,
-  "emails": ["alice@example.com (3d)", "bob@example.com (1d)", ...]
+  "emails": ["alice@example.com", "bob@example.com", "..."]
 }
 ```
-
----
 
 ## Adding New Cron Jobs
 
