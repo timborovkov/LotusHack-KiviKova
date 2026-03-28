@@ -42,12 +42,15 @@
 
 ## Integrations
 
-- **Landing page rework for Integrations-first positioning** - Rework hero and conversion sections to position Vernix as your in-call assistant that joins meetings and answers live business questions from integrated systems (e.g. "what were sales yesterday?", "which location performed best this quarter?"). Add clear Pro-focused CTAs, integration proof blocks, and upgrade banners throughout the page.
-- **Add a new Integrations page** - Basically we would only support MCPs, like we already do, but we could predefine a list of MCPs that users can choose from to quickly connect to, with logos, descriptions, and links to the MCP server documentation.
-- **Move MCPs from Settings to separate Integrations page**
-- **MCP Client OAuth** - Implement OAuth-based authentication for the MCP server endpoint per the [MCP auth spec](https://modelcontextprotocol.io/specification/2025-03-26/basic/authorization). Allow tools like Claude Desktop and Cursor to authenticate via OAuth flow instead of manually copying API keys. Requires authorization server endpoints (authorize, token, register), PKCE support, and dynamic client registration.
-- **Integration Library** - Quickly connect to predefined MCP servers like Linear, Calendar, Notion, Jira, Github, Slack, etc.
-- **Pro users only** - Only Pro users should be able to connect to MCP servers. This is our key selling point, so we should make sure we have proper CTA and messaging around it.
+- **Define codebase-managed Integration Catalog + schema validation** — Add `src/lib/integrations/catalog.json` (or `catalog.ts`) as the source of truth for predefined integrations (still MCP underneath), validate entries with Zod on load, and include fields like `id`, `name`, `description`, `logo`, `docsUrl`, `serverUrl/template`, `authMode` (`oauth` | `token` | `api_key`), `category` (e.g. CRM, ERP, Project Management, Communication), `tags`, `featured`, and `status`.
+- **Keep catalog interface migration-ready** — Keep the catalog loader/repository interface stable so the source can move from codebase to DB/admin tooling later without rewriting the integrations UI.
+- **MCP Client OAuth for external MCP clients** — Implement OAuth auth flow for the MCP endpoint per the [MCP auth spec](https://modelcontextprotocol.io/specification/2025-03-26/basic/authorization) (`authorize`, `token`, `register`, PKCE, dynamic client registration) for clients like Cursor and Claude Desktop.
+- **Implement integration connect flows by auth mode** — Support OAuth-based connects where available, plus token/API key flows, while storing all connections as MCP server configs.
+- **Seed first predefined integrations** — Add an initial curated set (GitHub, Slack, Notion, Linear, Jira, Google Calendar) with accurate metadata and connection requirements.
+- **Build `/dashboard/integrations` as the main integration hub** — New page with Featured integrations, searchable library, category + tag filters, and per-integration setup cards. Page is visible to Free and Pro users.
+- **Move MCP management from Settings to Integrations** — Migrate MCP UI entry points, keep Settings as a lightweight redirect/deep-link to the new page, and avoid duplicate management surfaces.
+- **Gate integration actions to Pro with clear upgrade UX** — Keep integrations page/library visible to Free users, but gate connect/use actions behind Pro with contextual paywall messaging, upgrade CTAs, and trial-to-Pro conversion copy.
+- **Landing page rework for integrations-first conversion** — Rework hero and core sections to position Vernix as an in-call assistant that can answer live business questions using connected tools; add Pro-focused CTAs and upgrade banners.
 
 ## Task Management
 

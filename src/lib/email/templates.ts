@@ -21,10 +21,10 @@ export function getWelcomeEmailHtml(name: string): string {
       <div style="background:#f0f0ff;border-radius:8px;padding:16px;margin:0 0 24px">
         <p style="font-size:13px;font-weight:600;color:#333;margin:0 0 8px">Start a free Pro trial to unlock:</p>
         <ul style="font-size:13px;color:#555;line-height:1.8;padding-left:18px;margin:0">
-          <li>Voice agent that answers questions live on calls</li>
-          <li>200 AI queries per day and cross-meeting search</li>
-          <li>200 knowledge base documents</li>
-          <li>API and MCP integrations</li>
+          <li>Connect tools like Slack, Linear, or your CRM for live data in meetings</li>
+          <li>Voice agent that answers questions and takes action during calls</li>
+          <li>Search across all your meetings and uploaded documents</li>
+          <li>200 AI queries per day</li>
         </ul>
         <p style="font-size:12px;color:#888;margin:8px 0 0">14 days free, then &euro;29/mo. Cancel anytime.</p>
       </div>
@@ -41,7 +41,7 @@ export function getWelcomeEmailHtml(name: string): string {
       </div>
       <p style="font-size:12px;color:#999;line-height:1.6;margin:0;text-align:center">
         Free plan includes 5 silent meetings per month.
-        Start a Pro trial anytime for the voice agent and more.
+        Start a Pro trial to connect your tools and unlock the voice agent.
       </p>
       <p style="font-size:12px;color:#999;margin:8px 0 0;text-align:center">
         Questions? Reply to this email or visit <a href="${APP_URL}/contact" style="color:#666">vernix.app/contact</a>
@@ -83,7 +83,7 @@ export function getTrialExpiryWarningHtml(
     "<li>5 knowledge base documents</li>" +
     "<li>20 AI queries per day</li></ul></div>" +
     '<p style="font-size:14px;color:#555;line-height:1.6;margin:0 0 24px">' +
-    "Upgrade to Pro to keep voice agent access, unlimited meetings with " +
+    "Upgrade to Pro to keep tool integrations, voice agent, and unlimited meetings with " +
     "&euro;30 monthly credit, and 200 documents.</p>" +
     '<div style="text-align:center;margin:32px 0">' +
     '<a href="' +

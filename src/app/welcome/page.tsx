@@ -12,23 +12,23 @@ import {
   Search,
   Plug,
   Clock,
-  ArrowRight,
 } from "lucide-react";
 import { PRICING, PLANS } from "@/lib/billing/constants";
 import { getCheckoutUrl } from "@/lib/billing/checkout-url";
 
 const PRO_FEATURES = [
-  { icon: Mic, label: "Voice agent answers questions live on calls" },
+  {
+    icon: Plug,
+    label: "Connect tools like Slack, Linear, or CRM for live data in meetings",
+  },
+  { icon: Mic, label: "Voice agent answers and takes action during calls" },
+  { icon: Search, label: "Search across all your meetings and documents" },
+  { icon: FileText, label: "200 knowledge base documents for context" },
   { icon: MessageSquare, label: "200 AI queries per day" },
-  { icon: Search, label: "Cross-meeting search" },
-  { icon: FileText, label: "200 knowledge base documents" },
-  { icon: Plug, label: "API and MCP integrations" },
   { icon: Clock, label: "Unlimited meetings with monthly credit" },
 ];
 
 export default function WelcomePage() {
-  const checkoutUrl = getCheckoutUrl();
-
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center px-4 py-12">
       <div className="mb-8">
@@ -62,16 +62,15 @@ export default function WelcomePage() {
           <CardContent className="p-6">
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-semibold">Pro Trial</h2>
+                <h2 className="text-lg font-semibold">Start Pro free</h2>
                 <p className="text-muted-foreground text-xs">
-                  14 days free, then €{PRICING[PLANS.PRO].monthly}/mo. Cancel
-                  anytime.
+                  14 days free. Cancel anytime before trial ends.
                 </p>
               </div>
               <Badge variant="default">Recommended</Badge>
             </div>
 
-            <ul className="mb-6 space-y-2.5">
+            <ul className="mb-5 space-y-2.5">
               {PRO_FEATURES.map((f) => (
                 <li key={f.label} className="flex items-center gap-2.5 text-sm">
                   <f.icon className="text-muted-foreground h-4 w-4 shrink-0" />
@@ -80,18 +79,41 @@ export default function WelcomePage() {
               ))}
             </ul>
 
-            <Button
-              variant="accent"
-              className="w-full"
-              onClick={() => {
-                window.location.href = checkoutUrl;
-              }}
-            >
-              Start 14-Day Free Trial
-              <ArrowRight className="ml-1 h-4 w-4" />
-            </Button>
+            <p className="text-muted-foreground mb-3 text-xs font-medium">
+              Pick a plan for after the trial:
+            </p>
+            <div className="mb-4 flex gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  window.location.href = getCheckoutUrl("monthly");
+                }}
+                className="border-border hover:border-ring flex-1 rounded-lg border p-3 text-left transition-colors"
+              >
+                <p className="text-sm font-medium">
+                  €{PRICING[PLANS.PRO].monthly}/mo
+                </p>
+                <p className="text-muted-foreground text-xs">Monthly</p>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  window.location.href = getCheckoutUrl("annual");
+                }}
+                className="border-ring/50 bg-ring/5 hover:border-ring flex-1 rounded-lg border p-3 text-left transition-colors"
+              >
+                <p className="text-sm font-medium">
+                  €{Math.round(PRICING[PLANS.PRO].annual / 12)}/mo
+                </p>
+                <p className="text-muted-foreground text-xs">
+                  Annual (save €
+                  {PRICING[PLANS.PRO].monthly * 12 - PRICING[PLANS.PRO].annual}
+                  /yr)
+                </p>
+              </button>
+            </div>
 
-            <p className="text-muted-foreground mt-3 text-center text-xs">
+            <p className="text-muted-foreground text-center text-xs">
               No charge for 14 days. Cancel before the trial ends and you
               won&apos;t be billed.
             </p>

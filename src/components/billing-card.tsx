@@ -186,7 +186,7 @@ export function BillingCard({ billing, loading }: BillingCardProps) {
               Upgrade to Pro — €{PRICING[PLANS.PRO].monthly}/mo
             </Button>
           )}
-          {isPro && billing.hasPolarCustomer && (
+          {billing.hasPolarCustomer && (
             <Button
               size="sm"
               variant="outline"
@@ -198,6 +198,35 @@ export function BillingCard({ billing, loading }: BillingCardProps) {
             </Button>
           )}
         </div>
+
+        {/* Annual savings prompt for monthly Pro users */}
+        {isPro &&
+          billing.hasPolarCustomer &&
+          (() => {
+            const periodMs =
+              new Date(billing.period.end).getTime() -
+              new Date(billing.period.start).getTime();
+            const isMonthly = periodMs < 45 * 24 * 60 * 60 * 1000;
+            if (!isMonthly) return null;
+            return (
+              <div className="bg-muted/50 flex items-center justify-between rounded-lg px-3 py-2">
+                <p className="text-muted-foreground text-xs">
+                  Switch to annual and save €
+                  {PRICING[PLANS.PRO].monthly * 12 - PRICING[PLANS.PRO].annual}
+                  /year
+                </p>
+                <Button
+                  size="xs"
+                  variant="ghost"
+                  onClick={() => {
+                    window.location.href = "/api/portal";
+                  }}
+                >
+                  Switch
+                </Button>
+              </div>
+            );
+          })()}
 
         {/* Period info */}
         <p className="text-muted-foreground text-xs">

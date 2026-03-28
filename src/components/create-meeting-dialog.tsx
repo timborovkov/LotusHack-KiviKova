@@ -136,14 +136,15 @@ export function CreateMeetingDialog({ onCreate }: CreateMeetingDialogProps) {
             <div className="bg-muted/50 flex items-center gap-2 rounded-lg px-3 py-2">
               <Mic className="text-muted-foreground h-4 w-4 shrink-0" />
               <p className="text-muted-foreground text-xs">
-                Want the agent to answer out loud?{" "}
+                Want the agent to answer out loud, pull live data, and take
+                action?{" "}
                 <a
                   href="/pricing"
                   className="text-foreground underline underline-offset-2"
                 >
-                  Upgrade to Pro
+                  Start a Pro trial
                 </a>{" "}
-                for the voice agent.
+                to connect your tools and unlock the voice agent.
               </p>
             </div>
           )}

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Video, Mic, FileText, MessageSquare, Clock } from "lucide-react";
+import { Video, Mic, FileText, Clock, Plug } from "lucide-react";
 import { MeetingCard } from "./meeting-card";
 import { useBilling } from "@/hooks/use-billing";
 import { Badge } from "@/components/ui/badge";
@@ -42,25 +42,25 @@ function TrialEmptyState() {
           Pro trial: {billing.trialDaysRemaining} days left
         </Badge>
         <p className="text-lg font-medium">
-          Try the voice agent on your next call
+          Your AI assistant is ready for calls
         </p>
         <p className="text-muted-foreground mx-auto mt-2 max-w-md text-sm">
           Click &quot;New Meeting&quot; and paste a Zoom, Meet, Teams, or Webex
-          link. Vernix joins your call, transcribes everything, and answers
-          questions out loud when you say &quot;Vernix.&quot;
+          link. Vernix joins, connects to your tools, and answers questions with
+          real data during the call.
         </p>
         <div className="text-muted-foreground mx-auto mt-6 grid max-w-lg gap-3 text-left text-sm sm:grid-cols-3">
           <div className="flex items-start gap-2">
+            <Plug className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>Connects to your tools for live data</span>
+          </div>
+          <div className="flex items-start gap-2">
             <Mic className="mt-0.5 h-4 w-4 shrink-0" />
-            <span>Voice agent answers questions live</span>
+            <span>Answers and takes action during calls</span>
           </div>
           <div className="flex items-start gap-2">
             <FileText className="mt-0.5 h-4 w-4 shrink-0" />
-            <span>Summaries and action items</span>
-          </div>
-          <div className="flex items-start gap-2">
-            <MessageSquare className="mt-0.5 h-4 w-4 shrink-0" />
-            <span>Search across all your meetings</span>
+            <span>Summaries, tasks, and searchable transcripts</span>
           </div>
         </div>
         <p className="text-muted-foreground mt-6 text-xs">
@@ -81,9 +81,9 @@ function TrialEmptyState() {
         everything, and generates summaries.
       </p>
       <p className="text-muted-foreground mt-4 text-xs">
-        Free plan includes 30 minutes of silent meetings per month.{" "}
+        Free plan includes 30 minutes of silent meetings.{" "}
         <Link href="/pricing" className="underline underline-offset-2">
-          See Pro features
+          Start a Pro trial to connect your tools and unlock voice
         </Link>
       </p>
     </div>

@@ -56,8 +56,9 @@ const TRIGGER_COPY: Record<PaywallTrigger, TriggerCopy> = {
     icon: Mic,
     title: "Unlock the voice agent",
     description:
-      "Ask questions out loud during meetings. The voice agent answers in real-time using your meeting history and knowledge base.",
-    proValue: "Voice + silent agent, unlimited with €30 monthly credit",
+      "Connect your tools and get an assistant that answers questions with real business data during calls. Ask it to look things up, take action, or pull reports, live.",
+    proValue:
+      "Tool integrations, voice agent, unlimited meetings with €30 monthly credit",
     limitType: "feature",
   },
   meeting_minutes: {
@@ -122,10 +123,10 @@ const TRIGGER_COPY: Record<PaywallTrigger, TriggerCopy> = {
   },
   api_access: {
     icon: Zap,
-    title: "API access requires Pro",
+    title: "Integrations require Pro",
     description:
-      "Connect Vernix to your tools via the REST API and MCP. Build automations, query transcripts, and manage meetings programmatically.",
-    proValue: `${LIMITS[PLANS.PRO].apiRequestsPerDay} API requests/day, MCP support`,
+      "Connect tools like Slack, Linear, GitHub, or your CRM. The agent pulls live data and takes action during your meetings.",
+    proValue: `Tool integrations, ${LIMITS[PLANS.PRO].apiRequestsPerDay} API requests/day`,
     limitType: "feature",
   },
   api_rate: {
@@ -206,8 +207,6 @@ export function UpgradeDialog({
   const copy = TRIGGER_COPY[trigger];
   const Icon = copy.icon;
 
-  const checkoutUrl = getCheckoutUrl();
-
   const isPro = billing?.plan === PLANS.PRO;
   const isTrialing = billing?.trialing;
   const trialDays = billing?.trialDaysRemaining ?? 0;
@@ -264,21 +263,45 @@ export function UpgradeDialog({
           )}
         </div>
 
-        <DialogFooter className="flex-col gap-2 sm:flex-row">
-          {!isPro && (
-            <Button
-              variant="accent"
-              className="w-full sm:w-auto"
+        {!isPro && (
+          <div className="flex gap-2">
+            <button
+              type="button"
               onClick={() => {
-                window.location.href = checkoutUrl;
+                window.location.href = getCheckoutUrl("monthly");
               }}
+              className="border-border hover:border-ring flex-1 rounded-lg border p-3 text-left transition-colors"
             >
-              Upgrade to Pro — €{PRICING[PLANS.PRO].monthly}/mo
-            </Button>
-          )}
+              <p className="text-sm font-medium">
+                €{PRICING[PLANS.PRO].monthly}/mo
+              </p>
+              <p className="text-muted-foreground text-xs">Monthly</p>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                window.location.href = getCheckoutUrl("annual");
+              }}
+              className="border-ring/50 bg-ring/5 hover:border-ring flex-1 rounded-lg border p-3 text-left transition-colors"
+            >
+              <p className="text-sm font-medium">
+                €{Math.round(PRICING[PLANS.PRO].annual / 12)}/mo
+              </p>
+              <p className="text-muted-foreground text-xs">
+                Annual (save €
+                {PRICING[PLANS.PRO].monthly * 12 - PRICING[PLANS.PRO].annual}
+                /yr)
+              </p>
+            </button>
+          </div>
+        )}
+        <p className="text-muted-foreground text-center text-xs">
+          14-day free trial. Cancel anytime.
+        </p>
+        <DialogFooter>
           <Button
-            variant="outline"
-            className="w-full sm:w-auto"
+            variant="ghost"
+            className="w-full"
             render={<Link href="/pricing" />}
             onClick={() => onOpenChange(false)}
           >

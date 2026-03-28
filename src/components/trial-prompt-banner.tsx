@@ -108,8 +108,8 @@ export function TrialPromptBanner({
               {billing.trialDaysRemaining !== 1 ? "s" : ""} left
             </p>
             <p className="text-muted-foreground text-xs">
-              Keep voice agent, cross-meeting search, and 200 queries/day after
-              your trial. €{PRICING[PLANS.PRO].monthly}/mo.
+              Keep tool integrations, voice agent, and live business data in
+              your meetings. €{PRICING[PLANS.PRO].monthly}/mo.
             </p>
           </div>
           <Button
@@ -144,24 +144,24 @@ export function TrialPromptBanner({
           </div>
           <div className="flex-1">
             <p className="text-sm font-medium">
-              Want the voice agent on your next call?
+              An assistant that knows your business
             </p>
             <div className="text-muted-foreground mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs">
               <span className="flex items-center gap-1">
+                <Plug className="h-3 w-3" />
+                Connects to your tools
+              </span>
+              <span className="flex items-center gap-1">
                 <Mic className="h-3 w-3" />
-                Answers live
+                Answers and acts live
               </span>
               <span className="flex items-center gap-1">
                 <Search className="h-3 w-3" />
-                Cross-meeting search
+                Pulls real data
               </span>
               <span className="flex items-center gap-1">
                 <MessageSquare className="h-3 w-3" />
                 200 queries/day
-              </span>
-              <span className="flex items-center gap-1">
-                <Plug className="h-3 w-3" />
-                Integrations
               </span>
             </div>
           </div>
@@ -197,11 +197,11 @@ export function TrialPromptBanner({
         </div>
         <div className="flex-1">
           <p className="text-sm font-medium">
-            Try the voice agent free for 14 days
+            Get an assistant that knows your business
           </p>
           <p className="text-muted-foreground text-xs">
-            Ask questions out loud during meetings. Then €
-            {PRICING[PLANS.PRO].monthly}/mo. Cancel anytime.
+            Connect your tools. Get live answers and actions during calls. 14
+            days free.
           </p>
         </div>
         <Button

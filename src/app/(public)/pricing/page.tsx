@@ -44,11 +44,8 @@ export default function PricingPage() {
   const period = annual ? "/ mo, billed annually" : "/ month";
   const savings = annual ? "Save €60/year" : null;
 
-  const proProductId = annual
-    ? process.env.NEXT_PUBLIC_POLAR_PRODUCT_ID_PRO_ANNUAL
-    : process.env.NEXT_PUBLIC_POLAR_PRODUCT_ID_PRO_MONTHLY;
   const checkoutUrl = session?.user
-    ? getCheckoutUrl({ productId: proProductId ?? undefined })
+    ? getCheckoutUrl(annual ? "annual" : "monthly")
     : null;
 
   return (
