@@ -105,7 +105,6 @@ describe("Catalog MCP Server Reachability", () => {
   });
 
   it("no duplicate serverUrls (except Jira/Confluence sharing Atlassian)", () => {
-    const urls = withServers.map((i) => i.serverUrl!);
     const counts = new Map<string, string[]>();
     for (const i of withServers) {
       const existing = counts.get(i.serverUrl!) ?? [];
