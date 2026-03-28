@@ -40,6 +40,13 @@
 - Fast Wake-Word Detection (Client-Side VAD + gpt-4o-mini-transcribe)
 - Billing with Polar (constants, Polar integration, hard caps, usage tracking, billing UI, webhook handler, limit enforcement, paywalls)
 
+## Integrations
+
+- **Add a new Integrations page**
+- **Move MCPs from Settings to separate Integrations page**
+- **Integration Library** - Quickly connect to predefined MCP servers like Linear, Notion, Jira, etc.
+- **MCP Client OAuth** - Implement OAuth-based authentication for the MCP server endpoint per the [MCP auth spec](https://modelcontextprotocol.io/specification/2025-03-26/basic/authorization). Allow tools like Claude Desktop and Cursor to authenticate via OAuth flow instead of manually copying API keys. Requires authorization server endpoints (authorize, token, register), PKCE support, and dynamic client registration.
+
 ## SEO & Discoverability
 
 - **robots.txt** — Add `public/robots.txt` allowing all crawlers, pointing to sitemap
@@ -67,7 +74,6 @@
 - **API docs page** — Host interactive docs at `/docs` or `/api-docs` (Scalar, Swagger UI, or similar). Auto-generated from the OpenAPI spec.
 - **Agent control endpoints** — `POST /api/v1/meetings` (create + auto-join), `POST /api/v1/meetings/:id/join` (join existing), `POST /api/v1/meetings/:id/stop` — lets external tools and agents invite Vernix to calls on the fly with just a meeting link.
 - **MCP server tools** — Add `join_meeting` and `stop_meeting` tools to the MCP server so Claude Desktop / Cursor users can say "join this call" and paste a link.
-- **MCP OAuth login** — Implement OAuth-based authentication for the MCP server endpoint per the [MCP auth spec](https://modelcontextprotocol.io/specification/2025-03-26/basic/authorization). Allow tools like Claude Desktop and Cursor to authenticate via OAuth flow instead of manually copying API keys. Requires authorization server endpoints (authorize, token, register), PKCE support, and dynamic client registration.
 - **Rate limiting & versioning** — Per-key rate limits, API version in URL path, deprecation headers.
 - **SDKs** — Consider auto-generating TypeScript/Python SDKs from the OpenAPI spec.
 
@@ -94,13 +100,6 @@
 - **Restrict knowledge base uploads** — Enforce strict file type allowlist and size limits for uploaded knowledge base documents.
 - **Validate and sanitize all user input** — Enforce max length limits and strict schema validation on all user-provided fields, and sanitize inputs before storage/use.
 - **Admin account data purge** — Add an admin operation to fully remove all data for a user account across DB records, object storage bucket data, and Recall resources.
-
-## Changelog & Status Page
-
-- **CHANGELOG.md** — Create and maintain a changelog file in the repo tracking all releases and notable changes
-- **Public changelog page** — `/changelog` page on the website rendering the changelog with dates, version tags, and descriptions
-- **Service uptime monitoring** — Monitor all critical dependencies: Vernix app, Recall.ai, OpenAI API, Polar, Railway, Qdrant, S3/Minio. Alert on downtime.
-- **Public status page** — Host a public status page (e.g. Openstatus, Instatus, or BetterStack) showing real-time uptime for all services. Link from footer.
 
 ## Blog & Content
 
@@ -144,3 +143,10 @@
 - **Image/diagram uploads** — Accept PNG, JPG, SVG uploads in knowledge base, extract descriptions via vision API
 - **Hybrid parsing** — Try text extraction first; if a page has low text density, fall back to vision-based extraction
 - **Cost management** — Vision API is expensive per page; add per-user limits or make it a premium feature
+
+## Changelog & Status Page
+
+- **CHANGELOG.md** — Create and maintain a changelog file in the repo tracking all releases and notable changes
+- **Public changelog page** — `/changelog` page on the website rendering the changelog with dates, version tags, and descriptions
+- **Service uptime monitoring** — Monitor all critical dependencies: Vernix app, Recall.ai, OpenAI API, Polar, Railway, Qdrant, S3/Minio. Alert on downtime.
+- **Public status page** — Host a public status page (e.g. Openstatus, Instatus, or BetterStack) showing real-time uptime for all services. Link from footer.
