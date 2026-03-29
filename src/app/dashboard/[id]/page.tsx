@@ -71,6 +71,9 @@ export default function MeetingDetailPage() {
     deleteTask,
   } = useMeetingTasks(id);
 
+  // Search query state (lifted from TranscriptTab to persist across tab switches)
+  const [searchQuery, setSearchQuery] = useState("");
+
   // Agenda state
   const [agenda, setAgenda] = useState("");
   const syncedMeetingId = useRef<string | null>(null);
@@ -217,6 +220,8 @@ export default function MeetingDetailPage() {
             transcript={transcript}
             searchResults={searchResults}
             searching={searching}
+            query={searchQuery}
+            onQueryChange={setSearchQuery}
             onSearch={search}
           />
         )}
