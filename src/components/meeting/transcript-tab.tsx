@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,6 +18,8 @@ interface TranscriptTabProps {
   transcript: TranscriptPoint[];
   searchResults: SearchResult[];
   searching: boolean;
+  query: string;
+  onQueryChange: (value: string) => void;
   onSearch: (query: string) => void;
 }
 
@@ -26,9 +27,10 @@ export function TranscriptTab({
   transcript,
   searchResults,
   searching,
+  query,
+  onQueryChange,
   onSearch,
 }: TranscriptTabProps) {
-  const [query, setQuery] = useState("");
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,7 +44,7 @@ export function TranscriptTab({
         <Input
           placeholder="Search transcript..."
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => onQueryChange(e.target.value)}
         />
         <Button type="submit" size="sm" disabled={searching}>
           <Search className="mr-1 h-4 w-4" />
