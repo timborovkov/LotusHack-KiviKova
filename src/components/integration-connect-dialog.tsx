@@ -231,14 +231,15 @@ export function IntegrationConnectDialog({
               isCatalogUrlKey) && (
               <div className="space-y-2">
                 <Label htmlFor="token">
-                  {integration.authMode === "api_key"
+                  {integration.authMode === "api_key" ||
+                  integration.authMode === "url_key"
                     ? "API Key"
                     : "Access Token"}
                 </Label>
                 <Input
                   id="token"
                   type="password"
-                  placeholder={`Paste your ${integration.authMode === "api_key" ? "API key" : "access token"}`}
+                  placeholder={`Paste your ${integration.authMode === "api_key" || integration.authMode === "url_key" ? "API key" : "access token"}`}
                   value={token}
                   onChange={(e) => setToken(e.target.value)}
                 />
