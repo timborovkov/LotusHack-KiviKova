@@ -15,9 +15,13 @@ export async function optimisticTaskUpdate(
 ): Promise<Array<[readonly unknown[], unknown]>> {
   await queryClient.cancelQueries({ queryKey: queryKeys.tasks.all });
 
-  const previousData = queryClient.getQueriesData({
+  const allQueries = queryClient.getQueriesData({
     queryKey: queryKeys.tasks.all,
   });
+  // Exclude per-meeting caches (["tasks","meeting",id]) — those are managed by useMeetingTasks
+  const previousData = allQueries.filter(
+    ([key]) => !(key.length >= 2 && key[1] === "meeting")
+  );
 
   for (const [key] of previousData) {
     queryClient.setQueryData(key, (old: unknown) => {
