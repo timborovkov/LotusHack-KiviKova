@@ -128,6 +128,11 @@ export default function TasksPage() {
                   >
                     {task.title}
                   </p>
+                  {task.sourceText && (
+                    <p className="text-muted-foreground mt-0.5 truncate text-xs italic">
+                      &quot;{task.sourceText}&quot;
+                    </p>
+                  )}
                   <div className="mt-0.5 flex items-center gap-2">
                     {task.meetingTitle && (
                       <Link

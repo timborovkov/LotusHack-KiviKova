@@ -10,6 +10,8 @@ export interface TaskWithMeeting {
   title: string;
   assignee: string | null;
   status: string;
+  sourceText: string | null;
+  sourceTimestampMs: number | null;
   dueDate: string | null;
   createdAt: string;
   meetingTitle: string | null;
@@ -53,15 +55,30 @@ export function useAllTasks(status?: "open" | "completed") {
       return res.json();
     },
     onMutate: async ({ taskId, updates }) => {
-      // Optimistic update: immediately reflect the change in all task caches
       await queryClient.cancelQueries({ queryKey: queryKeys.tasks.all });
       const previousData = queryClient.getQueriesData<TaskWithMeeting[]>({
         queryKey: queryKeys.tasks.all,
       });
-      queryClient.setQueriesData<TaskWithMeeting[]>(
-        { queryKey: queryKeys.tasks.all },
-        (old) => old?.map((t) => (t.id === taskId ? { ...t, ...updates } : t))
-      );
+      // Update all task caches. For filtered caches (e.g. ["tasks","open"]),
+      // remove tasks whose status no longer matches the filter.
+      for (const [key] of previousData) {
+        queryClient.setQueryData<TaskWithMeeting[]>(key, (old) => {
+          if (!old) return old;
+          const updated = old.map((t) =>
+            t.id === taskId ? { ...t, ...updates } : t
+          );
+          // If this cache has a status filter, remove non-matching tasks
+          const filterStatus = key.length > 1 ? key[key.length - 1] : null;
+          if (
+            updates.status &&
+            typeof filterStatus === "string" &&
+            (filterStatus === "open" || filterStatus === "completed")
+          ) {
+            return updated.filter((t) => t.status === filterStatus);
+          }
+          return updated;
+        });
+      }
       return { previousData };
     },
     onError: (_err, _vars, context) => {

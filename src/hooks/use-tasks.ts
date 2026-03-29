@@ -56,30 +56,36 @@ export function useMeetingTasks(meetingId: string) {
       return res.json();
     },
     onMutate: async ({ taskId, updates }) => {
-      // Cancel both per-meeting and all-tasks queries
       await queryClient.cancelQueries({ queryKey: queryKeys.tasks.all });
       const previousMeeting = queryClient.getQueryData<Task[]>(qk);
-      const previousAll = queryClient.getQueryData(queryKeys.tasks.all);
+      const previousAll = queryClient.getQueriesData({
+        queryKey: queryKeys.tasks.all,
+      });
 
       // Optimistic update on per-meeting tasks
       queryClient.setQueryData<Task[]>(qk, (old) =>
         old?.map((t) => (t.id === taskId ? { ...t, ...updates } : t))
       );
-      // Optimistic update on all-tasks (dashboard widget)
-      queryClient.setQueryData(queryKeys.tasks.all, (old: unknown) =>
-        Array.isArray(old)
-          ? old.map((t: Record<string, unknown>) =>
-              t.id === taskId ? { ...t, ...updates } : t
-            )
-          : old
+      // Optimistic update on all task caches (prefix-matched, covers ["tasks"], ["tasks","open"], etc.)
+      queryClient.setQueriesData(
+        { queryKey: queryKeys.tasks.all },
+        (old: unknown) => {
+          if (!Array.isArray(old)) return old;
+          return old.map((t: Record<string, unknown>) =>
+            t.id === taskId ? { ...t, ...updates } : t
+          );
+        }
       );
       return { previousMeeting, previousAll };
     },
     onError: (_err, _vars, context) => {
       if (context?.previousMeeting)
         queryClient.setQueryData(qk, context.previousMeeting);
-      if (context?.previousAll)
-        queryClient.setQueryData(queryKeys.tasks.all, context.previousAll);
+      if (context?.previousAll) {
+        for (const [key, data] of context.previousAll) {
+          queryClient.setQueryData(key, data);
+        }
+      }
       toast.error("Failed to update task");
     },
     onSettled: invalidateTasks,

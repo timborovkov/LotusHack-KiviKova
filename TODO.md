@@ -48,15 +48,11 @@
 - Reliability hardening: Recall webhook signature verification (Svix) and meeting-usage billing idempotency guard
 - Growth and discoverability surfaces: Welcome to Pro page (`/welcome-to-pro`), feature landing pages (`/features/integrations`, `/features/meeting-memory`, `/features/context`), and SEO foundations (robots.txt, sitemap.xml, llms.txt, meta tags)
 - Billing operations and packaging: Polar subscription reconciliation cron (`/api/cron/billing-sync`) and trial policy aligned to full Pro feature access (voice, API, MCP, integrations)
-- Task management: `/dashboard/tasks` cross-call task list with filter tabs (open/all/completed), inline task completion with optimistic updates, dashboard widget limited to 3 tasks with "View all" link, Tasks nav button in header, meeting title links to source call
+- Task management: `/dashboard/tasks` cross-call task list with filter tabs (open/all/completed), inline task completion with optimistic updates, dashboard widget limited to 3 tasks with "View all" link, Tasks nav button in header, meeting title links to source call, task source context (transcript snippet + timestamp from extraction)
 
 ## Integrations
 
 - **Register OAuth apps for more services** — Currently only GitHub has a pre-registered OAuth app. To enable more OAuth integrations (Slack, Linear, Notion, etc.): register Vernix on each service's developer console, add env vars, add to `PRE_REGISTERED_CLIENTS` in `oauth-provider.ts`, change catalog status to `available`.
-
-## Task Management
-
-- **Add task source context** — Store and display the transcript snippet/timestamp that created each task, linking to the relevant transcript anchor. Requires schema migration (`sourceText`, `sourceTimestampMs` columns) and changes to `extractActionItems`.
 
 ## Empty States & Onboarding UX
 
