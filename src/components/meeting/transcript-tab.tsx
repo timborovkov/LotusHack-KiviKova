@@ -90,7 +90,7 @@ export function TranscriptTab({
                   {formatTime(segment.timestampMs)}
                 </div>
                 <div>
-                  <span className="text-xs font-semibold uppercase tracking-wide text-blue-500">
+                  <span className="text-xs font-semibold tracking-wide text-blue-500 uppercase">
                     {segment.speaker}
                   </span>
                   <p className="text-sm">{segment.text}</p>

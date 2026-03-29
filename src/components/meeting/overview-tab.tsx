@@ -140,9 +140,7 @@ export function OverviewTab({
         <Button
           variant="outline"
           size="sm"
-          onClick={() =>
-            window.open(meeting.joinLink, "_blank", "noopener")
-          }
+          onClick={() => window.open(meeting.joinLink, "_blank", "noopener")}
         >
           <ExternalLink className="mr-1 h-3.5 w-3.5" />
           Open Meeting Link

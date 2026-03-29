@@ -66,9 +66,7 @@ export function TasksTab({
         ) : (
           <TaskList
             tasks={
-              hideCompleted
-                ? tasks.filter((t) => t.status === "open")
-                : tasks
+              hideCompleted ? tasks.filter((t) => t.status === "open") : tasks
             }
             onToggle={(taskId, status) => onToggle(taskId, status)}
             onDelete={onDelete}
