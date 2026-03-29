@@ -66,16 +66,30 @@ export function useMeetingTasks(meetingId: string) {
       queryClient.setQueryData<Task[]>(qk, (old) =>
         old?.map((t) => (t.id === taskId ? { ...t, ...updates } : t))
       );
-      // Optimistic update on all task caches (prefix-matched, covers ["tasks"], ["tasks","open"], etc.)
-      queryClient.setQueriesData(
-        { queryKey: queryKeys.tasks.all },
-        (old: unknown) => {
+      // Optimistic update on all task caches (prefix-matched)
+      // For filtered caches (e.g. ["tasks","open"]), remove tasks that no longer match
+      const allTaskQueries = queryClient.getQueriesData({
+        queryKey: queryKeys.tasks.all,
+      });
+      for (const [key] of allTaskQueries) {
+        queryClient.setQueryData(key, (old: unknown) => {
           if (!Array.isArray(old)) return old;
-          return old.map((t: Record<string, unknown>) =>
+          const updated = old.map((t: Record<string, unknown>) =>
             t.id === taskId ? { ...t, ...updates } : t
           );
-        }
-      );
+          const filterStatus = key.length > 1 ? key[key.length - 1] : null;
+          if (
+            updates.status &&
+            typeof filterStatus === "string" &&
+            (filterStatus === "open" || filterStatus === "completed")
+          ) {
+            return updated.filter(
+              (t: Record<string, unknown>) => t.status === filterStatus
+            );
+          }
+          return updated;
+        });
+      }
       return { previousMeeting, previousAll };
     },
     onError: (_err, _vars, context) => {
