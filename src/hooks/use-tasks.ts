@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { Task } from "@/lib/db/schema";
 import { queryKeys } from "@/lib/query-keys";
+import { optimisticTaskUpdate, rollbackTaskUpdate } from "./task-cache";
 
 async function fetchTasks(meetingId: string): Promise<Task[]> {
   const res = await fetch(`/api/meetings/${meetingId}/tasks`);
@@ -56,49 +57,25 @@ export function useMeetingTasks(meetingId: string) {
       return res.json();
     },
     onMutate: async ({ taskId, updates }) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.tasks.all });
       const previousMeeting = queryClient.getQueryData<Task[]>(qk);
-      const previousAll = queryClient.getQueriesData({
-        queryKey: queryKeys.tasks.all,
-      });
-
       // Optimistic update on per-meeting tasks
+      await queryClient.cancelQueries({ queryKey: qk });
       queryClient.setQueryData<Task[]>(qk, (old) =>
         old?.map((t) => (t.id === taskId ? { ...t, ...updates } : t))
       );
-      // Optimistic update on all task caches (prefix-matched)
-      // For filtered caches (e.g. ["tasks","open"]), remove tasks that no longer match
-      const allTaskQueries = queryClient.getQueriesData({
-        queryKey: queryKeys.tasks.all,
-      });
-      for (const [key] of allTaskQueries) {
-        queryClient.setQueryData(key, (old: unknown) => {
-          if (!Array.isArray(old)) return old;
-          const updated = old.map((t: Record<string, unknown>) =>
-            t.id === taskId ? { ...t, ...updates } : t
-          );
-          const filterStatus = key.length > 1 ? key[key.length - 1] : null;
-          if (
-            updates.status &&
-            typeof filterStatus === "string" &&
-            (filterStatus === "open" || filterStatus === "completed")
-          ) {
-            return updated.filter(
-              (t: Record<string, unknown>) => t.status === filterStatus
-            );
-          }
-          return updated;
-        });
-      }
+      // Optimistic update on all cross-meeting task caches
+      const previousAll = await optimisticTaskUpdate(
+        queryClient,
+        taskId,
+        updates as Record<string, unknown>
+      );
       return { previousMeeting, previousAll };
     },
     onError: (_err, _vars, context) => {
       if (context?.previousMeeting)
         queryClient.setQueryData(qk, context.previousMeeting);
       if (context?.previousAll) {
-        for (const [key, data] of context.previousAll) {
-          queryClient.setQueryData(key, data);
-        }
+        rollbackTaskUpdate(queryClient, context.previousAll);
       }
       toast.error("Failed to update task");
     },
