@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useMeetingDetail } from "@/hooks/use-meeting-detail";
 import { useKnowledge } from "@/hooks/use-knowledge";
 import { useMeetingTasks } from "@/hooks/use-tasks";
@@ -34,17 +34,16 @@ const TABS = [
 
 type TabId = (typeof TABS)[number]["id"];
 
+function getInitialTab(): TabId {
+  if (typeof window === "undefined") return "overview";
+  const hash = window.location.hash.slice(1);
+  if (TABS.some((t) => t.id === hash)) return hash as TabId;
+  return "overview";
+}
+
 export default function MeetingDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const [activeTab, setActiveTab] = useState<TabId>("overview");
-
-  // Sync tab from URL hash after mount (avoids SSR hydration mismatch)
-  useEffect(() => {
-    const hash = window.location.hash.slice(1);
-    if (TABS.some((t) => t.id === hash)) {
-      setActiveTab(hash as TabId);
-    }
-  }, []);
+  const [activeTab, setActiveTab] = useState<TabId>(getInitialTab);
 
   const {
     meeting,
@@ -72,25 +71,23 @@ export default function MeetingDetailPage() {
     deleteTask,
   } = useMeetingTasks(id);
 
-  // Search query state (lifted from TranscriptTab to persist across tab switches)
+  // Lifted state to persist across tab switches
   const [searchQuery, setSearchQuery] = useState("");
+  const [hideCompleted, setHideCompleted] = useState(true);
 
-  // Agenda state
-  const [agenda, setAgenda] = useState("");
-  const syncedMeetingId = useRef<string | null>(null);
+  // Agenda state — synced from meeting metadata
   const meetingId = meeting?.id;
   const meetingAgenda = meeting
     ? ((((meeting.metadata ?? {}) as Record<string, unknown>).agenda as
         | string
         | undefined) ?? "")
     : "";
-
-  useEffect(() => {
-    if (meetingId && meetingId !== syncedMeetingId.current) {
-      syncedMeetingId.current = meetingId;
-      setAgenda(meetingAgenda);
-    }
-  }, [meetingId, meetingAgenda]);
+  const [prevMeetingId, setPrevMeetingId] = useState<string | null>(null);
+  const [agenda, setAgenda] = useState(meetingAgenda);
+  if (meetingId && meetingId !== prevMeetingId) {
+    setPrevMeetingId(meetingId);
+    setAgenda(meetingAgenda);
+  }
 
   // Update URL hash when tab changes
   const handleTabChange = (tab: TabId) => {
@@ -232,6 +229,8 @@ export default function MeetingDetailPage() {
             tasks={meetingTasks}
             loading={tasksLoading}
             meetingStatus={meeting.status}
+            hideCompleted={hideCompleted}
+            onHideCompletedChange={setHideCompleted}
             onAdd={(title) => addTask(title)}
             onToggle={(taskId, status) =>
               updateTask(taskId, { status: status as "open" | "completed" })
