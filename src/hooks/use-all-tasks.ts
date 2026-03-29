@@ -52,10 +52,30 @@ export function useAllTasks(status?: "open" | "completed") {
       if (!res.ok) throw new Error("Failed to update task");
       return res.json();
     },
-    onSuccess: () => {
+    onMutate: async ({ taskId, updates }) => {
+      // Optimistic update: immediately reflect the change in all task caches
+      await queryClient.cancelQueries({ queryKey: queryKeys.tasks.all });
+      const previousData = queryClient.getQueriesData<TaskWithMeeting[]>({
+        queryKey: queryKeys.tasks.all,
+      });
+      queryClient.setQueriesData<TaskWithMeeting[]>(
+        { queryKey: queryKeys.tasks.all },
+        (old) => old?.map((t) => (t.id === taskId ? { ...t, ...updates } : t))
+      );
+      return { previousData };
+    },
+    onError: (_err, _vars, context) => {
+      // Rollback on error
+      if (context?.previousData) {
+        for (const [key, data] of context.previousData) {
+          queryClient.setQueryData(key, data);
+        }
+      }
+      toast.error("Failed to update task");
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
     },
-    onError: () => toast.error("Failed to update task"),
   });
 
   return {
