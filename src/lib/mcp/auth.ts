@@ -43,3 +43,17 @@ export function buildAuthHeaders(
       return {};
   }
 }
+
+/**
+ * For url_key auth, embed the API key as a URL query parameter.
+ * Returns the original URL unchanged for other auth types.
+ */
+export function buildAuthUrl(
+  url: string,
+  auth: Pick<McpServer, "authType" | "authHeaderValue" | "authKeyParam">
+): string {
+  if (auth.authType !== "url_key" || !auth.authHeaderValue) return url;
+  const u = new URL(url);
+  u.searchParams.set(auth.authKeyParam ?? "apiKey", auth.authHeaderValue);
+  return u.toString();
+}

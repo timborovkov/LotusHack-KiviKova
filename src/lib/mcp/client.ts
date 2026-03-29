@@ -2,7 +2,7 @@ import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { UnauthorizedError } from "@modelcontextprotocol/sdk/client/auth.js";
 import { jsonSchema } from "ai";
 import { connectMcpClient } from "./transport";
-import { buildAuthHeaders } from "./auth";
+import { buildAuthHeaders, buildAuthUrl } from "./auth";
 import { VernixOAuthProvider } from "./oauth-provider";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
@@ -135,17 +135,7 @@ export class McpClientManager {
     userId: string
   ): Promise<void> {
     const headers = buildAuthHeaders(server);
-
-    // For url_key auth, embed the API key as a query parameter in the URL
-    let connectUrl = server.url;
-    if (server.authType === "url_key" && server.authHeaderValue) {
-      const u = new URL(server.url);
-      u.searchParams.set(
-        server.authKeyParam ?? "apiKey",
-        server.authHeaderValue
-      );
-      connectUrl = u.toString();
-    }
+    const connectUrl = buildAuthUrl(server.url, server);
 
     // OAuth servers use the SDK's authProvider for automatic token management
     const authProvider =

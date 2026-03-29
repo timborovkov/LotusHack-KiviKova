@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 import { mcpServers } from "@/lib/db/schema";
 import { and, eq } from "drizzle-orm";
 import { connectMcpClient, isSsrfUrl } from "@/lib/mcp/transport";
-import { buildAuthHeaders } from "@/lib/mcp/auth";
+import { buildAuthHeaders, buildAuthUrl } from "@/lib/mcp/auth";
 import { VernixOAuthProvider } from "@/lib/mcp/oauth-provider";
 
 // Accept either an existing server ID or raw connection params for testing before saving
@@ -86,31 +86,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Server not found" }, { status: 404 });
     }
 
-    url = server.url;
-    // url_key: embed API key as query param
-    if (server.authType === "url_key" && server.authHeaderValue) {
-      const u = new URL(server.url);
-      u.searchParams.set(
-        server.authKeyParam ?? "apiKey",
-        server.authHeaderValue
-      );
-      url = u.toString();
-    }
+    url = buildAuthUrl(server.url, server);
     headers = buildAuthHeaders(server);
     if (server.authType === "oauth") {
       authProvider = new VernixOAuthProvider(user.id, server.id, server.url);
     }
   } else {
-    url = parsed.data.url;
-    // url_key: embed API key as query param
-    if (parsed.data.authType === "url_key" && parsed.data.authHeaderValue) {
-      const u = new URL(parsed.data.url);
-      u.searchParams.set(
-        parsed.data.authKeyParam ?? "apiKey",
-        parsed.data.authHeaderValue
-      );
-      url = u.toString();
-    }
+    url = buildAuthUrl(parsed.data.url, {
+      authType: parsed.data.authType,
+      authHeaderValue: parsed.data.authHeaderValue ?? null,
+      authKeyParam: parsed.data.authKeyParam ?? null,
+    });
     headers = buildAuthHeaders({
       authType:
         parsed.data.apiKey && parsed.data.authType === "none"
