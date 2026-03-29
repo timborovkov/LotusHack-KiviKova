@@ -49,22 +49,12 @@
 - Growth and discoverability surfaces: Welcome to Pro page (`/welcome-to-pro`), feature landing pages (`/features/integrations`, `/features/meeting-memory`, `/features/context`), and SEO foundations (robots.txt, sitemap.xml, llms.txt, meta tags)
 - Billing operations and packaging: Polar subscription reconciliation cron (`/api/cron/billing-sync`) and trial policy aligned to full Pro feature access (voice, API, MCP, integrations)
 - Task management: `/dashboard/tasks` cross-call task list with filter tabs (open/all/completed), inline task completion with optimistic updates, dashboard widget limited to 3 tasks with "View all" link, Tasks nav button in header, meeting title links to source call, task source context (transcript snippet + timestamp from extraction)
+- Empty states and onboarding UX: auth page redirects for logged-in users (middleware), public site header shows "Dashboard" when authenticated, landing page auth-aware CTAs, dashboard "Start your first call" empty state with knowledge/integrations nudges, integrations page first-connection banner
+- Terms of use acceptance: checkbox on credentials signup form, SSO post-auth acceptance page (`/accept-terms`), middleware enforcement (`termsAcceptedAt` in JWT), schema column on users table
 
 ## Integrations
 
 - **Register OAuth apps for more services** — Currently only GitHub has a pre-registered OAuth app. To enable more OAuth integrations (Slack, Linear, Notion, etc.): register Vernix on each service's developer console, add env vars, add to `PRE_REGISTERED_CLIENTS` in `oauth-provider.ts`, change catalog status to `available`.
-
-## Empty States & Onboarding UX
-
-- **Show dashboard-first navigation for logged-in users on public pages** — On landing and other public pages, replace Login/Sign up CTAs with a primary "Go to dashboard" action when a session exists.
-- **Redirect authenticated users away from auth pages** — If a logged-in user visits `/login` or `/register`, immediately redirect them to `/dashboard`.
-- **Users should be required to accept the terms of use and the privacy policy** — Add a checkbox to the signup form and the login form to accept the terms of use and the privacy policy.
-- **SSO users should be required to accept the terms of use and the privacy policy** — Require them to accept the terms of use and the privacy policy after they sign up with SSO.
-- **Dashboard calls empty state** — Add a primary "Start your first call" card when the user has no calls.
-- **Knowledge page empty state** — Add a primary "Upload your first document" card when there are no knowledge files.
-- **Integrations page empty state** — Add a primary "Connect your first integration" card when no integrations are configured.
-- **Dashboard knowledge nudge** — Add a dashboard notice when no documents exist, with CTA copy focused on giving the agent business context.
-- **Dashboard integrations nudge** — Add a dashboard notice when no integrations exist, with tool-use examples (CRM lookup, calendar checks, Slack follow-up actions).
 
 ## Call Detail Page UX
 
