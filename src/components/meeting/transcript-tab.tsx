@@ -31,7 +31,6 @@ export function TranscriptTab({
   onQueryChange,
   onSearch,
 }: TranscriptTabProps) {
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch(query);
