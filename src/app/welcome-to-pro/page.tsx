@@ -41,8 +41,8 @@ const UNLOCKED_FEATURES = [
   },
   {
     icon: MessageSquare,
-    label: "200 AI queries/day",
-    description: "Ask unlimited questions about your meetings",
+    label: "AI chat",
+    description: "Ask questions about your meetings and get instant answers",
   },
   {
     icon: CreditCard,
@@ -55,16 +55,18 @@ export default function WelcomeToProPage() {
   const { billing, loading, error } = useBilling();
   const router = useRouter();
 
-  // Redirect to dashboard if billing fails to load
+  // Redirect if not Pro/trialing or billing fails
+  const isPro = billing?.plan === "pro";
+  const isTrialOrPro = isPro || billing?.trialing;
   useEffect(() => {
-    if (!loading && (!billing || error)) {
+    if (!loading && (!billing || error || !isTrialOrPro)) {
       router.replace("/dashboard");
     }
-  }, [loading, billing, error, router]);
+  }, [loading, billing, error, isTrialOrPro, router]);
 
-  if (!loading && (!billing || error)) return null;
+  if (!loading && (!billing || error || !isTrialOrPro)) return null;
 
-  const isTrialing = billing?.trialing;
+  const isTrialing = billing?.trialing ?? false;
   const heading = isTrialing
     ? "Your Pro trial has started!"
     : "Welcome to Pro!";
