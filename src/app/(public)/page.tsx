@@ -146,7 +146,7 @@ export default function LandingPage() {
           </Button>
         </div>
         <p className="animate-fade-up text-muted-foreground mt-4 text-xs delay-300">
-          No credit card required. 14-day free trial.
+          Free plan available. 14-day Pro trial when you upgrade.
         </p>
         <div className="animate-fade-up text-muted-foreground mt-8 flex flex-wrap items-center justify-center gap-x-1 text-sm delay-400">
           <Video className="mr-1 h-4 w-4" />
@@ -295,7 +295,7 @@ export default function LandingPage() {
             summarize.
           </h2>
           <p className="text-muted-foreground mb-8">
-            14-day free trial. No credit card. Cancel anytime.
+            Start free. 14-day Pro trial when you upgrade. Cancel anytime.
           </p>
           <Button size="lg" variant="accent" render={<Link href="/register" />}>
             Try Vernix on Your Next Call

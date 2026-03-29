@@ -29,7 +29,7 @@ const QUESTIONS = [
   },
   {
     q: "How does the free trial work?",
-    a: "When you sign up, you get a 14-day trial of Pro with 90 minutes of meeting time (voice or silent). After the trial ends or you use up the 90 minutes, you fall back to the free plan. No credit card required.",
+    a: "When you upgrade to Pro, you get a 14-day trial with full Pro features and 90 minutes of meeting time (voice or silent). After the trial, your subscription activates automatically. You can cancel anytime during the trial.",
   },
   {
     q: "How does pricing work?",

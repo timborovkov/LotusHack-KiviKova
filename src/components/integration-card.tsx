@@ -6,25 +6,41 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ConfirmDialog } from "@/components/confirm-dialog";
-import { Check, Clock, ChevronDown, ExternalLink } from "lucide-react";
+import {
+  Check,
+  Clock,
+  ChevronDown,
+  ExternalLink,
+  FlaskConical,
+} from "lucide-react";
+import { toast } from "sonner";
 import type { Integration } from "@/lib/integrations/catalog";
 
 interface IntegrationCardProps {
   integration: Integration;
   connected: boolean;
+  serverId?: string;
   onConnect: (integration: Integration) => void;
   onDisconnect: (integration: Integration) => void;
+  onTest?: (id: string) => Promise<{
+    success: boolean;
+    toolCount?: number;
+    error?: string;
+  }>;
 }
 
 export function IntegrationCard({
   integration,
   connected,
+  serverId,
   onConnect,
   onDisconnect,
+  onTest,
 }: IntegrationCardProps) {
   const isComingSoon = integration.status === "coming-soon";
   const [confirmDisconnect, setConfirmDisconnect] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [testing, setTesting] = useState(false);
 
   return (
     <>
@@ -128,16 +144,45 @@ export function IntegrationCard({
                   </div>
                 </div>
               )}
-              <Button
-                size="xs"
-                variant="outline"
-                onClick={() =>
-                  window.open(integration.docsUrl, "_blank", "noopener")
-                }
-              >
-                <ExternalLink className="mr-1 h-3 w-3" />
-                Docs
-              </Button>
+              <div className="flex flex-wrap gap-2">
+                {connected && serverId && onTest && (
+                  <Button
+                    size="xs"
+                    variant="outline"
+                    disabled={testing}
+                    onClick={async () => {
+                      setTesting(true);
+                      try {
+                        const result = await onTest(serverId);
+                        if (result.success) {
+                          toast.success(
+                            `Connected — ${result.toolCount} tools available`
+                          );
+                        } else {
+                          toast.error(result.error ?? "Connection failed");
+                        }
+                      } catch {
+                        toast.error("Connection test failed");
+                      } finally {
+                        setTesting(false);
+                      }
+                    }}
+                  >
+                    <FlaskConical className="mr-1 h-3 w-3" />
+                    {testing ? "Testing..." : "Test"}
+                  </Button>
+                )}
+                <Button
+                  size="xs"
+                  variant="outline"
+                  onClick={() =>
+                    window.open(integration.docsUrl, "_blank", "noopener")
+                  }
+                >
+                  <ExternalLink className="mr-1 h-3 w-3" />
+                  Docs
+                </Button>
+              </div>
             </div>
           )}
         </CardContent>

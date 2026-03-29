@@ -84,7 +84,10 @@ export async function POST(request: Request) {
   } else {
     url = parsed.data.url;
     headers = buildAuthHeaders({
-      authType: parsed.data.apiKey ? "bearer" : parsed.data.authType,
+      authType:
+        parsed.data.apiKey && parsed.data.authType === "none"
+          ? "bearer"
+          : parsed.data.authType,
       authHeaderName: parsed.data.authHeaderName ?? null,
       authHeaderValue: parsed.data.authHeaderValue ?? null,
       authUsername: parsed.data.authUsername ?? null,

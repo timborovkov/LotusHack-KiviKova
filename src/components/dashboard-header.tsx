@@ -24,8 +24,8 @@ function PlanBanner() {
 
   const isPro = billing.plan === PLANS.PRO;
 
-  // Pro users don't need a banner
-  if (isPro && !billing.trialing) return null;
+  // Pro users don't need a banner (non-trialing)
+  if (isPro) return null;
 
   const checkoutUrl = getCheckoutUrl();
 

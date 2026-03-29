@@ -127,6 +127,22 @@ export function useMcpServers() {
       toast.error(err instanceof Error ? err.message : "OAuth failed"),
   });
 
+  const testServer = async (
+    id: string
+  ): Promise<{
+    success: boolean;
+    toolCount?: number;
+    tools?: { name: string; description: string }[];
+    error?: string;
+  }> => {
+    const res = await fetch("/api/settings/mcp-servers/test", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    return res.json();
+  };
+
   return {
     servers,
     loading,
@@ -137,6 +153,7 @@ export function useMcpServers() {
       await oauthMutation.mutateAsync({ integrationId, serverUrl });
     },
     oauthLoading: oauthMutation.isPending,
+    testServer,
     toggleServer: (id: string, enabled: boolean) =>
       toggleMutation.mutate({ id, enabled }),
     deleteServer: (id: string) => deleteMutation.mutate(id),

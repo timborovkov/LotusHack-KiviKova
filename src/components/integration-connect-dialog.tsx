@@ -40,6 +40,7 @@ export function IntegrationConnectDialog({
   onStartOAuth,
   oauthLoading,
 }: IntegrationConnectDialogProps) {
+  const [customName, setCustomName] = useState("");
   const [serverUrl, setServerUrl] = useState("");
   const [authType, setAuthType] = useState<McpAuthType>("none");
   const [token, setToken] = useState("");
@@ -50,6 +51,7 @@ export function IntegrationConnectDialog({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setCustomName("");
     setServerUrl(integration?.serverUrl ?? "");
     setAuthType(
       integration?.authMode === "api_key"
@@ -98,7 +100,7 @@ export function IntegrationConnectDialog({
     setLoading(true);
     try {
       const params: AddServerParams = {
-        name: isCustom ? serverUrl : integration.name,
+        name: isCustom ? customName || serverUrl : integration.name,
         url,
         catalogIntegrationId: isCustom ? undefined : integration.id,
       };
@@ -161,6 +163,19 @@ export function IntegrationConnectDialog({
           </div>
         ) : (
           <form onSubmit={handleConnect} className="space-y-4">
+            {/* Name field: only for custom servers */}
+            {isCustom && (
+              <div className="space-y-2">
+                <Label htmlFor="server-name">Server Name</Label>
+                <Input
+                  id="server-name"
+                  placeholder="My MCP Server"
+                  value={customName}
+                  onChange={(e) => setCustomName(e.target.value)}
+                />
+              </div>
+            )}
+
             {/* URL field: only for custom servers without prefilled URL */}
             {!hasPrefilledUrl && (
               <div className="space-y-2">

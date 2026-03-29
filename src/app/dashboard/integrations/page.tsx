@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useMcpServers } from "@/hooks/use-mcp-servers";
 import { useBilling } from "@/hooks/use-billing";
 import { IntegrationCard } from "@/components/integration-card";
+import { ConnectedServerCard } from "@/components/connected-server-card";
 import { IntegrationConnectDialog } from "@/components/integration-connect-dialog";
 import {
   UpgradeDialog,
@@ -24,8 +25,15 @@ import {
 } from "@/lib/integrations/catalog";
 
 export default function IntegrationsPage() {
-  const { servers, addServer, deleteServer, startOAuth, oauthLoading } =
-    useMcpServers();
+  const {
+    servers,
+    addServer,
+    deleteServer,
+    toggleServer,
+    testServer,
+    startOAuth,
+    oauthLoading,
+  } = useMcpServers();
   const { billing, loading: billingLoading } = useBilling();
   const searchParams = useSearchParams();
 
@@ -77,6 +85,18 @@ export default function IntegrationsPage() {
       })
       .filter(Boolean) as string[]
   );
+
+  // Custom servers: no catalogIntegrationId, or catalog match not found
+  const customServers = servers.filter((s) => {
+    if (s.catalogIntegrationId) {
+      return !integrations.some((i) => i.id === s.catalogIntegrationId);
+    }
+    return !integrations.some(
+      (i) =>
+        s.name.toLowerCase() === i.name.toLowerCase() ||
+        s.url.toLowerCase().includes(i.id)
+    );
+  });
 
   const filtered = integrations.filter((i) => {
     if (
@@ -180,6 +200,22 @@ export default function IntegrationsPage() {
         </CardContent>
       </Card>
 
+      {/* Connected custom servers */}
+      {customServers.length > 0 && (
+        <div className="mb-6 space-y-2">
+          <h2 className="text-sm font-medium">Your connections</h2>
+          {customServers.map((server) => (
+            <ConnectedServerCard
+              key={server.id}
+              server={server}
+              onTest={testServer}
+              onToggle={toggleServer}
+              onDelete={deleteServer}
+            />
+          ))}
+        </div>
+      )}
+
       {/* Search + filters */}
       <div className="mb-6 space-y-3">
         <Input
@@ -223,8 +259,16 @@ export default function IntegrationsPage() {
             key={integration.id}
             integration={integration}
             connected={connectedIds.has(integration.id)}
+            serverId={
+              servers.find(
+                (s) =>
+                  s.catalogIntegrationId === integration.id ||
+                  s.name.toLowerCase() === integration.name.toLowerCase()
+              )?.id
+            }
             onConnect={handleConnect}
             onDisconnect={handleDisconnect}
+            onTest={testServer}
           />
         ))}
       </div>
