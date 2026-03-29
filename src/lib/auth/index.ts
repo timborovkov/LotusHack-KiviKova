@@ -187,6 +187,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       user.id = newUser.id;
       user.image = image;
+      user.termsAcceptedAt = null; // new OAuth user, terms not yet accepted
       return true;
     },
     async jwt({ token, user, trigger }) {
