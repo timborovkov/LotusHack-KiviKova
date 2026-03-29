@@ -36,6 +36,7 @@ export function buildAuthHeaders(
       );
       return { Authorization: `Basic ${credentials}` };
     }
+    case "url_key":
     case "oauth":
     case "none":
     default:
