@@ -110,7 +110,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         );
 
       if (existingAccount) {
+        // Returning SSO user — load termsAcceptedAt from DB
+        const [dbUser] = await db
+          .select({
+            termsAcceptedAt: users.termsAcceptedAt,
+            image: users.image,
+          })
+          .from(users)
+          .where(eq(users.id, existingAccount.userId));
         user.id = existingAccount.userId;
+        user.image = dbUser?.image ?? user.image;
+        user.termsAcceptedAt = dbUser?.termsAcceptedAt ?? null;
         return true;
       }
 
@@ -149,6 +159,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             .where(eq(users.id, existingUser.id));
         }
         user.image = existingUser.image ?? oauthImage;
+        user.termsAcceptedAt = existingUser.termsAcceptedAt ?? null;
         return true;
       }
 
