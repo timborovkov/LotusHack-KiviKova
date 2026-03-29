@@ -19,8 +19,8 @@ const PRE_REGISTERED_CLIENTS: Record<
   { clientIdEnv: string; clientSecretEnv: string }
 > = {
   "https://api.githubcopilot.com": {
-    clientIdEnv: "GITHUB_CLIENT_ID",
-    clientSecretEnv: "GITHUB_CLIENT_SECRET",
+    clientIdEnv: "GITHUB_MCP_CLIENT_ID",
+    clientSecretEnv: "GITHUB_MCP_CLIENT_SECRET",
   },
 };
 
