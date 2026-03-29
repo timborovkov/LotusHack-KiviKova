@@ -4,6 +4,7 @@ import { requireSessionUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { mcpServers } from "@/lib/db/schema";
 import { invalidateMcpCache } from "@/lib/mcp/client";
+import { isSsrfUrl } from "@/lib/mcp/transport";
 
 export async function PATCH(
   request: Request,
@@ -32,10 +33,16 @@ export async function PATCH(
   if (typeof url === "string" && url.length > 0) {
     try {
       new URL(url);
-      updates.url = url;
     } catch {
       return NextResponse.json({ error: "Invalid URL" }, { status: 400 });
     }
+    if (isSsrfUrl(url)) {
+      return NextResponse.json(
+        { error: "URL resolves to a private or restricted address" },
+        { status: 400 }
+      );
+    }
+    updates.url = url;
   }
   if (typeof apiKey === "string") updates.apiKey = apiKey || null;
   if (typeof enabled === "boolean") updates.enabled = enabled;
