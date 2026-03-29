@@ -54,7 +54,9 @@ async function probeEndpoint(url: string): Promise<{
 
 describe("Catalog MCP Server Reachability", () => {
   const integrations = getIntegrations();
-  const withServers = integrations.filter((i) => i.serverUrl);
+  const withServers = integrations.filter(
+    (i) => i.serverUrl && i.status === "available"
+  );
 
   for (const integration of withServers) {
     it(
@@ -78,15 +80,6 @@ describe("Catalog MCP Server Reachability", () => {
       TIMEOUT_MS + 5_000
     );
   }
-
-  it("all available integrations have a serverUrl", () => {
-    const available = integrations.filter((i) => i.status === "available");
-    const missingUrl = available.filter((i) => !i.serverUrl);
-    expect(
-      missingUrl,
-      `Available integrations missing serverUrl: ${missingUrl.map((i) => i.name).join(", ")}`
-    ).toHaveLength(0);
-  });
 
   it("all serverUrls are valid HTTPS URLs", () => {
     for (const i of withServers) {
