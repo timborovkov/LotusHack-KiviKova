@@ -137,9 +137,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, ...result });
   } catch (error) {
     clearTimeout(timeoutId!);
-    console.error("[MCP Test] Connection failed:", error);
-    // Don't leak raw error messages (may contain URLs with embedded API keys)
     const raw = error instanceof Error ? error.message : "";
+    console.error("[MCP Test] Connection failed:", raw || "Unknown error");
+    // Don't leak raw error messages (may contain URLs with embedded API keys)
     const message = raw.includes("timed out")
       ? "Connection timed out"
       : raw.includes("SSRF") || raw.includes("private")
