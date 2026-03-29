@@ -24,9 +24,19 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
+  // Redirect authenticated users away from auth pages
+  const authPages = ["/login", "/register"];
+  if (req.auth && authPages.includes(req.nextUrl.pathname)) {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
+  }
+
   if (!req.auth) {
     if (req.nextUrl.pathname.startsWith("/api/")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    // Don't redirect auth pages to login (they ARE the login)
+    if (authPages.includes(req.nextUrl.pathname)) {
+      return NextResponse.next();
     }
     return NextResponse.redirect(new URL("/login", req.url));
   }
@@ -37,6 +47,8 @@ export const config = {
   matcher: [
     "/dashboard/:path*",
     "/welcome-to-pro",
+    "/login",
+    "/register",
     "/api/meetings/:path*",
     "/api/agent/:path*",
     "/api/search/:path*",
