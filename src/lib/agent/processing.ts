@@ -118,7 +118,9 @@ async function captureRecordingAndParticipants(
           const key = `recordings/${meetingId}.mp4`;
           await uploadFile(key, buffer, "video/mp4");
           updates.recordingKey = key;
-          console.log(`[Processing] Recording saved: ${key} (${Math.round(buffer.length / 1024 / 1024)}MB)`);
+          console.log(
+            `[Processing] Recording saved: ${key} (${Math.round(buffer.length / 1024 / 1024)}MB)`
+          );
         }
       }
     } catch (err) {
