@@ -101,17 +101,25 @@ async function captureRecordingAndParticipants(
   const bot = await provider.getBot(botId);
   const updates: Record<string, unknown> = {};
 
-  // Capture recording to S3
+  // Capture recording to S3 (skip files > 200MB to avoid OOM in serverless)
+  const MAX_RECORDING_SIZE = 200 * 1024 * 1024;
   const recordingUrl = bot.media_shortcuts?.video_mixed?.data?.download_url;
   if (recordingUrl) {
     try {
       const res = await fetch(recordingUrl);
       if (res.ok) {
-        const buffer = Buffer.from(await res.arrayBuffer());
-        const key = `recordings/${meetingId}.mp4`;
-        await uploadFile(key, buffer, "video/mp4");
-        updates.recordingKey = key;
-        console.log(`[Processing] Recording saved: ${key}`);
+        const contentLength = Number(res.headers.get("content-length") ?? "0");
+        if (contentLength > MAX_RECORDING_SIZE) {
+          console.warn(
+            `[Processing] Recording too large (${Math.round(contentLength / 1024 / 1024)}MB), skipping capture`
+          );
+        } else {
+          const buffer = Buffer.from(await res.arrayBuffer());
+          const key = `recordings/${meetingId}.mp4`;
+          await uploadFile(key, buffer, "video/mp4");
+          updates.recordingKey = key;
+          console.log(`[Processing] Recording saved: ${key} (${Math.round(buffer.length / 1024 / 1024)}MB)`);
+        }
       }
     } catch (err) {
       console.error("[Processing] Recording download failed:", err);
