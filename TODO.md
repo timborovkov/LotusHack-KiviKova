@@ -58,12 +58,12 @@
 
 - **Register OAuth apps for more services** — Currently only GitHub has a pre-registered OAuth app. To enable more OAuth integrations (Slack, Linear, Notion, etc.): register Vernix on each service's developer console, add env vars, add to `PRE_REGISTERED_CLIENTS` in `oauth-provider.ts`, change catalog status to `available`.
 
-## Call Reliability & Recording (remaining)
+## Recording Retention & Deletion
 
-- **Recording retention policy** — Decide keep/expire/user-configurable retention rules and estimate storage cost per meeting minute.
-- **Recording privacy controls** — Let users disable recording storage per call, and ensure meeting deletion also deletes stored media from S3/Minio.
-- **Expand export completeness** — Include transcript, knowledge, tasks, participant metadata, and recording references in exports.
-- **Transcript-synced video playback** — Click transcript line to seek video to that timestamp (requires timestamp mapping).
+- **Define and enforce default recording retention** — Set a clear launch policy for how long recordings are stored (and when they are deleted), and document expected storage cost per meeting minute.
+- **Ship recording privacy controls** — Allow users to disable recording storage per call.
+- **Guarantee deletion consistency** — When a meeting is deleted, also delete associated recording media from S3/Minio to avoid orphaned private data.
+- **Update legal disclosures** — Reflect final recording retention, storage, and deletion behavior in Terms of Use and Privacy Policy before launch.
 
 ## Cron Jobs & Background Reconciliation
 
@@ -89,7 +89,7 @@
 
 ## SEO & Discoverability
 
-- **Google Search Console** — Verify domain, submit sitemap, monitor indexing
+- **Google Search Console** — Verify domain, submit sitemap, monitor indexing - DONE
 - **Schema markup** — Add JSON-LD structured data: Organization, SoftwareApplication, FAQ schema on the FAQ page
 - **Canonical URLs** — Ensure all pages have proper canonical tags via metadataBase
 - **Dynamic robots.txt and sitemap** — Move `robots.txt` from static `public/` to a Next.js route handler so it generates at build time from config. Same for `llms.txt`.
