@@ -86,6 +86,18 @@ export async function GET(request: Request) {
         bot.status_changes?.[bot.status_changes.length - 1]?.code;
 
       if (lastStatus === "done" || lastStatus === "fatal") {
+        if (!m.userId) {
+          // No userId — can't process, mark as failed
+          await db
+            .update(meetings)
+            .set({ status: "failed", updatedAt: now })
+            .where(eq(meetings.id, m.id));
+          console.warn(
+            `[Meeting Recovery] Meeting ${m.id} has no userId, marked failed`
+          );
+          recovered++;
+          continue;
+        }
         // Bot has finished — process the meeting
         console.log(
           `[Meeting Recovery] Bot ${botId} is ${lastStatus}, processing meeting ${m.id}`
@@ -99,7 +111,6 @@ export async function GET(request: Request) {
           })
           .where(eq(meetings.id, m.id));
 
-        if (!m.userId) continue;
         await processMeetingEnd(m.id, m.userId, m.qdrantCollectionName, {
           ...metadata,
           title: m.title,
@@ -114,6 +125,14 @@ export async function GET(request: Request) {
           ? now.getTime() - new Date(m.startedAt).getTime()
           : 0;
         if (meetingAge > 4 * 60 * 60 * 1000) {
+          if (!m.userId) {
+            await db
+              .update(meetings)
+              .set({ status: "failed", updatedAt: now })
+              .where(eq(meetings.id, m.id));
+            recovered++;
+            continue;
+          }
           console.log(
             `[Meeting Recovery] Meeting ${m.id} active > 4h, forcing leave`
           );
@@ -130,7 +149,6 @@ export async function GET(request: Request) {
               updatedAt: now,
             })
             .where(eq(meetings.id, m.id));
-          if (!m.userId) continue;
           await processMeetingEnd(m.id, m.userId, m.qdrantCollectionName, {
             ...metadata,
             title: m.title,
@@ -171,7 +189,14 @@ export async function GET(request: Request) {
     );
 
   for (const m of staleProcessing) {
-    if (!m.userId) continue;
+    if (!m.userId) {
+      await db
+        .update(meetings)
+        .set({ status: "failed", updatedAt: now })
+        .where(eq(meetings.id, m.id));
+      recovered++;
+      continue;
+    }
     const metadata = (m.metadata as Record<string, unknown>) ?? {};
     console.log(
       `[Meeting Recovery] Retrying processing for stuck meeting ${m.id}`
