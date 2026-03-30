@@ -42,7 +42,9 @@ export async function GET(request: Request) {
       .where(and(eq(meetings.id, m.id), eq(meetings.status, "joining")))
       .returning({ id: meetings.id });
     if (updated) {
-      console.log(`[Meeting Recovery] Marked joining meeting ${m.id} as failed`);
+      console.log(
+        `[Meeting Recovery] Marked joining meeting ${m.id} as failed`
+      );
       recovered++;
     }
   }
