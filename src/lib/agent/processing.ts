@@ -70,7 +70,10 @@ export async function processMeetingEnd(
       try {
         await captureRecordingAndParticipants(meetingId, userId, botId);
       } catch (err) {
-        console.error("[Processing] Recording/participant capture failed:", err);
+        console.error(
+          "[Processing] Recording/participant capture failed:",
+          err
+        );
       }
     }
   } catch (error) {
