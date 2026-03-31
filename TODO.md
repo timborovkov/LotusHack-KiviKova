@@ -43,6 +43,8 @@
 - Cron job upgrade reminders for free users every week, email them to let them know about the upgrade options.
 - Subscription cancellation access policy (keep access until period/trial end)
 - Cron documentation sync (`docs/cron-jobs.md` aligned with active jobs)
+- Unified cron dispatcher (`/api/cron`) — single Railway service drives all jobs via schedule-based dispatch, extracted job handlers into `src/lib/cron/jobs/`
+- Recording retention bug fixes — S3 failure no longer orphans recordings (skips metadata clear on failure), null userId no longer causes infinite reprocessing loop
 - Integrations platform foundation: Zod-validated catalog (`src/lib/integrations/catalog.ts`), 30 seeded integrations, custom MCP auth types (none/bearer/header/basic/OAuth), OAuth flow (MCP SDK authProvider + state JWT + PKCE + token storage), and pre-registered GitHub OAuth
 - Integrations UX revamp: `/dashboard/integrations` searchable catalog + category filters + connected server cards, Integration Cloud on landing/feature pages, MCP management moved from Settings, and Pro/Trial paywall gating
 - Reliability hardening: Recall webhook signature verification (Svix) and meeting-usage billing idempotency guard
