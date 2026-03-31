@@ -46,7 +46,7 @@ describe("runRecordingRetention", () => {
   });
 
   it("returns zero deleted when no expired meetings found", async () => {
-    mockDb.where.mockReturnValueOnce({ limit: vi.fn().mockResolvedValueOnce([]) });
+    mockDb.limit.mockResolvedValueOnce([]);
 
     const result = await runRecordingRetention();
 
