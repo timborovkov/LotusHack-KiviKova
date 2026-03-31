@@ -43,6 +43,11 @@
 - Cron job upgrade reminders for free users every week, email them to let them know about the upgrade options.
 - Subscription cancellation access policy (keep access until period/trial end)
 - Cron documentation sync (`docs/cron-jobs.md` aligned with active jobs)
+- Unified cron dispatcher (`/api/cron`) — single Railway service drives all jobs via schedule-based dispatch, extracted job handlers into `src/lib/cron/jobs/`
+- Recording retention bug fixes — S3 failure no longer orphans recordings (skips metadata clear on failure), null userId no longer causes infinite reprocessing loop
+- Recording retention policy: 90-day default enforced via cron (`RECORDING_RETENTION_DAYS`), documented storage cost
+- Deletion consistency: meeting DELETE handler cleans up S3 recordings, Recall bots, Qdrant collections, and scoped documents
+- Legal disclosures: Terms of Use and Privacy Policy updated with recording retention, storage, and deletion behavior
 - Integrations platform foundation: Zod-validated catalog (`src/lib/integrations/catalog.ts`), 30 seeded integrations, custom MCP auth types (none/bearer/header/basic/OAuth), OAuth flow (MCP SDK authProvider + state JWT + PKCE + token storage), and pre-registered GitHub OAuth
 - Integrations UX revamp: `/dashboard/integrations` searchable catalog + category filters + connected server cards, Integration Cloud on landing/feature pages, MCP management moved from Settings, and Pro/Trial paywall gating
 - Reliability hardening: Recall webhook signature verification (Svix) and meeting-usage billing idempotency guard
@@ -60,10 +65,7 @@
 
 ## Recording Retention & Deletion
 
-- **Define and enforce default recording retention** — Set a clear launch policy for how long recordings are stored (and when they are deleted), and document expected storage cost per meeting minute.
-- **Ship recording privacy controls** — Allow users to disable recording storage per call.
-- **Guarantee deletion consistency** — When a meeting is deleted, also delete associated recording media from S3/Minio to avoid orphaned private data.
-- **Update legal disclosures** — Reflect final recording retention, storage, and deletion behavior in Terms of Use and Privacy Policy before launch.
+- **Ship recording privacy controls UI** — Backend `noRecording` flag works via API, but there's no UI toggle in the meeting creation form for users to disable recording.
 
 ## Cron Jobs & Background Reconciliation
 
