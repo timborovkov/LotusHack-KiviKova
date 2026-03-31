@@ -62,7 +62,6 @@ describe("runRecordingRetention", () => {
         metadata: { recordingKey: "recordings/abc.mp4", botId: "bot-1" },
       },
     ]);
-    mockDb.where.mockResolvedValueOnce(undefined);
 
     const result = await runRecordingRetention();
 
@@ -131,8 +130,6 @@ describe("runRecordingRetention", () => {
     mockDeleteFile
       .mockRejectedValueOnce(new Error("S3 error"))
       .mockResolvedValueOnce(undefined);
-    mockDb.where.mockResolvedValueOnce(undefined);
-
     const result = await runRecordingRetention();
 
     // m1: S3 fail → skipped, m2: null userId → skipped, m3: success
@@ -160,8 +157,6 @@ describe("runRecordingRetention", () => {
         metadata: { recordingKey: "recordings/abc.mp4" },
       },
     ]);
-    mockDb.where.mockResolvedValueOnce(undefined);
-
     await runRecordingRetention();
 
     expect(mockProvider.deleteBot).not.toHaveBeenCalled();
