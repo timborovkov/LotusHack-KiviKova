@@ -1,5 +1,6 @@
 import { DISPLAY, FREE_TRIAL, LIMITS, PLANS } from "@/lib/billing/constants";
 import { getIntegrations, CATEGORIES } from "@/lib/integrations/catalog";
+import { RATE_LIMIT_STANDARD, RATE_LIMIT_EXPENSIVE } from "@/lib/api/constants";
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://vernix.app";
 
@@ -70,7 +71,7 @@ Vernix provides a REST API and MCP server for programmatic access to meetings, t
 - API Documentation: ${BASE_URL}/docs
 - OpenAPI Spec: ${BASE_URL}/api/v1/openapi.json
 - Authentication: Bearer token with API key (create at ${BASE_URL}/dashboard/settings)
-- Rate Limits: 60 requests/minute standard, 10 requests/minute for search/agent operations
+- Rate Limits: ${RATE_LIMIT_STANDARD} requests/minute standard, ${RATE_LIMIT_EXPENSIVE} requests/minute for search/agent operations
 - Daily Quota: ${LIMITS[PLANS.PRO].apiRequestsPerDay} requests/day (Pro plan)
 
 ### REST API Endpoints
