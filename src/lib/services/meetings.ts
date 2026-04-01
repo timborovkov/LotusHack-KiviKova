@@ -184,6 +184,11 @@ export async function updateMeeting(
   const metadataUpdates: Record<string, unknown> = { ...existingMetadata };
 
   if (typeof input.agenda === "string") {
+    if (input.agenda.length > 10000) {
+      throw new (await import("@/lib/api/errors")).ValidationError(
+        "Agenda must be under 10,000 characters"
+      );
+    }
     const trimmedAgenda = input.agenda.trim();
     metadataUpdates.agenda = trimmedAgenda || null;
     metadataChanged = true;
