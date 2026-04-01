@@ -122,7 +122,7 @@ export default async function BlogPostPage({ params }: Props) {
       </header>
 
       {post.frontmatter.image && (
-        <div className="bg-muted relative mb-12 aspect-[2/1] w-full overflow-hidden rounded-lg">
+        <div className="bg-muted relative mb-12 aspect-2/1 w-full overflow-hidden rounded-lg">
           <Image
             src={post.frontmatter.image}
             alt={post.frontmatter.title}

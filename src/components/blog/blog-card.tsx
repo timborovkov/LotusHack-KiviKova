@@ -11,7 +11,7 @@ export function BlogCard({ post }: { post: BlogPost }) {
       className="border-border hover:border-ring/40 group block overflow-hidden rounded-lg border transition-colors"
     >
       {post.frontmatter.image && (
-        <div className="bg-muted relative aspect-[2/1] w-full">
+        <div className="bg-muted relative aspect-2/1 w-full">
           <Image
             src={post.frontmatter.image}
             alt={post.frontmatter.title}
