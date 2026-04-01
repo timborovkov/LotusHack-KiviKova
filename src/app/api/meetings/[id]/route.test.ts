@@ -31,6 +31,7 @@ const { mockDb, mockDeleteMeetingCollection, mockDeleteFile } = vi.hoisted(
 
 vi.mock("@/lib/db", () => ({ db: mockDb }));
 vi.mock("@/lib/vector/collections", () => ({
+  createMeetingCollection: vi.fn().mockResolvedValue(undefined),
   deleteMeetingCollection: mockDeleteMeetingCollection,
 }));
 vi.mock("@/lib/vector/agenda", () => ({
@@ -38,6 +39,50 @@ vi.mock("@/lib/vector/agenda", () => ({
 }));
 vi.mock("@/lib/storage/operations", () => ({
   deleteFile: mockDeleteFile,
+  ensureBucket: vi.fn().mockResolvedValue(undefined),
+  uploadFile: vi.fn().mockResolvedValue(undefined),
+  getDownloadUrl: vi.fn().mockResolvedValue("https://example.com/download"),
+}));
+vi.mock("@/lib/meeting-bot", () => ({
+  getMeetingBotProvider: vi.fn().mockReturnValue({
+    joinMeeting: vi.fn().mockResolvedValue({ botId: "bot-1" }),
+    leaveMeeting: vi.fn().mockResolvedValue(undefined),
+    deleteBot: vi.fn().mockResolvedValue(undefined),
+  }),
+}));
+vi.mock("@/lib/billing/enforce", () => ({
+  requireLimits: vi.fn().mockResolvedValue({
+    limits: {
+      meetingMinutesPerMonth: null,
+      voiceEnabled: true,
+      documentsCount: 100,
+      maxDocumentSizeMB: 50,
+      docUploadsPerMonth: 100,
+      totalStorageMB: 1000,
+      ragQueriesPerDay: 100,
+      meetingScopedDocs: 10,
+      concurrentMeetings: 3,
+      meetingsPerMonth: 100,
+      apiEnabled: true,
+      mcpEnabled: true,
+      apiRequestsPerDay: 1000,
+      mcpServerConnections: null,
+      mcpClientConnections: null,
+    },
+    period: { start: new Date(), end: new Date() },
+    plan: "pro",
+  }),
+  billingError: vi.fn(),
+}));
+vi.mock("@/lib/billing/usage", () => ({
+  getActiveMeetingCount: vi.fn().mockResolvedValue(0),
+  getUsedMinutes: vi.fn().mockResolvedValue(0),
+  getMonthlyMeetingCount: vi.fn().mockResolvedValue(0),
+  recordUsageEvent: vi.fn().mockResolvedValue(undefined),
+  getDailyCount: vi.fn().mockResolvedValue(0),
+  getDocumentCount: vi.fn().mockResolvedValue(0),
+  getMonthlyDocUploads: vi.fn().mockResolvedValue(0),
+  getTotalStorageMB: vi.fn().mockResolvedValue(0),
 }));
 
 import { GET, PATCH, DELETE } from "./route";
