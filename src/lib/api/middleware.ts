@@ -5,6 +5,11 @@ import { requireLimits } from "@/lib/billing/enforce";
 import { canMakeApiRequest } from "@/lib/billing/limits";
 import { getDailyCount, recordUsageEvent } from "@/lib/billing/usage";
 import { apiError } from "./response";
+import {
+  API_VERSION,
+  RATE_LIMIT_STANDARD,
+  RATE_LIMIT_WINDOW_MS,
+} from "./constants";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -23,7 +28,7 @@ type ApiHandler = (
 ) => Promise<NextResponse>;
 
 interface WithApiAuthOptions {
-  /** Requests per minute. Default: 60 */
+  /** Requests per minute. Default: RATE_LIMIT_STANDARD (60) */
   ratePerMinute?: number;
   /** Endpoint name for rate-limit key bucketing */
   endpoint: string;
@@ -36,7 +41,11 @@ interface WithApiAuthOptions {
 // ---------------------------------------------------------------------------
 
 export function withApiAuth(handler: ApiHandler, options: WithApiAuthOptions) {
-  const { ratePerMinute = 60, endpoint, skipBilling = false } = options;
+  const {
+    ratePerMinute = RATE_LIMIT_STANDARD,
+    endpoint,
+    skipBilling = false,
+  } = options;
 
   return async (
     request: Request,
@@ -49,8 +58,8 @@ export function withApiAuth(handler: ApiHandler, options: WithApiAuthOptions) {
     }
 
     // 2. Rate limit (per-user, per-endpoint)
-    const rl = rateLimit(`api:v1:${user.id}:${endpoint}`, {
-      interval: 60_000,
+    const rl = rateLimit(`api:${API_VERSION}:${user.id}:${endpoint}`, {
+      interval: RATE_LIMIT_WINDOW_MS,
       limit: ratePerMinute,
     });
     if (!rl.success) {
@@ -81,7 +90,7 @@ export function withApiAuth(handler: ApiHandler, options: WithApiAuthOptions) {
     const response = await handler(request, user, context);
 
     // 5. Set standard headers
-    response.headers.set("X-API-Version", "v1");
+    response.headers.set("X-API-Version", API_VERSION);
     response.headers.set("X-RateLimit-Limit", String(ratePerMinute));
     response.headers.set("X-RateLimit-Remaining", String(rl.remaining));
 
