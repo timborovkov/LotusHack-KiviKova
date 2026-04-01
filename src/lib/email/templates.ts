@@ -10,17 +10,48 @@ function getAppUrl(): string {
   return process.env.NEXT_PUBLIC_APP_URL ?? "https://vernix.app";
 }
 
-export function getWelcomeEmailHtml(name: string): string {
+function logoUrl(): string {
+  return `${getAppUrl()}/brand/combo/horizontal-on-dark.png`;
+}
+
+/** Shared email shell: DOCTYPE + dark header with logo + white body + footer */
+function emailShell(
+  title: string,
+  body: string,
+  unsubscribeUrl?: string
+): string {
   const APP_URL = getAppUrl();
+  const unsubFooter = unsubscribeUrl
+    ? `<p style="font-size:11px;color:#aaa;margin:16px 0 0;text-align:center"><a href="${unsubscribeUrl}" style="color:#aaa;text-decoration:underline">Unsubscribe</a> from these emails</p>`
+    : "";
   return `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
 <body style="margin:0;padding:0;background:#f7f7f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
   <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden">
     <div style="background:#242424;padding:32px;text-align:center">
-      <h1 style="color:#fff;font-size:24px;margin:0">Welcome to Vernix</h1>
+      <a href="${APP_URL}" style="display:inline-block;margin:0 0 16px">
+        <img src="${logoUrl()}" alt="Vernix" height="28" style="display:block;margin:0 auto" />
+      </a>
+      <h1 style="color:#fff;font-size:24px;margin:0">${title}</h1>
     </div>
     <div style="padding:32px">
+      ${body}
+    </div>
+    <div style="padding:0 32px 24px;text-align:center">
+      ${unsubFooter}
+      <p style="font-size:12px;color:#999;margin:${unsubscribeUrl ? "8" : "0"}px 0 0">&copy; Vernix &middot; <a href="${APP_URL}/contact" style="color:#999;text-decoration:none">Contact</a></p>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
+export function getWelcomeEmailHtml(name: string): string {
+  const APP_URL = getAppUrl();
+  return emailShell(
+    "Welcome to Vernix",
+    `
       <p style="font-size:16px;color:#333;margin:0 0 16px">Hi ${escapeHtml(name)},</p>
       <p style="font-size:14px;color:#555;line-height:1.6;margin:0 0 16px">
         Thanks for signing up. Vernix joins your video calls, transcribes
@@ -51,13 +82,8 @@ export function getWelcomeEmailHtml(name: string): string {
         Free plan includes ${LIMITS[PLANS.FREE].meetingsPerMonth} silent calls per month.
         Start a Pro trial to connect your tools and unlock the voice agent.
       </p>
-      <p style="font-size:12px;color:#999;margin:8px 0 0;text-align:center">
-        Questions? Reply to this email or visit <a href="${APP_URL}/contact" style="color:#666">vernix.app/contact</a>
-      </p>
-    </div>
-  </div>
-</body>
-</html>`;
+  `
+  );
 }
 
 export function getFreePlanUpgradeReminderHtml(
@@ -65,18 +91,9 @@ export function getFreePlanUpgradeReminderHtml(
   unsubscribeUrl?: string
 ): string {
   const appUrl = getAppUrl();
-  const unsubscribeFooter = unsubscribeUrl
-    ? `<p style="font-size:11px;color:#aaa;margin:16px 0 0;text-align:center"><a href="${unsubscribeUrl}" style="color:#aaa;text-decoration:underline">Unsubscribe</a> from these emails</p>`
-    : "";
-  return `<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background:#f7f7f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
-  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden">
-    <div style="background:#242424;padding:32px;text-align:center">
-      <h1 style="color:#fff;font-size:24px;margin:0">Want Vernix to do more in your calls?</h1>
-    </div>
-    <div style="padding:32px">
+  return emailShell(
+    "Want Vernix to do more in your calls?",
+    `
       <p style="font-size:16px;color:#333;margin:0 0 16px">Hi ${escapeHtml(name)},</p>
       <p style="font-size:14px;color:#555;line-height:1.6;margin:0 0 16px">
         Upgrade to Pro to connect your tools and let Vernix answer live business questions during calls.
@@ -98,11 +115,9 @@ export function getFreePlanUpgradeReminderHtml(
       <p style="font-size:12px;color:#999;line-height:1.6;margin:0;text-align:center">
         You're receiving this because your account is on the Free plan.
       </p>
-      ${unsubscribeFooter}
-    </div>
-  </div>
-</body>
-</html>`;
+  `,
+    unsubscribeUrl
+  );
 }
 
 export function getLastChanceRetentionHtml(
@@ -115,15 +130,9 @@ export function getLastChanceRetentionHtml(
     ? `You still keep your current benefits until ${escapeHtml(accessEndsAt.toLocaleDateString())}.`
     : "You still keep your current benefits until your current period ends.";
 
-  return `<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background:#f7f7f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
-  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden">
-    <div style="background:#242424;padding:32px;text-align:center">
-      <h1 style="color:#fff;font-size:24px;margin:0">Last chance to keep your Pro benefits</h1>
-    </div>
-    <div style="padding:32px">
+  return emailShell(
+    "Last chance to keep your Pro benefits",
+    `
       <p style="font-size:16px;color:#333;margin:0 0 16px">Hi ${escapeHtml(name)},</p>
       <p style="font-size:14px;color:#555;line-height:1.6;margin:0 0 16px">
         We noticed you canceled your subscription. ${accessEndsLine}
@@ -144,11 +153,9 @@ export function getLastChanceRetentionHtml(
       <p style="font-size:12px;color:#999;line-height:1.6;margin:0;text-align:center">
         If this was intentional, no action is needed.
       </p>
-      ${unsubscribeUrl ? `<p style="font-size:11px;color:#aaa;margin:16px 0 0;text-align:center"><a href="${unsubscribeUrl}" style="color:#aaa;text-decoration:underline">Unsubscribe</a> from these emails</p>` : ""}
-    </div>
-  </div>
-</body>
-</html>`;
+  `,
+    unsubscribeUrl
+  );
 }
 
 interface ContactNotificationData {
@@ -184,15 +191,9 @@ export function getPasswordResetEmailHtml(
   name: string,
   resetUrl: string
 ): string {
-  return `<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background:#f7f7f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
-  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden">
-    <div style="background:#242424;padding:32px;text-align:center">
-      <h1 style="color:#fff;font-size:24px;margin:0">Reset Your Password</h1>
-    </div>
-    <div style="padding:32px">
+  return emailShell(
+    "Reset Your Password",
+    `
       <p style="font-size:16px;color:#333;margin:0 0 16px">Hi ${escapeHtml(name)},</p>
       <p style="font-size:14px;color:#555;line-height:1.6;margin:0 0 24px">
         We received a request to reset your password. Click the button below to choose a new one.
@@ -208,26 +209,17 @@ export function getPasswordResetEmailHtml(
       <p style="font-size:12px;color:#999;line-height:1.6;margin:0">
         If you didn't request this, you can safely ignore this email. Your password won't change.
       </p>
-    </div>
-  </div>
-</body>
-</html>`;
+  `
+  );
 }
 
 export function getEmailVerificationHtml(
   name: string,
   verifyUrl: string
 ): string {
-  const APP_URL = getAppUrl();
-  return `<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background:#f7f7f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
-  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden">
-    <div style="background:#242424;padding:32px;text-align:center">
-      <h1 style="color:#fff;font-size:24px;margin:0">Verify Your Email</h1>
-    </div>
-    <div style="padding:32px">
+  return emailShell(
+    "Verify Your Email",
+    `
       <p style="font-size:16px;color:#333;margin:0 0 16px">Hi ${escapeHtml(name)},</p>
       <p style="font-size:14px;color:#555;line-height:1.6;margin:0 0 24px">
         Please verify your email address to complete your Vernix account setup.
@@ -243,13 +235,8 @@ export function getEmailVerificationHtml(
       <p style="font-size:12px;color:#999;line-height:1.6;margin:0">
         If you didn't create an account on Vernix, you can safely ignore this email.
       </p>
-      <p style="font-size:12px;color:#999;margin:8px 0 0;text-align:center">
-        Questions? Visit <a href="${APP_URL}/contact" style="color:#666">vernix.app/contact</a>
-      </p>
-    </div>
-  </div>
-</body>
-</html>`;
+  `
+  );
 }
 
 export function getFirstMeetingEmailHtml(
@@ -258,18 +245,9 @@ export function getFirstMeetingEmailHtml(
   summaryUrl: string,
   unsubscribeUrl?: string
 ): string {
-  const unsubscribeFooter = unsubscribeUrl
-    ? `<p style="font-size:11px;color:#aaa;margin:16px 0 0;text-align:center"><a href="${unsubscribeUrl}" style="color:#aaa;text-decoration:underline">Unsubscribe</a> from these emails</p>`
-    : "";
-  return `<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background:#f7f7f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
-  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden">
-    <div style="background:#242424;padding:32px;text-align:center">
-      <h1 style="color:#fff;font-size:24px;margin:0">Your First Meeting Summary Is Ready</h1>
-    </div>
-    <div style="padding:32px">
+  return emailShell(
+    "Your First Meeting Summary Is Ready",
+    `
       <p style="font-size:16px;color:#333;margin:0 0 16px">Hi ${escapeHtml(name)},</p>
       <p style="font-size:14px;color:#555;line-height:1.6;margin:0 0 16px">
         Your meeting <strong>${escapeHtml(meetingTitle)}</strong> has been processed. You now have a full transcript, summary, and extracted action items ready to review.
@@ -288,11 +266,9 @@ export function getFirstMeetingEmailHtml(
           View Summary
         </a>
       </div>
-      ${unsubscribeFooter}
-    </div>
-  </div>
-</body>
-</html>`;
+  `,
+    unsubscribeUrl
+  );
 }
 
 export function getTrialStartedEmailHtml(
@@ -306,18 +282,9 @@ export function getTrialStartedEmailHtml(
     day: "numeric",
     year: "numeric",
   });
-  const unsubscribeFooter = unsubscribeUrl
-    ? `<p style="font-size:11px;color:#aaa;margin:16px 0 0;text-align:center"><a href="${unsubscribeUrl}" style="color:#aaa;text-decoration:underline">Unsubscribe</a> from these emails</p>`
-    : "";
-  return `<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background:#f7f7f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
-  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden">
-    <div style="background:#242424;padding:32px;text-align:center">
-      <h1 style="color:#fff;font-size:24px;margin:0">Your Pro Trial Has Started</h1>
-    </div>
-    <div style="padding:32px">
+  return emailShell(
+    "Your Pro Trial Has Started",
+    `
       <p style="font-size:16px;color:#333;margin:0 0 16px">Hi ${escapeHtml(name)},</p>
       <p style="font-size:14px;color:#555;line-height:1.6;margin:0 0 16px">
         You now have full access to Vernix Pro until <strong>${endDate}</strong>. Here's what you've unlocked:
@@ -341,11 +308,9 @@ export function getTrialStartedEmailHtml(
           Go to Dashboard
         </a>
       </div>
-      ${unsubscribeFooter}
-    </div>
-  </div>
-</body>
-</html>`;
+  `,
+    unsubscribeUrl
+  );
 }
 
 export function getTrialExpiredEmailHtml(
@@ -353,18 +318,9 @@ export function getTrialExpiredEmailHtml(
   unsubscribeUrl?: string
 ): string {
   const APP_URL = getAppUrl();
-  const unsubscribeFooter = unsubscribeUrl
-    ? `<p style="font-size:11px;color:#aaa;margin:16px 0 0;text-align:center"><a href="${unsubscribeUrl}" style="color:#aaa;text-decoration:underline">Unsubscribe</a> from these emails</p>`
-    : "";
-  return `<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background:#f7f7f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
-  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden">
-    <div style="background:#242424;padding:32px;text-align:center">
-      <h1 style="color:#fff;font-size:24px;margin:0">Your Pro Trial Has Ended</h1>
-    </div>
-    <div style="padding:32px">
+  return emailShell(
+    "Your Pro Trial Has Ended",
+    `
       <p style="font-size:16px;color:#333;margin:0 0 16px">Hi ${escapeHtml(name)},</p>
       <p style="font-size:14px;color:#555;line-height:1.6;margin:0 0 16px">
         Your Vernix Pro trial has ended and your account has been moved to the Free plan. Your data is still safe — nothing has been deleted.
@@ -385,11 +341,9 @@ export function getTrialExpiredEmailHtml(
           Upgrade to Pro
         </a>
       </div>
-      ${unsubscribeFooter}
-    </div>
-  </div>
-</body>
-</html>`;
+  `,
+    unsubscribeUrl
+  );
 }
 
 export function getMidTrialCheckinHtml(
@@ -398,18 +352,9 @@ export function getMidTrialCheckinHtml(
   unsubscribeUrl?: string
 ): string {
   const APP_URL = getAppUrl();
-  const unsubscribeFooter = unsubscribeUrl
-    ? `<p style="font-size:11px;color:#aaa;margin:16px 0 0;text-align:center"><a href="${unsubscribeUrl}" style="color:#aaa;text-decoration:underline">Unsubscribe</a> from these emails</p>`
-    : "";
-  return `<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background:#f7f7f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
-  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden">
-    <div style="background:#242424;padding:32px;text-align:center">
-      <h1 style="color:#fff;font-size:24px;margin:0">How's Your Trial Going?</h1>
-    </div>
-    <div style="padding:32px">
+  return emailShell(
+    "How&#39;s Your Trial Going?",
+    `
       <p style="font-size:16px;color:#333;margin:0 0 16px">Hi ${escapeHtml(name)},</p>
       <p style="font-size:14px;color:#555;line-height:1.6;margin:0 0 16px">
         You're one week into your Pro trial with ${daysLeft} days left. Have you had a chance to set everything up?
@@ -427,11 +372,9 @@ export function getMidTrialCheckinHtml(
           Go to Dashboard
         </a>
       </div>
-      ${unsubscribeFooter}
-    </div>
-  </div>
-</body>
-</html>`;
+  `,
+    unsubscribeUrl
+  );
 }
 
 export function getTrialWarningHtml(
@@ -441,18 +384,9 @@ export function getTrialWarningHtml(
 ): string {
   const APP_URL = getAppUrl();
   const dayText = daysLeft === 1 ? "1 day" : `${daysLeft} days`;
-  const unsubscribeFooter = unsubscribeUrl
-    ? `<p style="font-size:11px;color:#aaa;margin:16px 0 0;text-align:center"><a href="${unsubscribeUrl}" style="color:#aaa;text-decoration:underline">Unsubscribe</a> from these emails</p>`
-    : "";
-  return `<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background:#f7f7f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
-  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden">
-    <div style="background:#242424;padding:32px;text-align:center">
-      <h1 style="color:#fff;font-size:24px;margin:0">Your Trial Ends in ${dayText}</h1>
-    </div>
-    <div style="padding:32px">
+  return emailShell(
+    `Your Trial Ends in ${dayText}`,
+    `
       <p style="font-size:16px;color:#333;margin:0 0 16px">Hi ${escapeHtml(name)},</p>
       <p style="font-size:14px;color:#555;line-height:1.6;margin:0 0 16px">
         Your Vernix Pro trial ends in ${dayText}. Upgrade now to keep access to all Pro features without interruption.
@@ -471,11 +405,9 @@ export function getTrialWarningHtml(
           Upgrade to Pro
         </a>
       </div>
-      ${unsubscribeFooter}
-    </div>
-  </div>
-</body>
-</html>`;
+  `,
+    unsubscribeUrl
+  );
 }
 
 export function getWinBackEmailHtml(
@@ -483,18 +415,9 @@ export function getWinBackEmailHtml(
   unsubscribeUrl?: string
 ): string {
   const APP_URL = getAppUrl();
-  const unsubscribeFooter = unsubscribeUrl
-    ? `<p style="font-size:11px;color:#aaa;margin:16px 0 0;text-align:center"><a href="${unsubscribeUrl}" style="color:#aaa;text-decoration:underline">Unsubscribe</a> from these emails</p>`
-    : "";
-  return `<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background:#f7f7f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
-  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden">
-    <div style="background:#242424;padding:32px;text-align:center">
-      <h1 style="color:#fff;font-size:24px;margin:0">We'd Love to Have You Back</h1>
-    </div>
-    <div style="padding:32px">
+  return emailShell(
+    "We&#39;d Love to Have You Back",
+    `
       <p style="font-size:16px;color:#333;margin:0 0 16px">Hi ${escapeHtml(name)},</p>
       <p style="font-size:14px;color:#555;line-height:1.6;margin:0 0 16px">
         It's been a while since you used Vernix Pro. Your meetings, transcripts, and documents are still here, waiting for you.
@@ -512,11 +435,9 @@ export function getWinBackEmailHtml(
           Re-subscribe to Pro
         </a>
       </div>
-      ${unsubscribeFooter}
-    </div>
-  </div>
-</body>
-</html>`;
+  `,
+    unsubscribeUrl
+  );
 }
 
 export function escapeHtml(str: string): string {
