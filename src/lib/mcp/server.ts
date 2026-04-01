@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { meetings, tasks } from "@/lib/db/schema";
+import { meetings, tasks, users } from "@/lib/db/schema";
 import { and, desc, eq } from "drizzle-orm";
 import { formatContextForPrompt } from "@/lib/agent/rag";
 import { scrollTranscript } from "@/lib/vector/scroll";
@@ -299,6 +299,12 @@ export function createMcpServer(userId: string): McpServer {
     },
     async ({ title, joinLink, agenda, silent }) => {
       try {
+        // Fetch user name for bot display
+        const [user] = await db
+          .select({ name: users.name })
+          .from(users)
+          .where(eq(users.id, userId));
+
         const meeting = await createMeeting(userId, {
           title,
           joinLink,
@@ -307,9 +313,12 @@ export function createMcpServer(userId: string): McpServer {
         });
 
         try {
-          const result = await joinMeeting(userId, meeting.id, undefined, {
-            skipBillingCheck: true,
-          });
+          const result = await joinMeeting(
+            userId,
+            meeting.id,
+            user?.name ?? undefined,
+            { skipBillingCheck: true }
+          );
           return {
             content: [
               {
