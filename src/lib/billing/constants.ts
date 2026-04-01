@@ -92,6 +92,8 @@ export const DISPLAY = {
   annualSavings: eur(
     PRICING[PLANS.PRO].monthly * 12 - PRICING[PLANS.PRO].annual
   ),
+  voiceCost: eur(USAGE_RATES.voice),
+  silentCost: eur(USAGE_RATES.silent),
   voiceRate: `${eur(USAGE_RATES.voice)}/hr`,
   silentRate: `${eur(USAGE_RATES.silent)}/hr`,
   monthlyCredit: eur(MONTHLY_CREDIT[PLANS.PRO]),
