@@ -1,14 +1,7 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { formatDate } from "@/lib/date";
 import type { BlogPost } from "@/lib/blog/types";
-
-function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
 
 export function BlogCard({ post }: { post: BlogPost }) {
   return (
@@ -18,7 +11,7 @@ export function BlogCard({ post }: { post: BlogPost }) {
     >
       <div className="text-muted-foreground mb-3 flex items-center gap-2 text-xs">
         <time dateTime={post.frontmatter.date}>
-          {formatDate(post.frontmatter.date)}
+          {formatDate(post.frontmatter.date, "UTC")}
         </time>
         <span>&middot;</span>
         <span>{post.readingTime} min read</span>
