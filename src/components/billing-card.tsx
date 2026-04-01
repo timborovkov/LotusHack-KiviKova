@@ -140,7 +140,7 @@ export function BillingCard({ billing, loading }: BillingCardProps) {
         {/* Meeting usage */}
         <div className="space-y-3">
           <UsageBar
-            label="Meeting minutes"
+            label="Call minutes"
             used={billing.usage.voiceMinutes + billing.usage.silentMinutes}
             limit={billing.limits.meetingMinutesPerMonth}
             unit="min"
