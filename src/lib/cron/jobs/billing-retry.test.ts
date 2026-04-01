@@ -14,6 +14,7 @@ const { mockDb, mockSyncUsageToPolar } = vi.hoisted(() => {
     "set",
     "delete",
     "limit",
+    "innerJoin",
   ]) {
     db[m] = vi.fn().mockImplementation(() => db);
   }
