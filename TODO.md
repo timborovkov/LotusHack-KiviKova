@@ -9,6 +9,7 @@
 
 ## Security Hardening & Infra Go-Live Check
 
+- **Migrate from Next.js middleware to proxy** - The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
 - **Set provider usage caps** — Add usage caps in OpenAI, Recall, and other third-party services.
 - **Set Railway usage caps** — Add spend/usage caps and guardrails in Railway.
 - **Configure alerting** — Configure alerts for cost, error rate, downtime, and abuse signals.
