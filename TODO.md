@@ -1,21 +1,14 @@
 # TODO
 
-## SEO & Discoverability
-
-- **Google Search Console** — Verify domain, submit sitemap, monitor indexing - DONE
-- **Schema markup** — Add JSON-LD structured data: Organization, SoftwareApplication, FAQ schema on the FAQ page
-- **Canonical URLs** — Ensure all pages have proper canonical tags via metadataBase
-- **Dynamic robots.txt and sitemap** — Move `robots.txt` from static `public/` to a Next.js route handler so it generates at build time from config. Same for `llms.txt` and `sitemap.xml`.
-- **Search indexing kill switch** — Add `NEXT_PUBLIC_DISABLE_INDEXING=true` env var for staging/preview environments.
-
 ## Public REST API & Documentation
 
 - **API design** — Design a clean, versioned REST API (`/api/v1/`) exposing meetings, transcripts, tasks, search, knowledge base, and agent control (join/stop).
 - **OpenAPI spec** — Write an OpenAPI 3.1 spec documenting all endpoints, request/response schemas, auth, pagination, and error codes.
 - **API docs page** — Host interactive docs at `/docs` or `/api-docs`.
 - **Agent control endpoints** — `POST /api/v1/meetings` (create + auto-join), `POST /api/v1/meetings/:id/join`, `POST /api/v1/meetings/:id/stop`.
-- **MCP server tools** — Add `join_meeting` and `stop_meeting` tools to the MCP server.
+- **MCP server tools** — Add `vernix_join_call` (create and instantly join a call), `vernix_stop_call` (stop the call), `vernix_search_meetings` (search across meeting transcripts and knowledge base using vector similarity), `vernix_search_tasks` (search across tasks using vector similarity), and other tools as needed.
 - **Rate limiting & versioning** — Per-key rate limits, API version in URL path, deprecation headers.
+- **API in llms.txt** — Link to the API docs in the llms.txt file and add an introduction to the API.
 
 ## Email Communication & Conversion
 
@@ -37,6 +30,7 @@ Current emails: welcome (signup), free plan upgrade reminder (weekly cron), last
 - **Goal configuration** — Set up GA4 conversions for signup, first meeting created, plan upgrade
 - **Attribution** — UTM parameter tracking across signup flow for campaign attribution
 - **Feature usage event tracking** — Track key in-product feature usage events for product analytics.
+- **Hotjar tracking** — Add Hotjar tracking to the website for heatmaps and session recording. Remember to update the privacy and cookie policies to include Hotjar. Make sure cookie consent is working correctly.
 
 ## Security Hardening & Infra Go-Live Check
 
