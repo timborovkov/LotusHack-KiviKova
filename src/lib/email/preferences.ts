@@ -1,4 +1,4 @@
-import { createHmac } from "crypto";
+import { createHmac, timingSafeEqual } from "crypto";
 import type { EmailPreferences } from "@/lib/db/schema";
 
 type EmailCategory = "marketing" | "product" | "transactional";
@@ -42,7 +42,8 @@ export function verifyUnsubscribeToken(
   category: string
 ): boolean {
   const expected = generateUnsubscribeToken(userId, category);
-  return token === expected;
+  if (token.length !== expected.length) return false;
+  return timingSafeEqual(Buffer.from(token), Buffer.from(expected));
 }
 
 /**
