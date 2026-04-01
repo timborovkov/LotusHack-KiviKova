@@ -31,18 +31,6 @@ export const metadata: Metadata = {
   description:
     "An AI agent that joins Zoom, Meet, Teams, and Webex. Connects to Slack, Linear, GitHub. Answers questions with live data during calls. Free to start.",
   ...(disableIndexing && { robots: { index: false, follow: false } }),
-  other: [
-    {
-      name: "theme-color",
-      content: "#ffffff",
-      media: "(prefers-color-scheme: light)",
-    },
-    {
-      name: "theme-color",
-      content: "#242424",
-      media: "(prefers-color-scheme: dark)",
-    },
-  ],
   icons: {
     icon: [
       {
