@@ -172,8 +172,8 @@ export default function TermsPage() {
             account settings.
           </p>
           <p className="text-muted-foreground mb-3 text-sm">
-            API usage is subject to per-key rate limits and daily request
-            quotas as published in our{" "}
+            API usage is subject to per-key rate limits and daily request quotas
+            as published in our{" "}
             <Link href="/docs" className="text-foreground underline">
               API documentation
             </Link>
@@ -182,13 +182,13 @@ export default function TermsPage() {
             responses.
           </p>
           <p className="text-muted-foreground text-sm">
-            The MCP server allows AI assistants (such as Claude Desktop,
-            Cursor, and similar tools) to access your Vernix data on your
-            behalf. By connecting an AI assistant to the Vernix MCP server,
-            you authorize that assistant to read and modify your meeting data,
-            tasks, and knowledge base within the limits of your plan. You are
-            responsible for the actions performed by any AI assistant
-            connected to your account.
+            The MCP server allows AI assistants (such as Claude Desktop, Cursor,
+            and similar tools) to access your Vernix data on your behalf. By
+            connecting an AI assistant to the Vernix MCP server, you authorize
+            that assistant to read and modify your meeting data, tasks, and
+            knowledge base within the limits of your plan. You are responsible
+            for the actions performed by any AI assistant connected to your
+            account.
           </p>
         </section>
 
