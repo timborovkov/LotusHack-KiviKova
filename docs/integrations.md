@@ -68,8 +68,11 @@ Most MCP servers don't support dynamic client registration (RFC 7591). Each OAut
 | ------- | -------------------------------------------------- | --------- |
 | GitHub  | `GITHUB_MCP_CLIENT_ID`, `GITHUB_MCP_CLIENT_SECRET` | Available |
 | Notion  | `NOTION_MCP_CLIENT_ID`, `NOTION_MCP_CLIENT_SECRET` | Available |
+| Linear  | `LINEAR_MCP_CLIENT_ID`, `LINEAR_MCP_CLIENT_SECRET` | Available |
+| Pipedrive | `PIPEDRIVE_MCP_CLIENT_ID`, `PIPEDRIVE_MCP_CLIENT_SECRET` | Available |
+| Slack   | `SLACK_MCP_CLIENT_ID`, `SLACK_MCP_CLIENT_SECRET`   | Available |
 
-MCP OAuth apps are separate from login OAuth apps — different redirect URLs. Login uses providers like `GITHUB_CLIENT_ID` → `/api/auth/callback/github`. MCP integrations use provider-specific MCP credentials (for example, `GITHUB_MCP_CLIENT_ID` or `NOTION_MCP_CLIENT_ID`) → `/api/mcp/oauth/callback`.
+MCP OAuth apps are separate from login OAuth apps — different redirect URLs. Login uses providers like `GITHUB_CLIENT_ID` → `/api/auth/callback/github`. MCP integrations use provider-specific MCP credentials (for example, `GITHUB_MCP_CLIENT_ID`, `NOTION_MCP_CLIENT_ID`, `LINEAR_MCP_CLIENT_ID`, `PIPEDRIVE_MCP_CLIENT_ID`, or `SLACK_MCP_CLIENT_ID`) → `/api/mcp/oauth/callback`.
 
 ### Adding a new OAuth integration
 
