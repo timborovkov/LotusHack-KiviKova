@@ -1,13 +1,5 @@
 # TODO
 
-## SEO & Discoverability
-
-- **Google Search Console** — Verify domain, submit sitemap, monitor indexing - DONE
-- **Schema markup** — Add JSON-LD structured data: Organization, SoftwareApplication, FAQ schema on the FAQ page
-- **Canonical URLs** — Ensure all pages have proper canonical tags via metadataBase
-- **Dynamic robots.txt and sitemap** — Move `robots.txt` from static `public/` to a Next.js route handler so it generates at build time from config. Same for `llms.txt` and `sitemap.xml`.
-- **Search indexing kill switch** — Add `NEXT_PUBLIC_DISABLE_INDEXING=true` env var for staging/preview environments.
-
 ## Public REST API & Documentation
 
 - **API design** — Design a clean, versioned REST API (`/api/v1/`) exposing meetings, transcripts, tasks, search, knowledge base, and agent control (join/stop).
