@@ -16,7 +16,11 @@ import { getEnv } from "@/lib/env";
  */
 const PRE_REGISTERED_CLIENTS: Record<
   string,
-  { clientIdEnv: string; clientSecretEnv: string }
+  {
+    clientIdEnv: string;
+    clientSecretEnv: string;
+    tokenEndpointAuthMethod?: OAuthClientMetadata["token_endpoint_auth_method"];
+  }
 > = {
   "https://api.githubcopilot.com": {
     clientIdEnv: "GITHUB_MCP_CLIENT_ID",
@@ -33,31 +37,42 @@ const PRE_REGISTERED_CLIENTS: Record<
   "https://mcp.pipedrive.com": {
     clientIdEnv: "PIPEDRIVE_MCP_CLIENT_ID",
     clientSecretEnv: "PIPEDRIVE_MCP_CLIENT_SECRET",
+    tokenEndpointAuthMethod: "client_secret_post",
   },
   "https://mcp.slack.com": {
     clientIdEnv: "SLACK_MCP_CLIENT_ID",
     clientSecretEnv: "SLACK_MCP_CLIENT_SECRET",
+    tokenEndpointAuthMethod: "client_secret_post",
   },
 };
+
+function getPreRegisteredConfig(serverUrl: string):
+  | {
+      clientIdEnv: string;
+      clientSecretEnv: string;
+      tokenEndpointAuthMethod?: OAuthClientMetadata["token_endpoint_auth_method"];
+    }
+  | undefined {
+  for (const [prefix, config] of Object.entries(PRE_REGISTERED_CLIENTS)) {
+    if (serverUrl.startsWith(prefix)) return config;
+  }
+  return undefined;
+}
 
 function getPreRegisteredClient(
   serverUrl: string
 ): OAuthClientInformation | undefined {
-  for (const [prefix, { clientIdEnv, clientSecretEnv }] of Object.entries(
-    PRE_REGISTERED_CLIENTS
-  )) {
-    if (serverUrl.startsWith(prefix)) {
-      const clientId = process.env[clientIdEnv];
-      const clientSecret = process.env[clientSecretEnv];
-      if (clientId) {
-        return {
-          client_id: clientId,
-          ...(clientSecret ? { client_secret: clientSecret } : {}),
-        };
-      }
-    }
-  }
-  return undefined;
+  const config = getPreRegisteredConfig(serverUrl);
+  if (!config) return undefined;
+
+  const clientId = process.env[config.clientIdEnv];
+  const clientSecret = process.env[config.clientSecretEnv];
+  if (!clientId) return undefined;
+
+  return {
+    client_id: clientId,
+    ...(clientSecret ? { client_secret: clientSecret } : {}),
+  };
 }
 
 /**
@@ -86,12 +101,15 @@ export class VernixOAuthProvider implements OAuthClientProvider {
   }
 
   get clientMetadata(): OAuthClientMetadata {
+    const tokenEndpointAuthMethod =
+      getPreRegisteredConfig(this.serverUrl)?.tokenEndpointAuthMethod ?? "none";
+
     return {
       redirect_uris: [this.redirectUrl],
       client_name: "Vernix",
       grant_types: ["authorization_code", "refresh_token"],
       response_types: ["code"],
-      token_endpoint_auth_method: "none",
+      token_endpoint_auth_method: tokenEndpointAuthMethod,
     };
   }
 
