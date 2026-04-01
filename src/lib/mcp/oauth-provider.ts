@@ -58,7 +58,9 @@ export function getPreRegisteredConfig(serverUrl: string):
   } catch {
     return undefined;
   }
-  for (const [registeredUrl, config] of Object.entries(PRE_REGISTERED_CLIENTS)) {
+  for (const [registeredUrl, config] of Object.entries(
+    PRE_REGISTERED_CLIENTS
+  )) {
     if (origin === new URL(registeredUrl).origin) return config;
   }
   return undefined;
