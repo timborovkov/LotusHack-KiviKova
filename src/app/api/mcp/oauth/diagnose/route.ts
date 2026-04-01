@@ -34,21 +34,15 @@ export async function GET(request: Request) {
     );
   }
 
-  const ENV_MAP: Record<
+  // GitHub, Slack, and Pipedrive need pre-registered credentials.
+  // Notion, Linear, and others use RFC 7591 dynamic client registration.
+  const PRE_REGISTERED_ENV_MAP: Record<
     string,
     { clientIdEnv: string; clientSecretEnv: string }
   > = {
     "https://api.githubcopilot.com": {
       clientIdEnv: "GITHUB_MCP_CLIENT_ID",
       clientSecretEnv: "GITHUB_MCP_CLIENT_SECRET",
-    },
-    "https://mcp.notion.com": {
-      clientIdEnv: "NOTION_MCP_CLIENT_ID",
-      clientSecretEnv: "NOTION_MCP_CLIENT_SECRET",
-    },
-    "https://mcp.linear.app": {
-      clientIdEnv: "LINEAR_MCP_CLIENT_ID",
-      clientSecretEnv: "LINEAR_MCP_CLIENT_SECRET",
     },
     "https://mcp.pipedrive.com": {
       clientIdEnv: "PIPEDRIVE_MCP_CLIENT_ID",
@@ -71,9 +65,9 @@ export async function GET(request: Request) {
         };
       }
 
-      // Check env vars
-      const envConfig = Object.entries(ENV_MAP).find(([prefix]) =>
-        serverUrl.startsWith(prefix)
+      // Check env vars (only for pre-registered providers)
+      const envConfig = Object.entries(PRE_REGISTERED_ENV_MAP).find(
+        ([prefix]) => serverUrl.startsWith(prefix)
       )?.[1];
 
       const clientId = envConfig
@@ -82,6 +76,7 @@ export async function GET(request: Request) {
       const clientSecret = envConfig
         ? process.env[envConfig.clientSecretEnv]
         : undefined;
+      const usesDynamicRegistration = !envConfig;
 
       // Fetch OAuth metadata
       let metadata: Record<string, unknown> | null = null;
@@ -120,14 +115,18 @@ export async function GET(request: Request) {
         name: integration.name,
         serverUrl,
         redirectUrl,
-        credentials: {
-          clientIdEnv:
-            envConfig?.clientIdEnv ?? "N/A (no pre-registered config)",
-          clientSecretEnv: envConfig?.clientSecretEnv ?? "N/A",
-          hasClientId: !!clientId,
-          clientIdPrefix: clientId ? clientId.slice(0, 8) + "…" : null,
-          hasClientSecret: !!clientSecret,
-        },
+        authStrategy: usesDynamicRegistration
+          ? "dynamic-registration (RFC 7591)"
+          : "pre-registered",
+        credentials: usesDynamicRegistration
+          ? { note: "Uses dynamic client registration — no env vars needed" }
+          : {
+              clientIdEnv: envConfig?.clientIdEnv,
+              clientSecretEnv: envConfig?.clientSecretEnv,
+              hasClientId: !!clientId,
+              clientIdPrefix: clientId ? clientId.slice(0, 8) + "…" : null,
+              hasClientSecret: !!clientSecret,
+            },
         serverMetadata: metadata
           ? {
               issuer: metadata.issuer,
