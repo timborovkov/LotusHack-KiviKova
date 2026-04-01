@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { meetings } from "@/lib/db/schema";
+import { meetings, users } from "@/lib/db/schema";
 import { createMeetingCollection } from "@/lib/vector/collections";
 import { upsertAgenda } from "@/lib/vector/agenda";
 import { desc, eq } from "drizzle-orm";
@@ -94,6 +94,12 @@ export async function POST(request: Request) {
       metadata,
     })
     .returning();
+
+  // Track last activity for inactive account detection
+  db.update(users)
+    .set({ lastActiveAt: new Date() })
+    .where(eq(users.id, user.id))
+    .catch(() => {}); // fire-and-forget
 
   // Embed agenda into Qdrant if provided
   if (metadata.agenda) {
