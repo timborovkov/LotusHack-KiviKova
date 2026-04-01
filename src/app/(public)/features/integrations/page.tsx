@@ -18,7 +18,7 @@ import { DISPLAY } from "@/lib/billing/constants";
 export const metadata: Metadata = {
   title: "Connect Your Tools to Video Calls | Vernix Integrations",
   description:
-    "Stop switching tabs during meetings. Connect Slack, Linear, GitHub, or your CRM. Ask Vernix and get live answers during the call.",
+    "Stop switching tabs during calls. Connect Slack, Linear, GitHub, or your CRM. Ask Vernix and get live answers during the call.",
 };
 
 const USE_CASES = [
@@ -54,7 +54,7 @@ const STEPS = [
   },
   {
     step: "2",
-    title: "Start a meeting",
+    title: "Start a call",
     description:
       "Paste a Zoom, Meet, Teams, or Webex link. Vernix joins and connects to your tools automatically.",
   },
