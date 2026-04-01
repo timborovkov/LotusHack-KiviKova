@@ -78,8 +78,7 @@ const TRIGGER_COPY: Record<PaywallTrigger, TriggerCopy> = {
   concurrent_meetings: {
     icon: Users,
     title: "One meeting at a time on Free",
-    description:
-      "Free accounts can run one meeting at a time. Upgrade to run up to 5 meetings simultaneously.",
+    description: `Free accounts can run one meeting at a time. Upgrade to run up to ${LIMITS[PLANS.PRO].concurrentMeetings} meetings simultaneously.`,
     proValue: `${LIMITS[PLANS.PRO].concurrentMeetings} concurrent meetings`,
     limitType: "feature",
   },
