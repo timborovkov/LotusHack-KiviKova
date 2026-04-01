@@ -112,6 +112,7 @@ All under `src/app/api/v1/`. Authenticated via API key (`Authorization: Bearer k
 - `v1/openapi.json/route.ts` — GET OpenAPI 3.1 specification
 
 **Key layers:**
+
 - `src/lib/api/constants.ts` — API version, rate limit constants (`RATE_LIMIT_STANDARD=60`, `RATE_LIMIT_EXPENSIVE=10`)
 - `src/lib/api/middleware.ts` — `withApiAuth()` HOF: API key auth → rate limit → billing check → usage recording → headers
 - `src/lib/api/response.ts` — Envelope helpers: `apiSuccess()`, `apiCreated()`, `apiError()`, `handleServiceError()`
@@ -210,6 +211,8 @@ Tests must verify **real behavior**, not just confirm that mocks return what you
 - [ ] Keep webhook endpoints (`/api/webhooks/*`) public — no auth middleware
 - [ ] Keep `CLAUDE.md` and `AGENTS.md` in sync — they should have identical content
 - [ ] Update internal docs in `docs/` when changing related features (billing, architecture, pricing, cron jobs, etc.)
+- [ ] Update OpenAPI spec (`src/lib/api/openapi.ts`) when adding/changing v1 API endpoints
+- [ ] Update `llms.txt` when adding new API endpoints or MCP tools
 - [ ] Mark completed items as done in `TODO.md` when shipping changes
 
 ## Environment
