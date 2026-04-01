@@ -42,9 +42,7 @@ export async function runQdrantCleanup() {
 
         if (!exists) {
           await qdrant.deleteCollection(name);
-          console.log(
-            `[Qdrant Cleanup] Deleted orphaned collection: ${name}`
-          );
+          console.log(`[Qdrant Cleanup] Deleted orphaned collection: ${name}`);
           deleted++;
         }
       } else if (name.startsWith("knowledge_")) {
