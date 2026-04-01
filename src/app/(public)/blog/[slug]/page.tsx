@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/date";
 import { mdxComponents } from "@/components/blog/mdx-components";
 
+export const dynamicParams = false;
+
 interface Props {
   params: Promise<{ slug: string }>;
 }
