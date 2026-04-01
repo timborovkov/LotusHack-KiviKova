@@ -95,11 +95,13 @@ export async function POST(request: Request) {
     })
     .returning();
 
-  // Track last activity for inactive account detection
-  db.update(users)
-    .set({ lastActiveAt: new Date() })
-    .where(eq(users.id, user.id))
-    .catch(() => {}); // fire-and-forget
+  // Track last activity for inactive account detection (fire-and-forget)
+  Promise.resolve(
+    db
+      .update(users)
+      .set({ lastActiveAt: new Date() })
+      .where(eq(users.id, user.id))
+  ).catch(() => {});
 
   // Embed agenda into Qdrant if provided
   if (metadata.agenda) {
