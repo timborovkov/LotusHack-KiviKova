@@ -114,6 +114,40 @@ describe("listObjects", () => {
     const command = mockS3Client.send.mock.calls[0][0];
     expect(command.input.MaxKeys).toBe(50);
   });
+
+  it("paginates when IsTruncated is true", async () => {
+    mockS3Client.send
+      .mockResolvedValueOnce({
+        Contents: [{ Key: "a/1.txt" }],
+        IsTruncated: true,
+        NextContinuationToken: "token-page2",
+      })
+      .mockResolvedValueOnce({
+        Contents: [{ Key: "a/2.txt" }],
+        IsTruncated: false,
+      });
+
+    const keys = await listObjects("a/");
+
+    expect(keys).toEqual(["a/1.txt", "a/2.txt"]);
+    expect(mockS3Client.send).toHaveBeenCalledTimes(2);
+    const secondCall = mockS3Client.send.mock.calls[1][0];
+    expect(secondCall.input.ContinuationToken).toBe("token-page2");
+  });
+
+  it("stops paginating when maxKeys is reached", async () => {
+    mockS3Client.send.mockResolvedValueOnce({
+      Contents: [{ Key: "a/1.txt" }, { Key: "a/2.txt" }],
+      IsTruncated: true,
+      NextContinuationToken: "token-page2",
+    });
+
+    const keys = await listObjects("a/", 2);
+
+    expect(keys).toEqual(["a/1.txt", "a/2.txt"]);
+    // Should not make a second call since maxKeys reached
+    expect(mockS3Client.send).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe("getDownloadUrl", () => {
