@@ -102,7 +102,7 @@ export default async function IntegrationPage({ params }: Props) {
 
       <header className="mb-12">
         <div className="mb-6 flex items-center gap-4">
-          <div className="bg-muted flex h-16 w-16 items-center justify-center rounded-xl">
+          <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-white shadow-sm">
             <Image
               src={integration.logo}
               alt={`${integration.name} logo`}
