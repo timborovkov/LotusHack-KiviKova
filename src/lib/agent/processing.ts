@@ -66,7 +66,7 @@ export async function processMeetingEnd(
 
     // First meeting email (non-critical)
     try {
-      await sendFirstMeetingEmail(meetingId, userId, metadata);
+      await sendFirstMeetingEmail(meetingId, userId);
     } catch (err) {
       console.error("[Processing] First meeting email failed:", err);
     }
@@ -217,8 +217,7 @@ async function captureRecordingAndParticipants(
  */
 async function sendFirstMeetingEmail(
   meetingId: string,
-  userId: string,
-  metadata: Record<string, unknown>
+  userId: string
 ): Promise<void> {
   const { sendEmail } = await import("@/lib/email/send");
   const { getFirstMeetingEmailHtml } = await import("@/lib/email/templates");
