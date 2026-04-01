@@ -175,6 +175,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
         user.image = existingUser.image ?? oauthImage;
         user.termsAcceptedAt = existingUser.termsAcceptedAt ?? null;
+
+        // Track last activity for inactive account detection (fire-and-forget)
+        Promise.resolve(
+          db
+            .update(users)
+            .set({ lastActiveAt: new Date() })
+            .where(eq(users.id, existingUser.id))
+        ).catch(() => {});
+
         return true;
       }
 
