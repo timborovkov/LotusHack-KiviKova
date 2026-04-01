@@ -27,6 +27,7 @@ async function probeEndpoint(url: string): Promise<{
     // Send a POST with MCP initialize request to trigger protocol handling
     const res = await fetch(url, {
       method: "POST",
+      redirect: "manual",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json, text/event-stream",
