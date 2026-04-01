@@ -222,6 +222,9 @@ Tasks:
 Search:
 - GET /api/v1/search — Semantic search (?q=query&meetingId=...&limit=10)
 
+Integrations:
+- GET /api/v1/integrations — List connected integrations (Slack, Linear, GitHub, etc.)
+
 Knowledge Base:
 - GET /api/v1/knowledge — List documents (?meetingId=...)
 - POST /api/v1/knowledge — Upload document (multipart/form-data, field: "file")
@@ -256,6 +259,7 @@ Available MCP tools:
 - vernix_stop_call — Stop the agent and trigger processing
 - vernix_search_meetings — Semantic search with structured results
 - vernix_search_tasks — Search and filter tasks
+- list_integrations — List connected integrations (Slack, Linear, GitHub, etc.)
 
 ## Links
 

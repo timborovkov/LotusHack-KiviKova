@@ -22,8 +22,8 @@ vi.mock("@/lib/agent/rag", async () => {
     }
   }
   class AllSearchesFailedError extends Error {
-    constructor(message: string) {
-      super(message);
+    constructor() {
+      super("Vector search failed for all collections");
       this.name = "AllSearchesFailedError";
     }
   }
@@ -60,9 +60,9 @@ describe("searchMeetings", () => {
       reason: "Daily RAG query limit reached",
     });
 
-    await expect(
-      searchMeetings(USER_ID, { query: "test" })
-    ).rejects.toThrow("Daily RAG query limit reached");
+    await expect(searchMeetings(USER_ID, { query: "test" })).rejects.toThrow(
+      "Daily RAG query limit reached"
+    );
   });
 
   it("throws BillingError with 429 status code", async () => {
@@ -94,27 +94,25 @@ describe("searchMeetings", () => {
       new EmbeddingError("OpenAI embedding failed")
     );
 
-    await expect(
-      searchMeetings(USER_ID, { query: "test" })
-    ).rejects.toThrow("Failed to create embedding");
+    await expect(searchMeetings(USER_ID, { query: "test" })).rejects.toThrow(
+      "Failed to create embedding"
+    );
   });
 
   it("translates AllSearchesFailedError to generic Error", async () => {
-    mockGetRAGContext.mockRejectedValueOnce(
-      new AllSearchesFailedError("All failed")
-    );
+    mockGetRAGContext.mockRejectedValueOnce(new AllSearchesFailedError());
 
-    await expect(
-      searchMeetings(USER_ID, { query: "test" })
-    ).rejects.toThrow("Vector search failed for all collections");
+    await expect(searchMeetings(USER_ID, { query: "test" })).rejects.toThrow(
+      "Vector search failed for all collections"
+    );
   });
 
   it("re-throws unknown errors as-is", async () => {
     mockGetRAGContext.mockRejectedValueOnce(new Error("Unexpected boom"));
 
-    await expect(
-      searchMeetings(USER_ID, { query: "test" })
-    ).rejects.toThrow("Unexpected boom");
+    await expect(searchMeetings(USER_ID, { query: "test" })).rejects.toThrow(
+      "Unexpected boom"
+    );
   });
 
   it("records usage event on success", async () => {

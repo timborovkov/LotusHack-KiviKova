@@ -9,6 +9,7 @@ import { createMeeting } from "@/lib/services/meetings";
 import { joinMeeting, stopMeeting } from "@/lib/services/agent";
 import { searchMeetings } from "@/lib/services/search";
 import { listTasks } from "@/lib/services/tasks";
+import { listConnectedIntegrations } from "@/lib/services/integrations";
 
 /**
  * Create an MCP server instance scoped to a specific user.
@@ -450,6 +451,45 @@ export function createMcpServer(userId: string): McpServer {
             {
               type: "text" as const,
               text: `Failed to search tasks: ${error instanceof Error ? error.message : "Unknown error"}`,
+            },
+          ],
+          isError: true,
+        };
+      }
+    }
+  );
+
+  // -----------------------------------------------------------------------
+  // Integrations
+  // -----------------------------------------------------------------------
+
+  server.registerTool(
+    "list_integrations",
+    {
+      description:
+        "List the user's connected integrations (Slack, Linear, GitHub, etc.) with their status and category.",
+      inputSchema: {},
+    },
+    async () => {
+      try {
+        const integrations = await listConnectedIntegrations(userId);
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text:
+                integrations.length > 0
+                  ? JSON.stringify(integrations, null, 2)
+                  : "No integrations connected. Connect integrations at Settings → Integrations.",
+            },
+          ],
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: `Failed to list integrations: ${error instanceof Error ? error.message : "Unknown error"}`,
             },
           ],
           isError: true,

@@ -73,7 +73,9 @@ function resetDbChain() {
   mockEnsureBucket.mockReset().mockResolvedValue(undefined);
   mockUploadFile.mockReset().mockResolvedValue(undefined);
   mockDeleteFile.mockReset().mockResolvedValue(undefined);
-  mockGetDownloadUrl.mockReset().mockResolvedValue("https://s3.example.com/file");
+  mockGetDownloadUrl
+    .mockReset()
+    .mockResolvedValue("https://s3.example.com/file");
   mockProcessDocument.mockReset().mockResolvedValue(undefined);
   mockDeleteDocumentChunks.mockReset().mockResolvedValue(undefined);
   mockKnowledgeCollectionName.mockReset().mockReturnValue("knowledge_user123");
@@ -292,9 +294,7 @@ describe("deleteDocument", () => {
 
     await deleteDocument(USER_ID, doc.id);
 
-    expect(mockDeleteFile).toHaveBeenCalledWith(
-      "knowledge/user/doc/file.pdf"
-    );
+    expect(mockDeleteFile).toHaveBeenCalledWith("knowledge/user/doc/file.pdf");
   });
 
   it("deletes DB record", async () => {

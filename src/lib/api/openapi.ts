@@ -989,6 +989,64 @@ List endpoints use cursor-based pagination. Pass \`limit\` (1-100, default 20) a
           },
         },
       },
+
+      // ---------------------------------------------------------------
+      // Integrations
+      // ---------------------------------------------------------------
+      "/integrations": {
+        get: {
+          operationId: "listIntegrations",
+          summary: "List connected integrations",
+          tags: ["Integrations"],
+          description:
+            "Returns the user's connected integrations (Slack, Linear, GitHub, etc.) with their catalog metadata.",
+          responses: {
+            "200": {
+              description: "List of connected integrations",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      data: {
+                        type: "array",
+                        items: {
+                          type: "object",
+                          properties: {
+                            id: { type: "string", format: "uuid" },
+                            name: { type: "string" },
+                            enabled: { type: "boolean" },
+                            catalogIntegrationId: {
+                              type: "string",
+                              nullable: true,
+                            },
+                            integrationName: {
+                              type: "string",
+                              nullable: true,
+                            },
+                            integrationCategory: {
+                              type: "string",
+                              nullable: true,
+                            },
+                            integrationLogo: {
+                              type: "string",
+                              nullable: true,
+                            },
+                            createdAt: {
+                              type: "string",
+                              format: "date-time",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     },
   } as any);
 
