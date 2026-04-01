@@ -38,7 +38,7 @@ const QUESTIONS = [
   },
   {
     q: "What counts as usage?",
-    a: `Meeting time is the main usage metric. A 1-hour voice meeting uses ${DISPLAY.voiceRate.replace("/hr", "")} of credit. A 1-hour silent meeting uses ${DISPLAY.silentRate.replace("/hr", "")}. Post-meeting chat, summaries, and action items are included at no extra cost. Your ${DISPLAY.monthlyCredit} monthly credit covers roughly ${DISPLAY.voiceHoursPerCredit} hours of voice meetings or ${DISPLAY.silentHoursPerCredit} hours of silent meetings.`,
+    a: `Meeting time is the main usage metric. A 1-hour voice meeting uses ${DISPLAY.voiceCost} of credit. A 1-hour silent meeting uses ${DISPLAY.silentCost}. Post-meeting chat, summaries, and action items are included at no extra cost. Your ${DISPLAY.monthlyCredit} monthly credit covers roughly ${DISPLAY.voiceHoursPerCredit} hours of voice meetings or ${DISPLAY.silentHoursPerCredit} hours of silent meetings.`,
   },
   {
     q: "Can I use my own documents?",
