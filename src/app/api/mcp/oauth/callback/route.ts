@@ -83,7 +83,11 @@ export async function GET(request: Request) {
       );
     }
   } catch (err) {
-    console.error("[OAuth Callback] Token exchange failed:", err);
+    console.error("[OAuth Callback] Token exchange failed:", {
+      error: err,
+      serverUrl: server.url,
+      catalogIntegrationId: server.catalogIntegrationId,
+    });
     return NextResponse.redirect(
       `${integrationsUrl}?error=${encodeURIComponent("Token exchange failed")}`
     );
