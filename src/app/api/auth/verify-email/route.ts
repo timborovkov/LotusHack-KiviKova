@@ -5,24 +5,22 @@ import { eq, and, gt } from "drizzle-orm";
 import { hashVerificationToken } from "@/lib/auth/email-verification";
 import { rateLimitByIp } from "@/lib/rate-limit";
 
+const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://vernix.app";
+
 export async function GET(request: Request) {
   const rl = rateLimitByIp(request, "auth:verify-email", {
     interval: 300_000,
     limit: 10,
   });
   if (!rl.success) {
-    return NextResponse.redirect(
-      new URL("/dashboard?verified=error", request.url)
-    );
+    return NextResponse.redirect(`${appUrl}/dashboard?verified=error`);
   }
 
   const { searchParams } = new URL(request.url);
   const token = searchParams.get("token");
 
   if (!token) {
-    return NextResponse.redirect(
-      new URL("/dashboard?verified=error", request.url)
-    );
+    return NextResponse.redirect(`${appUrl}/dashboard?verified=error`);
   }
 
   const tokenHash = hashVerificationToken(token);
@@ -41,9 +39,7 @@ export async function GET(request: Request) {
     );
 
   if (!record) {
-    return NextResponse.redirect(
-      new URL("/dashboard?verified=error", request.url)
-    );
+    return NextResponse.redirect(`${appUrl}/dashboard?verified=error`);
   }
 
   // Mark email as verified and delete the token
@@ -56,5 +52,5 @@ export async function GET(request: Request) {
     .delete(emailVerificationTokens)
     .where(eq(emailVerificationTokens.id, record.id));
 
-  return NextResponse.redirect(new URL("/dashboard?verified=1", request.url));
+  return NextResponse.redirect(`${appUrl}/dashboard?verified=1`);
 }
