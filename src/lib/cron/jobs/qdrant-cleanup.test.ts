@@ -63,10 +63,7 @@ describe("runQdrantCleanup", () => {
       collections: [{ name: "meeting_a0eebc999c0b4ef8bb6d6bb9bd380a11" }],
     });
     // Not found by qdrantCollectionName
-    mockDb.limit
-      .mockResolvedValueOnce([])
-      // Not found by UUID
-      .mockResolvedValueOnce([]);
+    mockDb.limit.mockResolvedValueOnce([]);
 
     const result = await runQdrantCleanup();
 
