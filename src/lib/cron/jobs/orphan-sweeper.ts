@@ -24,9 +24,7 @@ export async function runOrphanSweeper() {
 
     if (toDelete.length > 0) {
       const ids = toDelete.map((r) => r.id);
-      await db
-        .delete(usageEvents)
-        .where(inArray(usageEvents.id, ids));
+      await db.delete(usageEvents).where(inArray(usageEvents.id, ids));
       console.log(
         `[Orphan Sweeper] Deleted ${ids.length} orphaned usage events`
       );
