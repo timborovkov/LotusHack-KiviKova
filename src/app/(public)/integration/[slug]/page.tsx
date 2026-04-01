@@ -127,7 +127,9 @@ export default async function IntegrationPage({ params }: Props) {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="outline">{getCategoryLabel(integration.category)}</Badge>
+          <Badge variant="outline">
+            {getCategoryLabel(integration.category)}
+          </Badge>
           {integration.tags.map((tag) => (
             <Badge key={tag} variant="secondary" className="text-xs">
               {tag}
@@ -171,7 +173,7 @@ export default async function IntegrationPage({ params }: Props) {
           {integration.sampleResponses.map((response) => (
             <li
               key={response}
-              className="border-l-4 border-l-violet-500 bg-violet-500/5 rounded-r-lg px-4 py-3 text-sm"
+              className="rounded-r-lg border-l-4 border-l-violet-500 bg-violet-500/5 px-4 py-3 text-sm"
             >
               {response}
             </li>
