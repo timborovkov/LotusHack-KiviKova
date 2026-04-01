@@ -90,7 +90,8 @@ describe("POST /api/agent/stop", () => {
       .mockResolvedValueOnce([
         fakeMeeting({ status: "active", metadata: { botId: "bot-42" } }),
       ])
-      .mockResolvedValueOnce(undefined);
+      .mockImplementationOnce(() => mockDb) // processing update
+      .mockResolvedValueOnce([{ status: "completed" }]); // re-fetch
 
     const req = createJsonRequest("http://localhost/api/agent/stop", {
       method: "POST",
@@ -111,7 +112,8 @@ describe("POST /api/agent/stop", () => {
   it("stops joining meeting without botId — does not call leaveMeeting", async () => {
     mockDb.where
       .mockResolvedValueOnce([fakeMeeting({ status: "joining", metadata: {} })])
-      .mockResolvedValueOnce(undefined);
+      .mockImplementationOnce(() => mockDb)
+      .mockResolvedValueOnce([{ status: "completed" }]);
 
     const req = createJsonRequest("http://localhost/api/agent/stop", {
       method: "POST",
