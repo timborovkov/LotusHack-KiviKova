@@ -76,6 +76,16 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
+        <meta
+          name="theme-color"
+          content="#ffffff"
+          media="(prefers-color-scheme: light)"
+        />
+        <meta
+          name="theme-color"
+          content="#242424"
+          media="(prefers-color-scheme: dark)"
+        />
         <ThemeScript />
       </head>
       <body className="flex min-h-full flex-col">
