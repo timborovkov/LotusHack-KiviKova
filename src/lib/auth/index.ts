@@ -53,6 +53,12 @@ providers.push(
       const valid = await compare(password, user.passwordHash);
       if (!valid) return null;
 
+      // Track last activity for inactive account detection
+      db.update(users)
+        .set({ lastActiveAt: new Date() })
+        .where(eq(users.id, user.id))
+        .catch(() => {}); // fire-and-forget
+
       return {
         id: user.id,
         email: user.email,
@@ -121,6 +127,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         user.id = existingAccount.userId;
         user.image = dbUser?.image ?? user.image;
         user.termsAcceptedAt = dbUser?.termsAcceptedAt ?? null;
+
+        // Track last activity for inactive account detection
+        db.update(users)
+          .set({ lastActiveAt: new Date() })
+          .where(eq(users.id, existingAccount.userId))
+          .catch(() => {}); // fire-and-forget
+
         return true;
       }
 
