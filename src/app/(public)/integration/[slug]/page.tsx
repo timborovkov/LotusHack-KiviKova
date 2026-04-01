@@ -102,7 +102,8 @@ export default async function IntegrationPage({ params }: Props) {
       "@type": "Offer",
       price: "0",
       priceCurrency: "EUR",
-      description: "Free plan available. Pro plan for voice agent and integrations.",
+      description:
+        "Free plan available. Pro plan for voice agent and integrations.",
     },
     publisher: {
       "@type": "Organization",
