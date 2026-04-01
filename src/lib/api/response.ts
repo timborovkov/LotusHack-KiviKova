@@ -5,6 +5,7 @@ import {
   BillingError,
   ForbiddenError,
   ConflictError,
+  SearchError,
 } from "./errors";
 
 // ---------------------------------------------------------------------------
@@ -71,6 +72,9 @@ export function handleServiceError(error: unknown): NextResponse {
   }
   if (error instanceof ConflictError) {
     return apiError("CONFLICT", error.message, 409);
+  }
+  if (error instanceof SearchError) {
+    return apiError("SEARCH_ERROR", error.message, 500);
   }
   console.error("Unhandled API error:", error);
   return apiError("INTERNAL_ERROR", "Internal server error", 500);
