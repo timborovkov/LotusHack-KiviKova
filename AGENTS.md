@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 pnpm dev              # Start dev server (Turbopack)
-pnpm validate         # Format + lint --fix + typecheck + test (run before every PR)
+pnpm validate         # Format + lint --fix + typecheck + test + knip (run before every PR)
 pnpm test             # Vitest unit tests
 pnpm typecheck        # tsc --noEmit
 pnpm lint             # ESLint
@@ -16,7 +16,7 @@ pnpm db:studio        # Drizzle Studio GUI
 docker compose up -d  # Start Postgres + Qdrant + Minio locally
 ```
 
-Run `pnpm validate` after every change. It formats, lints with autofix, typechecks, and runs all tests.
+Run `pnpm validate` after every change. It formats, lints with autofix, typechecks, runs all tests, and checks for dead code with knip.
 
 ## Architecture
 
@@ -205,7 +205,7 @@ Tests must verify **real behavior**, not just confirm that mocks return what you
 ## Checklist for Changes
 
 - [ ] Write meaningful tests for new API routes and utility functions (see Test Quality Rules)
-- [ ] Run `pnpm validate` (format, lint, typecheck, test) — **mandatory after every change**
+- [ ] Run `pnpm validate` (format, lint, typecheck, test, knip) — **mandatory after every change**
 - [ ] Update `.env.example` if adding new environment variables
 - [ ] Update `README.md` env table and any relevant sections
 - [ ] Update `docker-compose.yml` if adding new services
