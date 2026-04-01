@@ -6,6 +6,8 @@ const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://vernix.app";
 // Build the OpenAPI 3.1 specification
 // ---------------------------------------------------------------------------
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export function buildOpenApiSpec() {
   const builder = OpenApiBuilder.create({
     openapi: "3.1.0",
@@ -147,8 +149,8 @@ List endpoints use cursor-based pagination. Pass \`limit\` (1-100, default 20) a
             participants: { type: "array", items: { type: "string" } },
             metadata: { type: "object" },
             qdrantCollectionName: { type: "string" },
-            startedAt: { type: "string", format: "date-time", nullable: true },
-            endedAt: { type: "string", format: "date-time", nullable: true },
+            startedAt: { type: "string", format: "date-time", nullable: true as any },
+            endedAt: { type: "string", format: "date-time", nullable: true as any },
             createdAt: { type: "string", format: "date-time" },
             updatedAt: { type: "string", format: "date-time" },
           },
@@ -159,14 +161,14 @@ List endpoints use cursor-based pagination. Pass \`limit\` (1-100, default 20) a
             id: { type: "string", format: "uuid" },
             meetingId: { type: "string", format: "uuid" },
             title: { type: "string" },
-            assignee: { type: "string", nullable: true },
+            assignee: { type: "string", nullable: true as any },
             status: { type: "string", enum: ["open", "completed"] },
-            sourceText: { type: "string", nullable: true },
-            sourceTimestampMs: { type: "number", nullable: true },
-            dueDate: { type: "string", format: "date-time", nullable: true },
+            sourceText: { type: "string", nullable: true as any },
+            sourceTimestampMs: { type: "number", nullable: true as any },
+            dueDate: { type: "string", format: "date-time", nullable: true as any },
             autoExtracted: { type: "boolean" },
             createdAt: { type: "string", format: "date-time" },
-            meetingTitle: { type: "string", nullable: true },
+            meetingTitle: { type: "string", nullable: true as any },
           },
         },
         Document: {
@@ -180,8 +182,8 @@ List endpoints use cursor-based pagination. Pass \`limit\` (1-100, default 20) a
               type: "string",
               enum: ["processing", "ready", "failed"],
             },
-            meetingId: { type: "string", format: "uuid", nullable: true },
-            chunkCount: { type: "number", nullable: true },
+            meetingId: { type: "string", format: "uuid", nullable: true as any },
+            chunkCount: { type: "number", nullable: true as any },
             createdAt: { type: "string", format: "date-time" },
           },
         },
@@ -726,7 +728,7 @@ List endpoints use cursor-based pagination. Pass \`limit\` (1-100, default 20) a
                   type: "object",
                   properties: {
                     title: { type: "string", minLength: 1, maxLength: 500 },
-                    assignee: { type: "string", maxLength: 200, nullable: true },
+                    assignee: { type: "string", maxLength: 200, nullable: true as any },
                     status: {
                       type: "string",
                       enum: ["open", "completed"],
@@ -734,7 +736,7 @@ List endpoints use cursor-based pagination. Pass \`limit\` (1-100, default 20) a
                     dueDate: {
                       type: "string",
                       format: "date-time",
-                      nullable: true,
+                      nullable: true as any,
                     },
                   },
                 },
