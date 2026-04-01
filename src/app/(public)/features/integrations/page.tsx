@@ -7,14 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { IntegrationCloud } from "@/components/integration-cloud";
 import { HeroBg } from "@/components/hero-bg";
-import {
-  Plug,
-  ArrowRight,
-  Mic,
-  Search,
-  FileText,
-  MessageSquare,
-} from "lucide-react";
+import { Plug, ArrowRight } from "lucide-react";
 import { DISPLAY } from "@/lib/billing/constants";
 import { getIntegrations, CATEGORIES } from "@/lib/integrations/catalog";
 
