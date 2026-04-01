@@ -8,6 +8,7 @@ import {
   ExternalLink,
   MessageSquareText,
   Sparkles,
+  Zap,
 } from "lucide-react";
 
 import { auth } from "@/lib/auth";
@@ -36,6 +37,14 @@ function findIntegration(slug: string): Integration | undefined {
 function getCategoryLabel(category: Integration["category"]): string {
   return CATEGORIES.find((c) => c.value === category)?.label ?? category;
 }
+
+const AUTH_LABELS: Record<string, string> = {
+  oauth: "One-click OAuth",
+  token: "API token",
+  api_key: "API key",
+  url_key: "API key (in URL)",
+  none: "No authentication",
+};
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://vernix.app";
 
@@ -181,20 +190,56 @@ export default async function IntegrationPage({ params }: Props) {
         </ul>
       </section>
 
-      {/* Docs link */}
-      {integration.docsUrl && (
-        <div className="mb-12">
-          <a
-            href={integration.docsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors"
-          >
-            View {integration.name} documentation
-            <ExternalLink className="h-3.5 w-3.5" />
-          </a>
+      {/* Getting started */}
+      <section className="mb-12">
+        <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold">
+          <Zap className="text-muted-foreground h-5 w-5" />
+          Getting started
+        </h2>
+        <div className="border-border divide-border divide-y rounded-lg border">
+          <div className="flex items-center justify-between px-4 py-3">
+            <span className="text-muted-foreground text-sm">
+              Connection method
+            </span>
+            <span className="text-sm font-medium">
+              {AUTH_LABELS[integration.authMode] ?? integration.authMode}
+            </span>
+          </div>
+          <div className="flex items-center justify-between px-4 py-3">
+            <span className="text-muted-foreground text-sm">Setup</span>
+            <span className="text-sm">{integration.setupInstructions}</span>
+          </div>
+          {integration.docsUrl && (
+            <div className="flex items-center justify-between px-4 py-3">
+              <span className="text-muted-foreground text-sm">
+                Documentation
+              </span>
+              <a
+                href={integration.docsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-ring hover:text-ring/80 inline-flex items-center gap-1.5 text-sm transition-colors"
+              >
+                {integration.name} docs
+                <ExternalLink className="h-3.5 w-3.5" />
+              </a>
+            </div>
+          )}
+          <div className="flex items-center justify-between px-4 py-3">
+            <span className="text-muted-foreground text-sm">Status</span>
+            <Badge
+              variant={
+                integration.status === "available" ? "default" : "secondary"
+              }
+              className="text-xs"
+            >
+              {integration.status === "available"
+                ? "Available now"
+                : "Coming soon"}
+            </Badge>
+          </div>
         </div>
-      )}
+      </section>
 
       {/* CTA */}
       <div className="border-border rounded-lg border p-8 text-center">
