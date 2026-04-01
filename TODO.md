@@ -2,7 +2,7 @@
 
 ## Integrations
 
-- **Register OAuth apps for more services** — Currently only GitHub has a pre-registered OAuth app. To enable more OAuth integrations (Slack, Linear, Notion, etc.): register Vernix on each service's developer console, add env vars, add to `PRE_REGISTERED_CLIENTS` in `oauth-provider.ts`, change catalog status to `available`.
+- **Register OAuth apps for more services (priority order)** — Pre-registered OAuth apps are now available for GitHub and Notion. Prioritize next: (1) Linear, (2) HubSpot CRM, (3) Salesforce, (4) Pipedrive, (5) Slack. Next wave: Jira, Asana. For each: register Vernix in provider developer console, add env vars, add to `PRE_REGISTERED_CLIENTS` in `oauth-provider.ts`, and change catalog status to `available`.
 
 ## Cron Jobs & Background Reconciliation
 
@@ -12,7 +12,12 @@
 ## Blog & Content
 
 - **Blog infrastructure** — Add a `/blog` section with MDX/markdown posts, frontmatter, static generation.
-- **Initial posts** — Write 3-5 launch posts.
+- **Initial posts** — Write 3-5 launch posts. Suggested ideas:
+  - "Silent Agent vs Voice Agent: When to Use Each Mode"
+  - "From Transcript to Action: How Vernix Extracts Tasks Automatically"
+  - "How to Build a Searchable Meeting Memory Across Your Calls"
+  - "Vernix + GitHub: Keep Engineering Context Close to Your Meeting Memory"
+  - "Privacy and Retention in AI Meeting Tools: What Teams Should Check"
 
 ## SEO & Discoverability
 
