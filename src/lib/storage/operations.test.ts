@@ -19,6 +19,7 @@ import {
   ensureBucket,
   uploadFile,
   deleteFile,
+  listObjects,
   getDownloadUrl,
 } from "./operations";
 
@@ -75,6 +76,43 @@ describe("deleteFile", () => {
       Bucket: "test-bucket",
       Key: "knowledge/user/doc/file.pdf",
     });
+  });
+});
+
+describe("listObjects", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it("returns keys from S3 listing", async () => {
+    mockS3Client.send.mockResolvedValueOnce({
+      Contents: [{ Key: "recordings/a.mp4" }, { Key: "recordings/b.mp4" }],
+    });
+
+    const keys = await listObjects("recordings/");
+
+    expect(keys).toEqual(["recordings/a.mp4", "recordings/b.mp4"]);
+    const command = mockS3Client.send.mock.calls[0][0];
+    expect(command.input).toEqual({
+      Bucket: "test-bucket",
+      Prefix: "recordings/",
+      MaxKeys: 1000,
+    });
+  });
+
+  it("returns empty array when no objects found", async () => {
+    mockS3Client.send.mockResolvedValueOnce({ Contents: undefined });
+
+    const keys = await listObjects("empty/");
+
+    expect(keys).toEqual([]);
+  });
+
+  it("respects custom maxKeys", async () => {
+    mockS3Client.send.mockResolvedValueOnce({ Contents: [] });
+
+    await listObjects("prefix/", 50);
+
+    const command = mockS3Client.send.mock.calls[0][0];
+    expect(command.input.MaxKeys).toBe(50);
   });
 });
 
