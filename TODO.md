@@ -2,64 +2,16 @@
 
 ## Completed
 
-- Core Pipeline (functional baseline)
-- Voice Agent (differentiator)
-- Post-Meeting Processing
-- UX Polish
-- Authentication
-- Live Voice Agent
-- Chat with Meeting Notes
-- Knowledge Base (file uploads + RAG)
-- Meeting-Scoped Knowledge
-- Meeting Context & Agenda
-- Action Items & Tasks
-- MCP Tool Connections
-- Data Export
-- Production Hardening
-- Rebrand to Vernix (`vernix.app`)
-- UI Polish & Launch Prep
-- Dark Mode & Theme Selector
-- User Profiles & SSO
-- Password Reset & NextAuth Email Integration
-- Silent Agent Mode (Text Agent)
-- Switch to TanStack Query
-- MCP Server Connection Testing
-- Analytics & Monitoring
-- Contact Forms & Email
-- Welcome Email
-- Pricing strategy calculation
-- Pricing page (`/pricing`)
-- Self-kick agent tool (leave_meeting)
-- Switch to silent mode tool (switch_to_silent)
-- User mute control (UI kill switch)
-- Mute state enforcement
-- Hide completed tasks from dashboard action points
-- Show meeting-scoped files on knowledge page
-- Voice Mode Rewrite (On-Demand Realtime)
-- Internal Agent System Documentation (`docs/agent-architecture.md`)
-- Fast Wake-Word Detection (Client-Side VAD + gpt-4o-mini-transcribe)
-- Billing with Polar (constants, Polar integration, hard caps, usage tracking, billing UI, webhook handler, limit enforcement, paywalls)
-- Billing lifecycle emails (disable trial-expiry reminders, weekly free-user upgrade reminders, cancellation retention emails)
-- Cron job upgrade reminders for free users every week, email them to let them know about the upgrade options.
-- Subscription cancellation access policy (keep access until period/trial end)
-- Cron documentation sync (`docs/cron-jobs.md` aligned with active jobs)
-- Unified cron dispatcher (`/api/cron`) — single Railway service drives all jobs via schedule-based dispatch, extracted job handlers into `src/lib/cron/jobs/`
-- Recording retention bug fixes — S3 failure no longer orphans recordings (skips metadata clear on failure), null userId no longer causes infinite reprocessing loop
-- Recording retention policy: 90-day default enforced via cron (`RECORDING_RETENTION_DAYS`), documented storage cost
-- Deletion consistency: meeting DELETE handler cleans up S3 recordings, Recall bots, Qdrant collections, and scoped documents
-- Legal disclosures: Terms of Use and Privacy Policy updated with recording retention, storage, and deletion behavior
-- Recording privacy controls UI: "Disable recording" checkbox in meeting creation dialog, threaded through hook/API
-- Cron jobs: token purge, document processing watchdog, usage integrity audit, billing meter retry/backfill (`polarSyncedAt` tracking), Qdrant collection cleanup, orphaned S3 storage cleanup, orphan DB record sweeper, inactive account detection (informational)
-- Integrations platform foundation: Zod-validated catalog (`src/lib/integrations/catalog.ts`), 30 seeded integrations, custom MCP auth types (none/bearer/header/basic/OAuth), OAuth flow (MCP SDK authProvider + state JWT + PKCE + token storage), and pre-registered GitHub OAuth
-- Integrations UX revamp: `/dashboard/integrations` searchable catalog + category filters + connected server cards, Integration Cloud on landing/feature pages, MCP management moved from Settings, and Pro/Trial paywall gating
-- Reliability hardening: Recall webhook signature verification (Svix) and meeting-usage billing idempotency guard
-- Growth and discoverability surfaces: Welcome to Pro page (`/welcome-to-pro`), feature landing pages (`/features/integrations`, `/features/meeting-memory`, `/features/context`), and SEO foundations (robots.txt, sitemap.xml, llms.txt, meta tags)
-- Billing operations and packaging: Polar subscription reconciliation cron (`/api/cron/billing-sync`) and trial policy aligned to full Pro feature access (voice, API, MCP, integrations)
-- Task management: `/dashboard/tasks` cross-call task list with filter tabs (open/all/completed), inline task completion with optimistic updates, dashboard widget limited to 3 tasks with "View all" link, Tasks nav button in header, meeting title links to source call, task source context (transcript snippet + timestamp from extraction)
-- Empty states and onboarding UX: auth page redirects for logged-in users (middleware), public site header shows "Dashboard" when authenticated, landing page auth-aware CTAs, dashboard "Start your first call" empty state with knowledge/integrations nudges, integrations page first-connection banner
-- Terms of use acceptance: checkbox on credentials signup form, SSO post-auth acceptance page (`/accept-terms`), middleware enforcement (`termsAcceptedAt` in JWT), schema column on users table
-- Call detail page restructure: tab-based layout (Overview, Transcript, Tasks, Documents, Chat), URL hash deep linking, bounded transcript scroll, meeting link button, extracted into 5 component files
-- Call reliability and recording: Recall API expansion (getBot, getParticipantEvents), auto-recording capture to S3, participant event persistence, meeting recovery cron (stuck joining/active/processing), video player in overview tab, re-generate summary button
+- Core product foundation: call pipeline, post-call processing, and production hardening
+- AI agent system: live voice agent, on-demand realtime rewrite, fast wake-word detection, silent/text mode, mute controls, and agent tools
+- Knowledge & context: chat with call notes, RAG knowledge base, meeting-scoped docs, and agenda/context support
+- Tasks & productivity: action item extraction, task management UX, and dashboard/task list improvements
+- Auth & accounts: credentials auth, SSO, password reset/email integration, profiles, and terms acceptance flow
+- Billing & monetization: pricing strategy/page, Polar billing integration, plan limits/paywalls, lifecycle emails, and subscription access policy
+- Integrations platform: MCP connections/testing, integrations catalog + UX revamp, and OAuth foundation (including GitHub pre-registration)
+- Reliability, retention & compliance: recording retention policy/fixes, deletion consistency, webhook verification/idempotency, and legal policy updates
+- Operations & background jobs: unified cron dispatcher, active reconciliation/cleanup jobs, billing sync/reminders, and cron documentation alignment
+- UX, onboarding & launch: rebrand to Vernix, dark mode/theme selector, empty-state/onboarding polish, growth/SEO surfaces, and analytics/monitoring
 
 ## Integrations
 
