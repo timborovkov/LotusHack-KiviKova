@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireSessionUser } from "@/lib/auth/session";
 import { getIntegrations } from "@/lib/integrations/catalog";
+import { getPreRegisteredConfig } from "@/lib/mcp/oauth-provider";
 
 /**
  * Diagnostic endpoint for OAuth configuration.
@@ -34,26 +35,6 @@ export async function GET(request: Request) {
     );
   }
 
-  // GitHub, Slack, and Pipedrive need pre-registered credentials.
-  // Notion, Linear, and others use RFC 7591 dynamic client registration.
-  const PRE_REGISTERED_ENV_MAP: Record<
-    string,
-    { clientIdEnv: string; clientSecretEnv: string }
-  > = {
-    "https://api.githubcopilot.com": {
-      clientIdEnv: "GITHUB_MCP_CLIENT_ID",
-      clientSecretEnv: "GITHUB_MCP_CLIENT_SECRET",
-    },
-    "https://mcp.pipedrive.com": {
-      clientIdEnv: "PIPEDRIVE_MCP_CLIENT_ID",
-      clientSecretEnv: "PIPEDRIVE_MCP_CLIENT_SECRET",
-    },
-    "https://mcp.slack.com": {
-      clientIdEnv: "SLACK_MCP_CLIENT_ID",
-      clientSecretEnv: "SLACK_MCP_CLIENT_SECRET",
-    },
-  };
-
   const results = await Promise.all(
     targets.map(async (integration) => {
       const serverUrl = integration.serverUrl;
@@ -66,10 +47,7 @@ export async function GET(request: Request) {
       }
 
       // Check env vars (only for pre-registered providers)
-      const envConfig = Object.entries(PRE_REGISTERED_ENV_MAP).find(
-        ([prefix]) => serverUrl.startsWith(prefix)
-      )?.[1];
-
+      const envConfig = getPreRegisteredConfig(serverUrl);
       const clientId = envConfig
         ? process.env[envConfig.clientIdEnv]
         : undefined;
