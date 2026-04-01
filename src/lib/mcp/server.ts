@@ -20,13 +20,20 @@ export function createMcpServer(userId: string): McpServer {
     version: "1.0.0",
   });
 
-  server.tool(
+  // -----------------------------------------------------------------------
+  // Core tools (read-only data access)
+  // -----------------------------------------------------------------------
+
+  server.registerTool(
     "search_meetings",
-    "Search across meeting transcripts and knowledge base using vector similarity",
     {
-      query: z.string(),
-      meetingId: z.string().optional(),
-      limit: z.number().optional(),
+      description:
+        "Search across meeting transcripts and knowledge base using vector similarity",
+      inputSchema: {
+        query: z.string(),
+        meetingId: z.string().optional(),
+        limit: z.number().optional(),
+      },
     },
     async ({ query, meetingId, limit }) => {
       const results = await getRAGContext(query, {
@@ -47,20 +54,22 @@ export function createMcpServer(userId: string): McpServer {
     }
   );
 
-  server.tool(
+  server.registerTool(
     "list_meetings",
-    "List user's meetings with optional status filter",
     {
-      status: z
-        .enum([
-          "pending",
-          "joining",
-          "active",
-          "processing",
-          "completed",
-          "failed",
-        ])
-        .optional(),
+      description: "List user's meetings with optional status filter",
+      inputSchema: {
+        status: z
+          .enum([
+            "pending",
+            "joining",
+            "active",
+            "processing",
+            "completed",
+            "failed",
+          ])
+          .optional(),
+      },
     },
     async ({ status }) => {
       const conditions = [eq(meetings.userId, userId)];
@@ -88,10 +97,12 @@ export function createMcpServer(userId: string): McpServer {
     }
   );
 
-  server.tool(
+  server.registerTool(
     "get_meeting",
-    "Get meeting details including summary and agenda",
-    { meetingId: z.string() },
+    {
+      description: "Get meeting details including summary and agenda",
+      inputSchema: { meetingId: z.string() },
+    },
     async ({ meetingId }) => {
       const [meeting] = await db
         .select()
@@ -130,10 +141,12 @@ export function createMcpServer(userId: string): McpServer {
     }
   );
 
-  server.tool(
+  server.registerTool(
     "get_transcript",
-    "Get the full transcript for a meeting",
-    { meetingId: z.string() },
+    {
+      description: "Get the full transcript for a meeting",
+      inputSchema: { meetingId: z.string() },
+    },
     async ({ meetingId }) => {
       const [meeting] = await db
         .select({ qdrantCollectionName: meetings.qdrantCollectionName })
@@ -160,12 +173,15 @@ export function createMcpServer(userId: string): McpServer {
     }
   );
 
-  server.tool(
+  server.registerTool(
     "list_tasks",
-    "List action items / tasks, optionally filtered by meeting or status",
     {
-      meetingId: z.string().optional(),
-      status: z.enum(["open", "completed"]).optional(),
+      description:
+        "List action items / tasks, optionally filtered by meeting or status",
+      inputSchema: {
+        meetingId: z.string().optional(),
+        status: z.enum(["open", "completed"]).optional(),
+      },
     },
     async ({ meetingId, status }) => {
       const conditions = [eq(tasks.userId, userId)];
@@ -186,13 +202,15 @@ export function createMcpServer(userId: string): McpServer {
     }
   );
 
-  server.tool(
+  server.registerTool(
     "create_task",
-    "Create a new task / action item for a meeting",
     {
-      meetingId: z.string(),
-      title: z.string().min(1).max(500),
-      assignee: z.string().max(200).optional(),
+      description: "Create a new task / action item for a meeting",
+      inputSchema: {
+        meetingId: z.string(),
+        title: z.string().min(1).max(500),
+        assignee: z.string().max(200).optional(),
+      },
     },
     async ({ meetingId, title, assignee }) => {
       // Verify meeting ownership
@@ -226,20 +244,27 @@ export function createMcpServer(userId: string): McpServer {
     }
   );
 
-  server.tool(
+  // -----------------------------------------------------------------------
+  // Agent control tools
+  // -----------------------------------------------------------------------
+
+  server.registerTool(
     "vernix_join_call",
-    "Create a new meeting and immediately join the Vernix agent to the call. Returns the meeting details and agent status.",
     {
-      title: z.string().min(1).describe("Meeting title"),
-      joinLink: z
-        .string()
-        .url()
-        .describe("Video call URL (Zoom, Meet, Teams, Webex)"),
-      agenda: z.string().max(10000).optional().describe("Meeting agenda"),
-      silent: z
-        .boolean()
-        .optional()
-        .describe("If true, use text-only silent mode instead of voice"),
+      description:
+        "Create a new meeting and immediately join the Vernix agent to the call. Returns the meeting details and agent status.",
+      inputSchema: {
+        title: z.string().min(1).describe("Meeting title"),
+        joinLink: z
+          .string()
+          .url()
+          .describe("Video call URL (Zoom, Meet, Teams, Webex)"),
+        agenda: z.string().max(10000).optional().describe("Meeting agenda"),
+        silent: z
+          .boolean()
+          .optional()
+          .describe("If true, use text-only silent mode instead of voice"),
+      },
     },
     async ({ title, joinLink, agenda, silent }) => {
       try {
@@ -294,11 +319,14 @@ export function createMcpServer(userId: string): McpServer {
     }
   );
 
-  server.tool(
+  server.registerTool(
     "vernix_stop_call",
-    "Stop the Vernix agent in an active meeting and trigger post-meeting processing (summary generation, task extraction).",
     {
-      meetingId: z.string().describe("The meeting ID to stop"),
+      description:
+        "Stop the Vernix agent in an active meeting and trigger post-meeting processing (summary generation, task extraction).",
+      inputSchema: {
+        meetingId: z.string().describe("The meeting ID to stop"),
+      },
     },
     async ({ meetingId }) => {
       try {
@@ -329,16 +357,26 @@ export function createMcpServer(userId: string): McpServer {
     }
   );
 
-  server.tool(
+  // -----------------------------------------------------------------------
+  // Search tools (use service layer for billing + RAG)
+  // -----------------------------------------------------------------------
+
+  server.registerTool(
     "vernix_search_meetings",
-    "Semantic search across all meeting transcripts and knowledge base documents using vector similarity. Returns relevant text snippets with source information.",
     {
-      query: z.string().describe("Natural language search query"),
-      meetingId: z
-        .string()
-        .optional()
-        .describe("Scope search to a specific meeting"),
-      limit: z.number().optional().describe("Max results (1-50, default 10)"),
+      description:
+        "Semantic search across all meeting transcripts and knowledge base documents using vector similarity. Returns relevant text snippets with source information.",
+      inputSchema: {
+        query: z.string().describe("Natural language search query"),
+        meetingId: z
+          .string()
+          .optional()
+          .describe("Scope search to a specific meeting"),
+        limit: z
+          .number()
+          .optional()
+          .describe("Max results (1-50, default 10)"),
+      },
     },
     async ({ query, meetingId, limit }) => {
       try {
@@ -372,16 +410,22 @@ export function createMcpServer(userId: string): McpServer {
     }
   );
 
-  server.tool(
+  server.registerTool(
     "vernix_search_tasks",
-    "Search and filter tasks across all meetings. Filter by status (open/completed) or meeting.",
     {
-      meetingId: z.string().optional().describe("Filter by meeting ID"),
-      status: z
-        .enum(["open", "completed"])
-        .optional()
-        .describe("Filter by status"),
-      limit: z.number().optional().describe("Max results (1-100, default 20)"),
+      description:
+        "Search and filter tasks across all meetings. Filter by status (open/completed) or meeting.",
+      inputSchema: {
+        meetingId: z.string().optional().describe("Filter by meeting ID"),
+        status: z
+          .enum(["open", "completed"])
+          .optional()
+          .describe("Filter by status"),
+        limit: z
+          .number()
+          .optional()
+          .describe("Max results (1-100, default 20)"),
+      },
     },
     async ({ meetingId, status, limit }) => {
       try {
