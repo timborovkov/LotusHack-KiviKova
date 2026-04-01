@@ -170,7 +170,8 @@ describe("POST /api/agent/stop", () => {
           endedAt,
         }),
       ])
-      .mockResolvedValueOnce([{ status: "completed" }]);
+      .mockImplementationOnce(() => mockDb) // processing update
+      .mockResolvedValueOnce([{ status: "completed" }]); // re-fetch
 
     const req = createJsonRequest("http://localhost/api/agent/stop", {
       method: "POST",
