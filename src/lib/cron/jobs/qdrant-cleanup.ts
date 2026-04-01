@@ -32,9 +32,8 @@ export async function runQdrantCleanup() {
 
     try {
       if (name.startsWith("meeting_")) {
-        const rawId = name.slice("meeting_".length);
-        const uuid = rawIdToUuid(rawId);
-
+        // Collection name is meeting_<randomUUID> — unrelated to meetings.id,
+        // so we can only match by qdrantCollectionName.
         const [exists] = await db
           .select({ id: meetings.id })
           .from(meetings)
@@ -42,24 +41,11 @@ export async function runQdrantCleanup() {
           .limit(1);
 
         if (!exists) {
-          // Double-check by UUID if the name yielded a valid one
-          let foundById = false;
-          if (uuid) {
-            const [byId] = await db
-              .select({ id: meetings.id })
-              .from(meetings)
-              .where(eq(meetings.id, uuid))
-              .limit(1);
-            foundById = !!byId;
-          }
-
-          if (!foundById) {
-            await qdrant.deleteCollection(name);
-            console.log(
-              `[Qdrant Cleanup] Deleted orphaned collection: ${name}`
-            );
-            deleted++;
-          }
+          await qdrant.deleteCollection(name);
+          console.log(
+            `[Qdrant Cleanup] Deleted orphaned collection: ${name}`
+          );
+          deleted++;
         }
       } else if (name.startsWith("knowledge_")) {
         const rawId = name.slice("knowledge_".length);
