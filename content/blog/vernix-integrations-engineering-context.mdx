@@ -10,13 +10,13 @@ Engineers spend a surprising amount of meeting time looking things up. "Let me p
 
 These micro-interruptions break the flow of conversation. Worse, they create gaps where context gets lost because someone couldn't find the right tab fast enough.
 
-## MCP: one protocol, many tools
+## One protocol, many tools
 
-Vernix supports the Model Context Protocol (MCP), an open standard for connecting AI agents to external tools. Instead of building custom integrations for every service, you configure MCP servers that expose your tools to the Vernix agent.
+Vernix connects to your tools through an open standard for AI integrations. Instead of building a custom connector for every service, you point Vernix at your tools and they become available to the agent.
 
-During a call, when someone asks "What's the status of the checkout rewrite?" — the agent doesn't just search your transcripts. It can call your connected tools to get live data. The current status of a Linear ticket. The latest comment on a GitHub PR. Data from your internal APIs.
+During a call, when someone asks "What's the status of the checkout rewrite?" — the agent doesn't just search your transcripts. It can query your connected tools for live data. The current status of a Linear ticket. The latest comment on a GitHub PR. Data from your internal APIs.
 
-You configure which MCP servers to connect in your Vernix settings. Each server can use different authentication: API keys, OAuth, basic auth, or custom headers. Once connected, the tools are available to the agent during every call.
+You configure which tools to connect in your Vernix settings. Each connection can use different authentication: API keys, OAuth, basic auth, or custom headers. Once connected, the tools are available to the agent during every call.
 
 ## What this looks like in practice
 
@@ -42,18 +42,18 @@ When your meeting agent can access your engineering tools, two things happen:
 
 ## Setting up integrations
 
-In your Vernix dashboard, go to Settings and add MCP servers. Each server needs:
+In your Vernix dashboard, go to Settings and add integrations. Each connection needs:
 
 - A name and URL
 - An authentication method (bearer token, API key, OAuth, or none for local tools)
 
-Vernix supports five auth types, including full OAuth flows for services that require them. Once a server is connected, its tools appear in the agent's toolkit automatically.
+Vernix supports five auth types, including full OAuth flows for services that require them. Once connected, the tools appear in the agent's toolkit automatically.
 
-You can also use the Vernix MCP server endpoint to expose your meeting data to other AI tools in your workflow. This works both ways — Vernix can consume external tools, and external tools can consume Vernix data.
+This works both ways. Vernix can pull data from your tools, and other AI tools in your workflow can query your Vernix meeting data through its API.
 
 ## Beyond GitHub
 
-MCP is protocol-level, not service-specific. Any tool that exposes an MCP server works with Vernix. Some examples:
+The integration protocol is open and service-agnostic. Any compatible tool works with Vernix. Some examples:
 
 - **Project management:** Pull ticket status, sprint progress, or roadmap items
 - **Documentation:** Search internal wikis or knowledge bases in real time
