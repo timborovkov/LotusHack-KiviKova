@@ -35,6 +35,18 @@ function updateConsentMode(choice: ConsentChoice, retries = 10) {
   });
 }
 
+/** Load Contentsquare tag only after consent. No consent mode — script must not load at all without opt-in. */
+function loadContentsquare(choice: ConsentChoice) {
+  const tag = process.env.NEXT_PUBLIC_CONTENTSQUARE_TAG;
+  if (!tag || choice !== "accepted") return;
+  if (document.getElementById("contentsquare-tag")) return;
+  const script = document.createElement("script");
+  script.id = "contentsquare-tag";
+  script.src = `https://t.contentsquare.net/uxa/${tag}.js`;
+  script.async = true;
+  document.head.appendChild(script);
+}
+
 const consentListeners = new Set<() => void>();
 
 function persistConsent(choice: ConsentChoice) {
@@ -81,6 +93,7 @@ export function CookieConsentBanner({
   useEffect(() => {
     if (analyticsEnabled && consentChoice) {
       updateConsentMode(consentChoice);
+      loadContentsquare(consentChoice);
     }
   }, [analyticsEnabled, consentChoice]);
 
