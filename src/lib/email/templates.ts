@@ -60,8 +60,14 @@ export function getWelcomeEmailHtml(name: string): string {
 </html>`;
 }
 
-export function getFreePlanUpgradeReminderHtml(name: string): string {
+export function getFreePlanUpgradeReminderHtml(
+  name: string,
+  unsubscribeUrl?: string
+): string {
   const appUrl = getAppUrl();
+  const unsubscribeFooter = unsubscribeUrl
+    ? `<p style="font-size:11px;color:#aaa;margin:16px 0 0;text-align:center"><a href="${unsubscribeUrl}" style="color:#aaa;text-decoration:underline">Unsubscribe</a> from these emails</p>`
+    : "";
   return `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
@@ -92,6 +98,7 @@ export function getFreePlanUpgradeReminderHtml(name: string): string {
       <p style="font-size:12px;color:#999;line-height:1.6;margin:0;text-align:center">
         You're receiving this because your account is on the Free plan.
       </p>
+      ${unsubscribeFooter}
     </div>
   </div>
 </body>
@@ -100,7 +107,8 @@ export function getFreePlanUpgradeReminderHtml(name: string): string {
 
 export function getLastChanceRetentionHtml(
   name: string,
-  accessEndsAt?: Date | null
+  accessEndsAt?: Date | null,
+  unsubscribeUrl?: string
 ): string {
   const appUrl = getAppUrl();
   const accessEndsLine = accessEndsAt
