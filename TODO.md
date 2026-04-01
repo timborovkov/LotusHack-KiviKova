@@ -72,7 +72,7 @@
 
 ## Pricing Constants Sweep
 
-- **Use billing constants everywhere** — `src/lib/billing/constants.ts` defines all prices, limits, and rates, but many files hardcode `€29`, `€30`, `200`, `€3/hr`, etc. Affected: pricing page, FAQ, upgrade-dialog trigger copy, trial-prompt-banner, feature pages, email templates, welcome page, SEO meta descriptions. Sweep all hardcoded values and replace with imports from constants. Email templates (HTML strings) need a helper function to inject values since they can't import TS directly.
+- **Use billing constants everywhere** — `src/lib/billing/constants.ts` should be the single source of truth for all billing-configurable values (prices, usage limits, monthly credits, trial duration/allowance, hard caps, and plan-dependent quotas), but many files still hardcode values like `€29`, `€30`, `200`, `90 min`, and `€3/hr`. Affected: pricing page, FAQ, upgrade-dialog trigger copy, trial-prompt-banner, feature pages, email templates, welcome page, and SEO meta descriptions. Sweep all hardcoded billing values and replace them with constants-driven wiring. Email templates (HTML strings) need a helper function to inject values since they can't import TS directly.
 
 ## Product Terminology & Time Display
 
