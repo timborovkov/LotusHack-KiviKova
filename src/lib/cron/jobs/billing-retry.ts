@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { usageEvents } from "@/lib/db/schema";
-import { and, gte, isNull, sql } from "drizzle-orm";
+import { and, gte, isNotNull, isNull, sql } from "drizzle-orm";
 import { syncUsageToPolar } from "@/lib/billing/usage";
 
 /**
@@ -23,6 +23,7 @@ export async function runBillingRetry() {
     .where(
       and(
         isNull(usageEvents.polarSyncedAt),
+        isNotNull(usageEvents.meetingId),
         gte(usageEvents.createdAt, cutoff),
         sql`${usageEvents.type} IN ('voice_meeting', 'silent_meeting')`
       )
