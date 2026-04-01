@@ -12,15 +12,18 @@ export default function TermsPage() {
     <div className="mx-auto max-w-3xl px-4 py-24">
       <h1 className="mb-2 text-3xl font-bold">Terms of Service</h1>
       <p className="text-muted-foreground mb-12 text-sm">
-        Last updated: March 2026
+        Last updated: April 2026
       </p>
 
       <div className="space-y-8">
         <section>
           <h2 className="mb-2 text-lg font-semibold">1. Acceptance of Terms</h2>
           <p className="text-muted-foreground text-sm">
-            By accessing or using Vernix (&quot;the Service&quot;), you agree to
-            be bound by these Terms of Service and our{" "}
+            Vernix (&quot;the Service&quot;) is operated by Nyxone OÜ (registry
+            code 16172329, VAT ID EE16172329), registered at Harju maakond,
+            Tallinn, Kesklinna linnaosa, Narva mnt 5, 10117, Estonia. By
+            accessing or using the Service, you agree to be bound by these Terms
+            of Service and our{" "}
             <Link href="/privacy" className="text-foreground underline">
               Privacy Policy
             </Link>
@@ -420,11 +423,13 @@ export default function TermsPage() {
           </h2>
           <p className="text-muted-foreground text-sm">
             These Terms shall be governed by and construed in accordance with
-            the laws of England and Wales, without regard to conflict-of-law
-            principles. Any dispute arising from these Terms or the Service
-            shall be subject to the exclusive jurisdiction of the courts of
-            England and Wales. Nothing in these Terms limits your rights under
-            mandatory consumer-protection laws in your jurisdiction.
+            the laws of the Republic of Estonia, without regard to
+            conflict-of-law principles. Any dispute arising from these Terms or
+            the Service shall be subject to the exclusive jurisdiction of the
+            courts of the Republic of Estonia. If you are a consumer habitually
+            resident in the European Union, you additionally retain the
+            protection of mandatory provisions of the consumer-protection laws
+            of your member state of residence.
           </p>
         </section>
 
