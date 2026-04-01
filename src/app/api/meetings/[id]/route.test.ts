@@ -90,7 +90,15 @@ import { GET, PATCH, DELETE } from "./route";
 const makeParams = (id: string) => ({ params: Promise.resolve({ id }) });
 
 describe("GET /api/meetings/[id]", () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Re-establish chain: every mock method returns mockDb by default
+    for (const m of Object.values(mockDb)) {
+      if (typeof m === "function" && "mockImplementation" in m) {
+        (m as ReturnType<typeof vi.fn>).mockImplementation(() => mockDb);
+      }
+    }
+  });
 
   it("returns meeting when found", async () => {
     mockDb.where.mockResolvedValueOnce([fakeMeeting()]);
@@ -113,7 +121,15 @@ describe("GET /api/meetings/[id]", () => {
 });
 
 describe("PATCH /api/meetings/[id]", () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Re-establish chain: every mock method returns mockDb by default
+    for (const m of Object.values(mockDb)) {
+      if (typeof m === "function" && "mockImplementation" in m) {
+        (m as ReturnType<typeof vi.fn>).mockImplementation(() => mockDb);
+      }
+    }
+  });
 
   it("updates allowed fields (title, joinLink)", async () => {
     mockDb.where
@@ -248,7 +264,15 @@ describe("PATCH /api/meetings/[id]", () => {
 });
 
 describe("DELETE /api/meetings/[id]", () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Re-establish chain: every mock method returns mockDb by default
+    for (const m of Object.values(mockDb)) {
+      if (typeof m === "function" && "mockImplementation" in m) {
+        (m as ReturnType<typeof vi.fn>).mockImplementation(() => mockDb);
+      }
+    }
+  });
 
   it("deletes Qdrant collection and meeting-scoped S3 files", async () => {
     const meeting = fakeMeeting({
