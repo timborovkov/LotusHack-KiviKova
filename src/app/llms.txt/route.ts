@@ -63,6 +63,50 @@ Vernix is an AI meeting assistant that joins Zoom, Google Meet, Microsoft Teams,
 
 ${availableByCategory}${comingSoonList}
 
+## API
+
+Vernix provides a REST API and MCP server for programmatic access to meetings, transcripts, tasks, search, and more.
+
+- API Documentation: ${BASE_URL}/docs
+- OpenAPI Spec: ${BASE_URL}/api/v1/openapi.json
+- Authentication: Bearer token with API key (create at ${BASE_URL}/dashboard/settings)
+- Rate Limits: 60 requests/minute standard, 10 requests/minute for search/agent operations
+- Daily Quota: ${LIMITS[PLANS.PRO].apiRequestsPerDay} requests/day (Pro plan)
+
+### REST API Endpoints
+
+- GET /api/v1/meetings — List meetings (paginated, filterable by status)
+- POST /api/v1/meetings — Create a meeting (with optional autoJoin)
+- GET /api/v1/meetings/:id — Get meeting details
+- POST /api/v1/meetings/:id/join — Join the Vernix agent to a call
+- POST /api/v1/meetings/:id/stop — Stop the agent and trigger processing
+- GET /api/v1/meetings/:id/transcript — Get full meeting transcript
+- GET /api/v1/meetings/:id/tasks — List tasks for a meeting
+- GET /api/v1/tasks — List all tasks across meetings
+- GET /api/v1/search?q=query — Semantic search across transcripts and documents
+- GET /api/v1/knowledge — List uploaded documents
+- POST /api/v1/knowledge — Upload a document (PDF, DOCX, TXT, MD)
+
+### MCP Server
+
+Vernix exposes an MCP (Model Context Protocol) server for AI assistants like Claude Desktop, Cursor, and others.
+
+- MCP Endpoint: ${BASE_URL}/api/mcp
+- Transport: Streamable HTTP (with SSE fallback)
+- Auth: Same API key as REST API (Bearer token)
+
+Available MCP tools:
+- search_meetings: Search transcripts and knowledge base via vector similarity
+- list_meetings: List meetings with optional status filter
+- get_meeting: Get meeting details including summary and agenda
+- get_transcript: Get full transcript with speaker labels
+- list_tasks: List action items across meetings
+- create_task: Create a task for a specific meeting
+- vernix_join_call: Create a meeting and join the agent
+- vernix_stop_call: Stop the agent and trigger processing
+- vernix_search_meetings: Semantic search with structured results
+- vernix_search_tasks: Search and filter tasks
+
 ## Links
 
 - Homepage: ${BASE_URL}
@@ -72,6 +116,7 @@ ${availableByCategory}${comingSoonList}
 - Pricing: ${BASE_URL}/pricing
 - FAQ: ${BASE_URL}/faq
 - Contact: ${BASE_URL}/contact
+- API Docs: ${BASE_URL}/docs
 `;
 }
 
