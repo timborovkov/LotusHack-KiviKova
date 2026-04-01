@@ -40,3 +40,10 @@ export class ConflictError extends Error {
     this.name = "ConflictError";
   }
 }
+
+export class SearchError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "SearchError";
+  }
+}
