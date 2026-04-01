@@ -56,7 +56,7 @@ export default function TasksPage() {
         <div className="flex-1">
           <h1 className="text-2xl font-bold">Tasks</h1>
           <p className="text-muted-foreground text-sm">
-            Action items from your meetings
+            Action items from your calls
           </p>
         </div>
       </div>
@@ -98,7 +98,7 @@ export default function TasksPage() {
                 : "No tasks yet"}
           </p>
           <p className="text-sm">
-            Tasks are automatically extracted from your meeting transcripts.
+            Tasks are automatically extracted from your call transcripts.
           </p>
         </div>
       ) : (
