@@ -163,6 +163,7 @@ export const POST = Webhooks({
         email: users.email,
         name: users.name,
         lastRetentionEmailSentAt: users.lastRetentionEmailSentAt,
+        emailPreferences: users.emailPreferences,
       })
       .from(users)
       .where(eq(users.id, externalId));
@@ -178,15 +179,20 @@ export const POST = Webhooks({
       !user.lastRetentionEmailSentAt ||
       user.lastRetentionEmailSentAt <= cooldownBoundary;
 
-    if (shouldSendRetentionEmail) {
+    if (
+      shouldSendRetentionEmail &&
+      shouldSendEmail(user.emailPreferences, "marketing")
+    ) {
       const periodEnd = payload.data.currentPeriodEnd
         ? new Date(payload.data.currentPeriodEnd)
         : null;
 
+      const unsubscribeUrl = buildUnsubscribeUrl(externalId, "marketing");
       await sendEmail({
         to: user.email,
         subject: "Last chance to keep your Vernix Pro benefits",
-        html: getLastChanceRetentionHtml(user.name, periodEnd),
+        html: getLastChanceRetentionHtml(user.name, periodEnd, unsubscribeUrl),
+        unsubscribeUrl,
       });
 
       await db
