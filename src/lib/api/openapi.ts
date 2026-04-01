@@ -1,4 +1,5 @@
 import { OpenApiBuilder } from "openapi3-ts/oas31";
+import { RATE_LIMIT_STANDARD, RATE_LIMIT_EXPENSIVE, API_VERSION } from "./constants";
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://vernix.app";
 
@@ -34,7 +35,7 @@ Authorization: Bearer kk_your_api_key_here
 
 API access requires a **Pro plan**. Free plan users will receive a \`403 BILLING_LIMIT\` error.
 
-**Rate limits:** 60 requests/minute for standard endpoints, 10 requests/minute for expensive operations (search, join, stop, upload). Rate limit headers are included in every response:
+**Rate limits:** ${RATE_LIMIT_STANDARD} requests/minute for standard endpoints, ${RATE_LIMIT_EXPENSIVE} requests/minute for expensive operations (search, join, stop, upload). Rate limit headers are included in every response:
 - \`X-RateLimit-Limit\` — max requests per window
 - \`X-RateLimit-Remaining\` — remaining requests
 - \`X-API-Version\` — current API version (\`v1\`)
