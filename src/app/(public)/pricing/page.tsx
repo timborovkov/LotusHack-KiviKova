@@ -24,7 +24,7 @@ const PRO_FEATURES = [
   `${DISPLAY.monthlyCredit} usage credit included monthly`,
   "Pay-as-you-go beyond credits",
   `${LIMITS[PLANS.PRO].documentsCount} knowledge base documents`,
-  `API access (${LIMITS[PLANS.PRO].apiRequestsPerDay.toLocaleString()} requests/day)`,
+  `API access (${LIMITS[PLANS.PRO].apiRequestsPerDay.toLocaleString("en")} requests/day)`,
   "MCP server and client connections",
   "Cross-meeting search",
   "Meeting export (PDF and Markdown)",
