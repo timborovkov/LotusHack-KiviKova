@@ -130,11 +130,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         user.image = dbUser?.image ?? user.image;
         user.termsAcceptedAt = dbUser?.termsAcceptedAt ?? null;
 
-        // Track last activity for inactive account detection
-        db.update(users)
-          .set({ lastActiveAt: new Date() })
-          .where(eq(users.id, existingAccount.userId))
-          .catch(() => {}); // fire-and-forget
+        // Track last activity for inactive account detection (fire-and-forget)
+        Promise.resolve(
+          db
+            .update(users)
+            .set({ lastActiveAt: new Date() })
+            .where(eq(users.id, existingAccount.userId))
+        ).catch(() => {});
 
         return true;
       }
