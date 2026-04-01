@@ -46,6 +46,7 @@ Current emails: welcome (signup), free plan upgrade reminder (weekly cron), last
 - **Run security scan & audit** — Run a security scan/audit, then track/fix findings.
 - **Block malicious bots** — Add bot blocking at app/edge level.
 - **Collect and attribute usage telemetry** — Track token usage, Recall usage, and related costs.
+- **Configure LLM tracing** — Configure something like Langsmith tracing for all AI agents and tools. (note, we use OpenAI, so Langsmith is probably not the best choice)
 
 ## Account Verification
 
