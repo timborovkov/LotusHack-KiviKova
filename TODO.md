@@ -1,5 +1,10 @@
 # TODO
 
+## Account Verification
+
+- **Email verification flow** — Add verification tokens + email template + verify route, enforce verified email before full app access.
+- **Optional profile enrichment fields in Settings** — Add optional `phone` and `company` fields to user profiles.
+
 ## Email Communication & Conversion
 
 Current emails: welcome (signup), free plan upgrade reminder (weekly cron), last chance retention (on cancel webhook), password reset.
@@ -31,11 +36,6 @@ Current emails: welcome (signup), free plan upgrade reminder (weekly cron), last
 - **Block malicious bots** — Add bot blocking at app/edge level.
 - **Collect and attribute usage telemetry** — Track token usage, Recall usage, and related costs.
 - **Configure LLM tracing** — Configure something like Langsmith tracing for all AI agents and tools. (note, we use OpenAI, so Langsmith is probably not the best choice)
-
-## Account Verification
-
-- **Email verification flow** — Add verification tokens + email template + verify route, enforce verified email before full app access.
-- **Optional profile enrichment fields in Settings** — Add optional `phone` and `company` fields to user profiles.
 
 ## Scoped Context, Tools and Data Access
 
