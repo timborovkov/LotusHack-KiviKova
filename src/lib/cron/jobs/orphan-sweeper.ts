@@ -49,12 +49,14 @@ export async function runOrphanSweeper() {
       .where(and(sql`${documents.meetingId} IS NOT NULL`, isNull(meetings.id)))
       .limit(100);
 
+    let reparented = 0;
     for (const doc of orphanedDocs) {
       try {
         await db
           .update(documents)
           .set({ meetingId: null, updatedAt: new Date() })
           .where(eq(documents.id, doc.id));
+        reparented++;
         cleaned++;
       } catch (err) {
         console.error(
@@ -64,9 +66,9 @@ export async function runOrphanSweeper() {
       }
     }
 
-    if (orphanedDocs.length > 0) {
+    if (reparented > 0) {
       console.log(
-        `[Orphan Sweeper] Re-parented ${orphanedDocs.length} orphaned documents`
+        `[Orphan Sweeper] Re-parented ${reparented} orphaned documents`
       );
     }
   } catch (err) {
