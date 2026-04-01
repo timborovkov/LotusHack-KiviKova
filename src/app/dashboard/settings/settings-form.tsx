@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useApiKeys } from "@/hooks/use-api-keys";
@@ -49,15 +49,22 @@ export function SettingsForm({
     typeof window !== "undefined"
       ? Intl.DateTimeFormat().resolvedOptions().timeZone
       : "UTC";
-  const allTimezones =
-    typeof Intl.supportedValuesOf === "function"
-      ? Intl.supportedValuesOf("timeZone")
-      : [browserTz];
-  const filteredTimezones = tzSearch
-    ? allTimezones.filter((tz) =>
-        tz.toLowerCase().includes(tzSearch.toLowerCase())
-      )
-    : allTimezones;
+  const allTimezones = useMemo(
+    () =>
+      typeof Intl.supportedValuesOf === "function"
+        ? Intl.supportedValuesOf("timeZone")
+        : [browserTz],
+    [browserTz]
+  );
+  const filteredTimezones = useMemo(
+    () =>
+      tzSearch
+        ? allTimezones.filter((tz) =>
+            tz.toLowerCase().includes(tzSearch.toLowerCase())
+          )
+        : allTimezones,
+    [tzSearch, allTimezones]
+  );
 
   const handleNameSave = async () => {
     try {
