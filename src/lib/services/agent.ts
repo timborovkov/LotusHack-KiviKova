@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { meetings } from "@/lib/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { getMeetingBotProvider } from "@/lib/meeting-bot";
 import { processMeetingEnd } from "@/lib/agent/processing";
 import { requireLimits } from "@/lib/billing/enforce";
@@ -56,10 +56,22 @@ export async function joinMeeting(
     );
   }
 
-  await db
+  // Optimistic lock: only transition if still in expected status
+  const [transitioned] = await db
     .update(meetings)
     .set({ status: "joining", updatedAt: new Date() })
-    .where(and(eq(meetings.id, meetingId), eq(meetings.userId, userId)));
+    .where(
+      and(
+        eq(meetings.id, meetingId),
+        eq(meetings.userId, userId),
+        sql`${meetings.status} IN ('pending', 'failed')`
+      )
+    )
+    .returning({ id: meetings.id });
+
+  if (!transitioned) {
+    throw new ConflictError("Meeting is already being joined by another request");
+  }
 
   const provider = getMeetingBotProvider();
   const existingMetadata = (meeting.metadata as Record<string, unknown>) ?? {};
