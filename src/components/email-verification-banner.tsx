@@ -2,21 +2,20 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 export function EmailVerificationBanner() {
   const { data: session, update: updateSession } = useSession();
-  const searchParams = useSearchParams();
   const [dismissed, setDismissed] = useState(false);
   const [sending, setSending] = useState(false);
 
-  // After verify-email redirect, refresh the JWT so emailVerifiedAt is populated
+  // After verify-email redirect (?verified=1), refresh the JWT so emailVerifiedAt is populated
   useEffect(() => {
-    if (searchParams.get("verified") === "1") {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("verified") === "1") {
       updateSession();
     }
-  }, [searchParams, updateSession]);
+  }, [updateSession]);
 
   if (!session?.user || session.user.emailVerifiedAt || dismissed) {
     return null;
