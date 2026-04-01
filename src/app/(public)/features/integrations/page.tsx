@@ -172,33 +172,6 @@ export default function IntegrationsPage() {
         </div>
       </ScrollReveal>
 
-      {/* Plus section */}
-      <ScrollReveal>
-        <div className="mb-24 lg:mb-28">
-          <h2 className="mb-8 text-center text-2xl font-bold sm:text-3xl">
-            Plus, everything else
-          </h2>
-          <div className="text-muted-foreground mx-auto grid max-w-2xl gap-4 text-sm sm:grid-cols-2">
-            <div className="flex items-center gap-2">
-              <Mic className="h-4 w-4 shrink-0" />
-              Voice agent answers live
-            </div>
-            <div className="flex items-center gap-2">
-              <FileText className="h-4 w-4 shrink-0" />
-              Automatic summaries and tasks
-            </div>
-            <div className="flex items-center gap-2">
-              <Search className="h-4 w-4 shrink-0" />
-              Cross-call search
-            </div>
-            <div className="flex items-center gap-2">
-              <MessageSquare className="h-4 w-4 shrink-0" />
-              AI chat across all calls
-            </div>
-          </div>
-        </div>
-      </ScrollReveal>
-
       {/* Full integration catalog */}
       <ScrollReveal>
         <div className="mb-24 lg:mb-28">
