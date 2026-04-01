@@ -91,12 +91,9 @@ export const POST = withApiAuth(
 
       if (autoJoin) {
         try {
-          const joinResult = await joinMeeting(
-            user.id,
-            meeting.id,
-            user.name,
-            { skipBillingCheck: true }
-          );
+          const joinResult = await joinMeeting(user.id, meeting.id, user.name, {
+            skipBillingCheck: true,
+          });
           return apiCreated({
             ...meeting,
             agent: { botId: joinResult.botId, status: joinResult.status },
