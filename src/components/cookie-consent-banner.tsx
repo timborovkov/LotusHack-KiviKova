@@ -18,6 +18,8 @@ declare global {
 }
 
 function updateConsentMode(choice: ConsentChoice, retries = 10) {
+  // GA not configured — nothing to update
+  if (!process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID) return;
   if (typeof window.gtag !== "function") {
     if (retries > 0) {
       setTimeout(() => updateConsentMode(choice, retries - 1), 100);
