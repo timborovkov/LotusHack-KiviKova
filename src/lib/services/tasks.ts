@@ -4,6 +4,14 @@ import { and, desc, eq, lt, or } from "drizzle-orm";
 import { NotFoundError, ValidationError } from "@/lib/api/errors";
 import { decodeCursor, buildPaginationMeta } from "@/lib/api/pagination";
 
+async function verifyMeetingOwnership(userId: string, meetingId: string) {
+  const [meeting] = await db
+    .select({ id: meetings.id })
+    .from(meetings)
+    .where(and(eq(meetings.id, meetingId), eq(meetings.userId, userId)));
+  if (!meeting) throw new NotFoundError("Meeting");
+}
+
 // ---------------------------------------------------------------------------
 // List tasks (cross-meeting, paginated)
 // ---------------------------------------------------------------------------
@@ -18,8 +26,11 @@ export async function listTasks(
   }
 ) {
   const limit = opts.limit ?? 20;
-  const conditions = [eq(tasks.userId, userId)];
 
+  // Verify meeting ownership when filtering by meetingId
+  if (opts.meetingId) await verifyMeetingOwnership(userId, opts.meetingId);
+
+  const conditions = [eq(tasks.userId, userId)];
   if (opts.meetingId) conditions.push(eq(tasks.meetingId, opts.meetingId));
   if (opts.status) conditions.push(eq(tasks.status, opts.status));
 
@@ -135,11 +146,10 @@ export async function updateTask(
 ) {
   const updates: Record<string, unknown> = { updatedAt: new Date() };
 
-  if (
-    typeof input.title === "string" &&
-    input.title.length > 0 &&
-    input.title.length <= 500
-  ) {
+  if (typeof input.title === "string") {
+    if (input.title.length === 0 || input.title.length > 500) {
+      throw new ValidationError("Title must be between 1 and 500 characters");
+    }
     updates.title = input.title;
   }
   if (input.assignee !== undefined) {
