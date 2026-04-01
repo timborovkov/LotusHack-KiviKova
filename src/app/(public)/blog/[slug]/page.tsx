@@ -40,6 +40,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         images: [{ url: post.frontmatter.image }],
       }),
     },
+    twitter: {
+      card: "summary_large_image",
+      title: post.frontmatter.title,
+      description: post.frontmatter.description,
+      ...(post.frontmatter.image && {
+        images: [post.frontmatter.image],
+      }),
+    },
   };
 }
 
