@@ -12,6 +12,7 @@ export async function GET(request: Request) {
   try {
     const result = await listTasks(user.id, {
       status: status === "open" || status === "completed" ? status : undefined,
+      limit: 1000,
     });
     return NextResponse.json({ tasks: result.data });
   } catch (error) {

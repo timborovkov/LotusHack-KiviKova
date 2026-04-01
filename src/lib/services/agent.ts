@@ -172,10 +172,18 @@ export async function stopMeeting(userId: string, meetingId: string) {
   });
 
   // Re-fetch to return the actual post-processing status (completed or failed)
-  const [updated] = await db
-    .select({ status: meetings.status })
-    .from(meetings)
-    .where(and(eq(meetings.id, meetingId), eq(meetings.userId, userId)));
+  let finalStatus = "processing";
+  try {
+    const rows = await db
+      .select({ status: meetings.status })
+      .from(meetings)
+      .where(and(eq(meetings.id, meetingId), eq(meetings.userId, userId)));
+    if (Array.isArray(rows) && rows[0]?.status) {
+      finalStatus = rows[0].status;
+    }
+  } catch {
+    // If re-fetch fails, return processing — the caller can poll for updates
+  }
 
-  return { status: (updated?.status ?? "processing") as string };
+  return { status: finalStatus };
 }
