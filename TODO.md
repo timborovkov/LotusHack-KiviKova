@@ -39,10 +39,17 @@ Current emails: welcome (signup), free plan upgrade reminder (weekly cron), last
 
 ## Scoped Context, Tools and Data Access
 
+- **Context groups** — Solution to the problem of context leakage, too many tools, too many data sources, too much context. We don't want the Vernix assistant to leak private information on public calls for example.
 - **Data access scoping via Groups/Tags** — Add a grouping model for knowledge documents, calls, and MCP tool connections, then scope agent access by selected group(s) per call. Primary goal is preventing context leakage.
 - **Multiple connections to the same tool** — Allow multiple MCP integration connections to the same tool. The user might a member of multiple teams, projects, and organizations, and each might have a Notion or Linear workspace.
 - **List tools in the UI** — List available tools from MCP integrations in the UI, so the user can see what they can connect to.
 - **Allow toggling tools on/off** — Allow the user to toggle tools provided by MCP integrations on/off in the UI, so they can control which tools are available to the agent.
+- **Integration list APIs and MCP server tool updates** — Update the integration list APIs and MCP server tools to show what tools each integration provides, what is enabled/disabled.
+- **Scoped context, tools and data access in MCP server and public APISs** — Update the MCP server and public APIs to use the new scoped context, tools and data access model. They should show what belongs where, allow for filtering and sorting by context group, allow creating new context groups, modifying existing context groups, deleting context groups, adding and removing things from context groups, etc.
+- **Update public documentation** — Update the public documentation to reflect the new scoped context, tools and data access model, e.g. context groups.
+- **Website feature page for context groups** — Create a new feature page for context groups, explaining what they are, how to use them, and how to create them.
+- **Update website content** — Update the website content to reflect the new scoped context, tools and data access model, e.g. context groups. This affects the landing page, the FAQ, etc.
+- **New blog post for context groups** — Write a new blog post for context groups, explaining what they are, how to use them, and how to create them.
 
 ## Inactive Account Cleanup
 
