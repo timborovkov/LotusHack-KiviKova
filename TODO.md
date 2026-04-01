@@ -8,6 +8,7 @@
 - **Agent control endpoints** — `POST /api/v1/meetings` (create + auto-join), `POST /api/v1/meetings/:id/join`, `POST /api/v1/meetings/:id/stop`.
 - **MCP server tools** — Add `join_meeting` and `stop_meeting` tools to the MCP server.
 - **Rate limiting & versioning** — Per-key rate limits, API version in URL path, deprecation headers.
+- **API in llms.txt** — Link to the API docs in the llms.txt file and add an introduction to the API.
 
 ## Email Communication & Conversion
 
