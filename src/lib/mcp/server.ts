@@ -307,7 +307,9 @@ export function createMcpServer(userId: string): McpServer {
         });
 
         try {
-          const result = await joinMeeting(userId, meeting.id);
+          const result = await joinMeeting(userId, meeting.id, undefined, {
+            skipBillingCheck: true,
+          });
           return {
             content: [
               {
