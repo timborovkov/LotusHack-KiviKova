@@ -87,7 +87,8 @@ export function createMcpServer(userId: string): McpServer {
         })
         .from(meetings)
         .where(and(...conditions))
-        .orderBy(desc(meetings.createdAt));
+        .orderBy(desc(meetings.createdAt))
+        .limit(100);
 
       return {
         content: [
@@ -192,7 +193,8 @@ export function createMcpServer(userId: string): McpServer {
         .select()
         .from(tasks)
         .where(and(...conditions))
-        .orderBy(desc(tasks.createdAt));
+        .orderBy(desc(tasks.createdAt))
+        .limit(100);
 
       return {
         content: [
