@@ -79,3 +79,17 @@ export const TRIAL_LIMITS = {
   ...LIMITS[PLANS.PRO],
   meetingMinutesPerMonth: FREE_TRIAL.totalMinutes,
 } as const;
+
+/** Pre-formatted display strings for UI — avoids scattering `€${...}` everywhere */
+export const DISPLAY = {
+  proMonthly: `€${PRICING[PLANS.PRO].monthly}`,
+  proAnnual: `€${PRICING[PLANS.PRO].annual / 12}`,
+  annualSavings: `€${PRICING[PLANS.PRO].monthly * 12 - PRICING[PLANS.PRO].annual}`,
+  voiceRate: `€${USAGE_RATES.voice}/hr`,
+  silentRate: `€${USAGE_RATES.silent}/hr`,
+  monthlyCredit: `€${MONTHLY_CREDIT[PLANS.PRO]}`,
+  trialDays: `${FREE_TRIAL.days}`,
+  trialMinutes: `${FREE_TRIAL.totalMinutes}`,
+  voiceHoursPerCredit: `${Math.floor(MONTHLY_CREDIT[PLANS.PRO] / USAGE_RATES.voice)}`,
+  silentHoursPerCredit: `${Math.floor(MONTHLY_CREDIT[PLANS.PRO] / USAGE_RATES.silent)}`,
+} as const;
