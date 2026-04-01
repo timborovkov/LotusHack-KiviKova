@@ -5,11 +5,6 @@
 - **Cron: dead-user data purge (S3 + Qdrant + Recall)** — For deleted/expired accounts, remove all remaining object storage files, user/meeting vector collections, and Recall call/bot artifacts to enforce retention and control storage costs. Requires user deletion flow first.
 - **Inactive account cleanup: warning emails + archival** — Current inactive-cleanup cron only detects; needs warning email flow and actual archival/deletion logic.
 
-## Blog & Content
-
-- **Blog infrastructure** — Add a `/blog` section with MDX/markdown posts, frontmatter, static generation.
-- **Initial posts** — Write 3-5 launch posts.
-
 ## SEO & Discoverability
 
 - **Google Search Console** — Verify domain, submit sitemap, monitor indexing - DONE
