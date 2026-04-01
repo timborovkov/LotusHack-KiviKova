@@ -22,7 +22,7 @@ describe("BillingApiError", () => {
     expect(err.status).toBe(403);
   });
 
-  it("isFeatureGate is true for LIMIT_EXCEEDED", () => {
+  it("isFeatureGate is true for BILLING_LIMIT", () => {
     const err = new BillingApiError("test", "BILLING_LIMIT", 403);
     expect(err.isFeatureGate).toBe(true);
     expect(err.isQuotaExhausted).toBe(false);
@@ -74,7 +74,7 @@ function mockResponse(status: number, body: unknown): Response {
 }
 
 describe("throwIfBillingError", () => {
-  it("throws BillingApiError for 403 with LIMIT_EXCEEDED code", async () => {
+  it("throws BillingApiError for 403 with BILLING_LIMIT code", async () => {
     const res = mockResponse(403, {
       error: "Voice meetings require a Pro plan",
       code: "BILLING_LIMIT",
