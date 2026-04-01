@@ -413,7 +413,7 @@ export default function TermsPage() {
             <Link href="/privacy" className="text-foreground underline">
               Privacy Policy
             </Link>
-            . Sections 6, 8, 11, 12, and 14 survive termination.
+            . Sections 7, 9, 12, 13, and 15 survive termination.
           </p>
         </section>
 
