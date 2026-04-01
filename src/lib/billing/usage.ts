@@ -313,17 +313,23 @@ export async function syncUsageToPolar(
       ],
     });
 
-    // Mark the usage event as synced to Polar
-    await db
-      .update(usageEvents)
-      .set({ polarSyncedAt: new Date() })
-      .where(
-        and(
-          eq(usageEvents.userId, userId),
-          eq(usageEvents.meetingId, meetingId),
-          eq(usageEvents.type, type)
-        )
-      );
+    // Mark the usage event as synced — separate try/catch so a DB failure
+    // doesn't mask a successful Polar ingest. Worst case: Polar gets a
+    // duplicate on retry (deduplicated by externalId).
+    try {
+      await db
+        .update(usageEvents)
+        .set({ polarSyncedAt: new Date() })
+        .where(
+          and(
+            eq(usageEvents.userId, userId),
+            eq(usageEvents.meetingId, meetingId),
+            eq(usageEvents.type, type)
+          )
+        );
+    } catch (dbErr) {
+      console.error("[Billing] polarSyncedAt update failed:", dbErr);
+    }
 
     return true;
   } catch (err) {
