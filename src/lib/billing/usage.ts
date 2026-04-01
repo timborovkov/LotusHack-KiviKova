@@ -268,22 +268,26 @@ export function getEffectivePeriod(user: {
 // Sync usage to Polar meters (fire-and-forget after meetings end)
 // ---------------------------------------------------------------------------
 
+/**
+ * Sync a usage event to Polar's metered billing.
+ * Returns true if sync succeeded, false if it failed or was skipped.
+ */
 export async function syncUsageToPolar(
   userId: string,
   meetingId: string,
   type: "voice_meeting" | "silent_meeting",
   durationMinutes: number
-) {
+): Promise<boolean> {
   try {
     const { isPolarEnabled, getPolar } = await import("@/lib/polar");
-    if (!isPolarEnabled()) return;
+    if (!isPolarEnabled()) return false;
 
     const [user] = await db
       .select({ polarCustomerId: users.polarCustomerId })
       .from(users)
       .where(eq(users.id, userId));
 
-    if (!user?.polarCustomerId) return;
+    if (!user?.polarCustomerId) return false;
 
     const polar = getPolar();
     const hours = durationMinutes / 60;
@@ -320,7 +324,10 @@ export async function syncUsageToPolar(
           eq(usageEvents.type, type)
         )
       );
+
+    return true;
   } catch (err) {
     console.error("[Billing] Failed to sync usage to Polar:", err);
+    return false;
   }
 }

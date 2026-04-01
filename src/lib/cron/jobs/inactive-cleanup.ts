@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { users, meetings } from "@/lib/db/schema";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, isNull, lt, or, sql } from "drizzle-orm";
 
 /**
  * Detect inactive free-plan accounts (no activity in 180 days).
@@ -22,9 +22,10 @@ export async function runInactiveCleanup() {
     .where(
       and(
         eq(users.plan, "free"),
-        // lastActiveAt is null (never tracked) or older than cutoff
-        sql`(${users.lastActiveAt} IS NULL AND ${users.createdAt} < ${cutoff})
-            OR ${users.lastActiveAt} < ${cutoff}`
+        or(
+          and(isNull(users.lastActiveAt), lt(users.createdAt, cutoff)),
+          lt(users.lastActiveAt, cutoff)
+        )
       )
     )
     .limit(100);

@@ -19,7 +19,7 @@ const { mockDb, mockSyncUsageToPolar } = vi.hoisted(() => {
   }
   return {
     mockDb: db,
-    mockSyncUsageToPolar: vi.fn().mockResolvedValue(undefined),
+    mockSyncUsageToPolar: vi.fn().mockResolvedValue(true),
   };
 });
 
@@ -95,7 +95,7 @@ describe("runBillingRetry", () => {
     expect(mockSyncUsageToPolar).not.toHaveBeenCalled();
   });
 
-  it("continues when one sync fails", async () => {
+  it("does not count events where sync returns false", async () => {
     mockDb.limit.mockResolvedValueOnce([
       {
         id: "evt-1",
@@ -112,9 +112,10 @@ describe("runBillingRetry", () => {
         quantity: "20",
       },
     ]);
+    // First sync fails (returns false), second succeeds (returns true)
     mockSyncUsageToPolar
-      .mockRejectedValueOnce(new Error("Polar down"))
-      .mockResolvedValueOnce(undefined);
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(true);
 
     const result = await runBillingRetry();
 

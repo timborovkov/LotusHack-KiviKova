@@ -36,16 +36,14 @@ export async function runBillingRetry() {
   for (const event of unsynced) {
     if (!event.meetingId) continue;
 
-    try {
-      await syncUsageToPolar(
-        event.userId,
-        event.meetingId,
-        event.type as "voice_meeting" | "silent_meeting",
-        Number(event.quantity)
-      );
+    const synced = await syncUsageToPolar(
+      event.userId,
+      event.meetingId,
+      event.type as "voice_meeting" | "silent_meeting",
+      Number(event.quantity)
+    );
+    if (synced) {
       retried++;
-    } catch (err) {
-      console.error(`[Billing Retry] Failed to sync event ${event.id}:`, err);
     }
   }
 
