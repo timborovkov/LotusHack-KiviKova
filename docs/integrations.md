@@ -23,7 +23,7 @@ Vernix uses MCP as the protocol layer for all tool integrations. Users connect e
 
 - `id`, `name`, `description`, `logo` (SVG in `public/integrations/`)
 - `category` (communication, project-management, dev-tools, crm, productivity)
-- `authMode` (api_key, token, oauth, none)
+- `authMode` (api_key, token, oauth, none, url_key)
 - `serverUrl` (pre-filled URL for hosted MCP endpoints, null if user-provided)
 - `status` (available, coming-soon)
 - `examplePrompts` and `sampleResponses` for marketing display
@@ -64,13 +64,13 @@ Most MCP servers don't support dynamic client registration (RFC 7591). Each OAut
 
 `VernixOAuthProvider` checks `PRE_REGISTERED_CLIENTS` in `src/lib/mcp/oauth-provider.ts` for credentials from env vars before falling back to dynamic registration. Currently registered:
 
-| Service   | Env Vars                                                 | Status    |
-| --------- | -------------------------------------------------------- | --------- |
-| GitHub    | `GITHUB_MCP_CLIENT_ID`, `GITHUB_MCP_CLIENT_SECRET`       | Available |
-| Notion    | `NOTION_MCP_CLIENT_ID`, `NOTION_MCP_CLIENT_SECRET`       | Available |
-| Linear    | `LINEAR_MCP_CLIENT_ID`, `LINEAR_MCP_CLIENT_SECRET`       | Available |
-| Pipedrive | `PIPEDRIVE_MCP_CLIENT_ID`, `PIPEDRIVE_MCP_CLIENT_SECRET` | Available |
-| Slack     | `SLACK_MCP_CLIENT_ID`, `SLACK_MCP_CLIENT_SECRET`         | Available |
+| Service   | Env Vars                                                 | Status    | Token Endpoint Auth Method |
+| --------- | -------------------------------------------------------- | --------- | -------------------------- |
+| GitHub    | `GITHUB_MCP_CLIENT_ID`, `GITHUB_MCP_CLIENT_SECRET`       | Available | `none` (default)           |
+| Notion    | `NOTION_MCP_CLIENT_ID`, `NOTION_MCP_CLIENT_SECRET`       | Available | `none` (default)           |
+| Linear    | `LINEAR_MCP_CLIENT_ID`, `LINEAR_MCP_CLIENT_SECRET`       | Available | `none` (default)           |
+| Pipedrive | `PIPEDRIVE_MCP_CLIENT_ID`, `PIPEDRIVE_MCP_CLIENT_SECRET` | Available | `client_secret_post`       |
+| Slack     | `SLACK_MCP_CLIENT_ID`, `SLACK_MCP_CLIENT_SECRET`         | Available | `client_secret_post`       |
 
 MCP OAuth apps are separate from login OAuth apps — different redirect URLs. Login uses providers like `GITHUB_CLIENT_ID` → `/api/auth/callback/github`. MCP integrations use provider-specific MCP credentials (for example, `GITHUB_MCP_CLIENT_ID`, `NOTION_MCP_CLIENT_ID`, `LINEAR_MCP_CLIENT_ID`, `PIPEDRIVE_MCP_CLIENT_ID`, or `SLACK_MCP_CLIENT_ID`) → `/api/mcp/oauth/callback`.
 
@@ -241,4 +241,4 @@ Stored in `public/integrations/{id}.svg`. Sourced from Simple Icons and official
 
 Run with: `pnpm test:network`
 
-Tests send an MCP `initialize` request to each server URL. Acceptable responses: 200, 401, 403, 405, 302/307 (all prove the server exists). Also validates structural invariants (all available integrations have URLs, all URLs are HTTPS, no unexpected duplicates).
+Tests send an MCP `initialize` request to each available server URL. Reachability accepts statuses proving the endpoint exists (e.g. 200, 401/403, 405, and redirect responses). OAuth integrations are additionally validated for auth-gated behavior (redirect or auth challenge). The suite also validates structural invariants (all available integrations have URLs, all URLs are HTTPS, no unexpected duplicates).
