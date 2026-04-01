@@ -4,6 +4,7 @@ import {
   GetObjectCommand,
   HeadBucketCommand,
   CreateBucketCommand,
+  ListObjectsV2Command,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { getS3Client, getS3Bucket } from "./client";
@@ -46,6 +47,21 @@ export async function deleteFile(key: string): Promise<void> {
       Key: key,
     })
   );
+}
+
+export async function listObjects(
+  prefix: string,
+  maxKeys = 1000
+): Promise<string[]> {
+  const client = getS3Client();
+  const result = await client.send(
+    new ListObjectsV2Command({
+      Bucket: getS3Bucket(),
+      Prefix: prefix,
+      MaxKeys: maxKeys,
+    })
+  );
+  return (result.Contents ?? []).map((obj) => obj.Key!).filter(Boolean);
 }
 
 export async function getDownloadUrl(
