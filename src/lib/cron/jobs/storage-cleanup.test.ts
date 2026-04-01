@@ -32,6 +32,10 @@ vi.mock("@/lib/storage/operations", () => ({
 
 import { runStorageCleanup } from "./storage-cleanup";
 
+// Valid UUID for test data
+const validDocId = "c2aadd11-2b3c-4ef8-bb6d-8dd1df602c33";
+const validMeetingId = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11";
+
 describe("runStorageCleanup", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -47,28 +51,25 @@ describe("runStorageCleanup", () => {
 
   it("deletes orphaned knowledge file when document not found", async () => {
     mockListObjects
-      .mockResolvedValueOnce(["knowledge/user1/doc1/file.pdf"])
+      .mockResolvedValueOnce([`knowledge/user1/${validDocId}/file.pdf`])
       .mockResolvedValueOnce([]); // no recordings
-    // Not found by s3Key
-    mockDb.limit
-      .mockResolvedValueOnce([])
-      // Not found by docId
-      .mockResolvedValueOnce([]);
+    // Not found by s3Key, not found by docId
+    mockDb.limit.mockResolvedValueOnce([]).mockResolvedValueOnce([]);
 
     const result = await runStorageCleanup();
 
     expect(result.deleted).toBe(1);
     expect(mockDeleteFile).toHaveBeenCalledWith(
-      "knowledge/user1/doc1/file.pdf"
+      `knowledge/user1/${validDocId}/file.pdf`
     );
   });
 
   it("does not delete knowledge file when document exists by s3Key", async () => {
     mockListObjects
-      .mockResolvedValueOnce(["knowledge/user1/doc1/file.pdf"])
+      .mockResolvedValueOnce([`knowledge/user1/${validDocId}/file.pdf`])
       .mockResolvedValueOnce([]);
-    // Found by s3Key
-    mockDb.limit.mockResolvedValueOnce([{ id: "doc1" }]);
+    // Found by s3Key on first lookup
+    mockDb.limit.mockResolvedValueOnce([{ id: validDocId }]);
 
     const result = await runStorageCleanup();
 
@@ -79,31 +80,63 @@ describe("runStorageCleanup", () => {
   it("deletes orphaned recording when meeting not found", async () => {
     mockListObjects
       .mockResolvedValueOnce([]) // no knowledge files
-      .mockResolvedValueOnce(["recordings/meeting-123.mp4"]);
-    // Not found by recordingKey metadata
-    mockDb.limit
-      .mockResolvedValueOnce([])
-      // Not found by meeting ID
-      .mockResolvedValueOnce([]);
+      .mockResolvedValueOnce([`recordings/${validMeetingId}.mp4`]);
+    // Not found by recordingKey metadata, not found by meeting ID
+    mockDb.limit.mockResolvedValueOnce([]).mockResolvedValueOnce([]);
 
     const result = await runStorageCleanup();
 
     expect(result.deleted).toBe(1);
-    expect(mockDeleteFile).toHaveBeenCalledWith("recordings/meeting-123.mp4");
+    expect(mockDeleteFile).toHaveBeenCalledWith(
+      `recordings/${validMeetingId}.mp4`
+    );
   });
 
-  it("does not delete recording when meeting still exists", async () => {
+  it("does not delete recording when meeting still exists by ID", async () => {
     mockListObjects
       .mockResolvedValueOnce([])
-      .mockResolvedValueOnce(["recordings/meeting-123.mp4"]);
-    // Not found by recordingKey
+      .mockResolvedValueOnce([`recordings/${validMeetingId}.mp4`]);
+    // Not found by recordingKey metadata
     mockDb.limit
       .mockResolvedValueOnce([])
       // But found by meeting ID
-      .mockResolvedValueOnce([{ id: "meeting-123" }]);
+      .mockResolvedValueOnce([{ id: validMeetingId }]);
 
     const result = await runStorageCleanup();
 
     expect(result.deleted).toBe(0);
+  });
+
+  it("skips non-UUID doc IDs without crashing", async () => {
+    mockListObjects
+      .mockResolvedValueOnce(["knowledge/user1/not-a-uuid/file.pdf"])
+      .mockResolvedValueOnce([]);
+    // Not found by s3Key — UUID check is skipped for invalid ID
+    mockDb.limit.mockResolvedValueOnce([]);
+
+    const result = await runStorageCleanup();
+
+    // Deleted because s3Key not found and UUID check was skipped
+    expect(result.deleted).toBe(1);
+  });
+
+  it("continues processing when one item fails", async () => {
+    mockListObjects
+      .mockResolvedValueOnce([
+        `knowledge/user1/${validDocId}/a.pdf`,
+        `knowledge/user2/${validDocId}/b.pdf`,
+      ])
+      .mockResolvedValueOnce([]);
+    // First file: s3Key not found, docId not found → delete fails
+    mockDb.limit.mockResolvedValueOnce([]).mockResolvedValueOnce([]);
+    mockDeleteFile.mockRejectedValueOnce(new Error("S3 error"));
+    // Second file: s3Key not found, docId not found → delete succeeds
+    mockDb.limit.mockResolvedValueOnce([]).mockResolvedValueOnce([]);
+
+    const result = await runStorageCleanup();
+
+    // First failed, second succeeded
+    expect(result.deleted).toBe(1);
+    expect(mockDeleteFile).toHaveBeenCalledTimes(2);
   });
 });
