@@ -425,7 +425,10 @@ export function SettingsForm({
                 </Button>
                 {profile?.timezone && (
                   <span className="text-muted-foreground text-sm">
-                    Current: <span className="text-foreground font-medium">{profile.timezone}</span>
+                    Current:{" "}
+                    <span className="text-foreground font-medium">
+                      {profile.timezone}
+                    </span>
                   </span>
                 )}
               </div>
