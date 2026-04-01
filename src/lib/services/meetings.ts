@@ -262,11 +262,13 @@ export async function deleteMeeting(userId: string, meetingId: string) {
 
   await deleteMeetingCollection(meeting.qdrantCollectionName);
 
-  // Clean up meeting-scoped documents
+  // Clean up meeting-scoped documents (scoped to userId for defense-in-depth)
   const meetingDocs = await db
     .select({ id: documents.id, s3Key: documents.s3Key })
     .from(documents)
-    .where(eq(documents.meetingId, meetingId));
+    .where(
+      and(eq(documents.meetingId, meetingId), eq(documents.userId, userId))
+    );
 
   for (const doc of meetingDocs) {
     try {
@@ -277,7 +279,11 @@ export async function deleteMeeting(userId: string, meetingId: string) {
   }
 
   if (meetingDocs.length > 0) {
-    await db.delete(documents).where(eq(documents.meetingId, meetingId));
+    await db
+      .delete(documents)
+      .where(
+        and(eq(documents.meetingId, meetingId), eq(documents.userId, userId))
+      );
   }
 
   await db
