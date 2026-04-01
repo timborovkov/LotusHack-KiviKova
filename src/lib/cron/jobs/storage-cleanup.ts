@@ -3,6 +3,9 @@ import { documents, meetings } from "@/lib/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { listObjects, deleteFile } from "@/lib/storage/operations";
 
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 /**
  * Remove orphaned S3 objects that no longer have matching DB records.
  * Scans knowledge/ and recordings/ prefixes.
@@ -17,34 +20,38 @@ export async function runStorageCleanup() {
     for (const key of knowledgeKeys) {
       if (deleted >= maxDeletions) break;
 
-      // Key pattern: knowledge/<userId>/<docId>/filename
-      const parts = key.split("/");
-      if (parts.length < 3) continue;
-      const docId = parts[2];
+      try {
+        // Key pattern: knowledge/<userId>/<docId>/filename
+        const parts = key.split("/");
+        if (parts.length < 3) continue;
+        const docId = parts[2];
 
-      const [exists] = await db
-        .select({ id: documents.id })
-        .from(documents)
-        .where(eq(documents.s3Key, key))
-        .limit(1);
-
-      if (!exists) {
-        // Double check by docId in case key format differs
-        const [byId] = await db
+        const [byKey] = await db
           .select({ id: documents.id })
           .from(documents)
-          .where(eq(documents.id, docId))
+          .where(eq(documents.s3Key, key))
           .limit(1);
 
-        if (!byId) {
-          try {
+        if (!byKey) {
+          // Double check by docId if it's a valid UUID
+          let foundById = false;
+          if (UUID_RE.test(docId)) {
+            const [byId] = await db
+              .select({ id: documents.id })
+              .from(documents)
+              .where(eq(documents.id, docId))
+              .limit(1);
+            foundById = !!byId;
+          }
+
+          if (!foundById) {
             await deleteFile(key);
             console.log(`[Storage Cleanup] Deleted orphaned file: ${key}`);
             deleted++;
-          } catch (err) {
-            console.error(`[Storage Cleanup] Failed to delete ${key}:`, err);
           }
         }
+      } catch (err) {
+        console.error(`[Storage Cleanup] Failed to process ${key}:`, err);
       }
     }
   } catch (err) {
@@ -57,33 +64,37 @@ export async function runStorageCleanup() {
     for (const key of recordingKeys) {
       if (deleted >= maxDeletions) break;
 
-      // Key pattern: recordings/<meetingId>.mp4
-      const fileName = key.split("/").pop() ?? "";
-      const meetingId = fileName.replace(/\.mp4$/, "");
+      try {
+        // Key pattern: recordings/<meetingId>.mp4
+        const fileName = key.split("/").pop() ?? "";
+        const meetingId = fileName.replace(/\.mp4$/, "");
 
-      const [exists] = await db
-        .select({ id: meetings.id })
-        .from(meetings)
-        .where(eq(sql`${meetings.metadata}->>'recordingKey'`, key))
-        .limit(1);
-
-      if (!exists) {
-        // Also check if meeting exists at all
-        const [meetingExists] = await db
+        const [byMeta] = await db
           .select({ id: meetings.id })
           .from(meetings)
-          .where(eq(meetings.id, meetingId))
+          .where(eq(sql`${meetings.metadata}->>'recordingKey'`, key))
           .limit(1);
 
-        if (!meetingExists) {
-          try {
+        if (!byMeta) {
+          // Also check if meeting exists at all (only if valid UUID)
+          let meetingExists = false;
+          if (UUID_RE.test(meetingId)) {
+            const [byId] = await db
+              .select({ id: meetings.id })
+              .from(meetings)
+              .where(eq(meetings.id, meetingId))
+              .limit(1);
+            meetingExists = !!byId;
+          }
+
+          if (!meetingExists) {
             await deleteFile(key);
             console.log(`[Storage Cleanup] Deleted orphaned recording: ${key}`);
             deleted++;
-          } catch (err) {
-            console.error(`[Storage Cleanup] Failed to delete ${key}:`, err);
           }
         }
+      } catch (err) {
+        console.error(`[Storage Cleanup] Failed to process ${key}:`, err);
       }
     }
   } catch (err) {
