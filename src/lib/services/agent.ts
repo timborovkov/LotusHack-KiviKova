@@ -70,7 +70,9 @@ export async function joinMeeting(
     .returning({ id: meetings.id });
 
   if (!transitioned) {
-    throw new ConflictError("Meeting is already being joined by another request");
+    throw new ConflictError(
+      "Meeting is already being joined by another request"
+    );
   }
 
   const provider = getMeetingBotProvider();
