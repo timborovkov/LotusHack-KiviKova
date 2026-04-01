@@ -13,13 +13,14 @@ export async function PATCH(
   const user = await requireSessionUser();
   if (user instanceof NextResponse) return user;
 
-  const { taskId } = await params;
+  const { id: meetingId, taskId } = await params;
   const body = await request.json();
 
   const { title, assignee, status, dueDate } = body as Record<string, unknown>;
 
   try {
     const updated = await updateTask(user.id, taskId, {
+      meetingId,
       title: typeof title === "string" ? title : undefined,
       assignee:
         assignee === null
