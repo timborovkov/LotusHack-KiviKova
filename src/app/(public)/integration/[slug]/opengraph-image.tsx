@@ -10,7 +10,10 @@ export async function generateStaticParams() {
 export default function Image({ params }: { params: { slug: string } }) {
   const integration = getIntegrations().find((i) => i.id === params.slug);
   if (!integration) {
-    return generateOgImage("Vernix Integration", "Connect your tools to video calls.");
+    return generateOgImage(
+      "Vernix Integration",
+      "Connect your tools to video calls."
+    );
   }
 
   return generateOgImage(
