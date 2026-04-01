@@ -29,7 +29,7 @@ export async function POST(request: Request) {
   if (user instanceof NextResponse) return user;
 
   try {
-    const result = await joinMeeting(user.id, parsed.data.meetingId);
+    const result = await joinMeeting(user.id, parsed.data.meetingId, user.name);
     return NextResponse.json({ success: true, botId: result.botId });
   } catch (error) {
     if (error instanceof NotFoundError) {
