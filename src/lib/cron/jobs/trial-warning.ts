@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
-import { and, eq, between, or, isNull, lt } from "drizzle-orm";
+import { and, eq, between, or, isNull, lte } from "drizzle-orm";
 import { PLANS } from "@/lib/billing/constants";
 import { sendEmail } from "@/lib/email/send";
 import { getTrialWarningHtml } from "@/lib/email/templates";
@@ -36,7 +36,7 @@ export async function runTrialWarning() {
         // Either never sent, or sent more than 2 days ago (allows second warning)
         or(
           isNull(users.trialWarningEmailSentAt),
-          lt(users.trialWarningEmailSentAt, twoDaysAgo)
+          lte(users.trialWarningEmailSentAt, twoDaysAgo)
         )
       )
     );
