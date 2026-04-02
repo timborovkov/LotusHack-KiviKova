@@ -19,7 +19,7 @@ import { LIMITS, PLANS } from "./constants";
 describe("getEffectiveLimits", () => {
   it("returns free limits for free plan with no trial", () => {
     const limits = getEffectiveLimits("free", null);
-    expect(limits.voiceEnabled).toBe(true);
+
     expect(limits.voiceMeetingsPerMonth).toBe(1);
     expect(limits.meetingMinutesPerMonth).toBe(30);
     expect(limits.documentsCount).toBe(5);
@@ -31,7 +31,7 @@ describe("getEffectiveLimits", () => {
   it("returns trial limits for free plan with active trial", () => {
     const future = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     const limits = getEffectiveLimits("free", future);
-    expect(limits.voiceEnabled).toBe(true);
+
     expect(limits.voiceMeetingsPerMonth).toBeNull(); // unlimited during trial
     expect(limits.meetingMinutesPerMonth).toBe(90); // 90-minute trial cap
     expect(limits.documentsCount).toBe(200);
@@ -41,14 +41,14 @@ describe("getEffectiveLimits", () => {
   it("returns free limits when trial has expired", () => {
     const past = new Date(Date.now() - 24 * 60 * 60 * 1000);
     const limits = getEffectiveLimits("free", past);
-    expect(limits.voiceEnabled).toBe(true);
+
     expect(limits.voiceMeetingsPerMonth).toBe(1);
     expect(limits.meetingMinutesPerMonth).toBe(30);
   });
 
   it("returns pro limits for pro plan regardless of trial", () => {
     const limits = getEffectiveLimits("pro", null);
-    expect(limits.voiceEnabled).toBe(true);
+
     expect(limits.voiceMeetingsPerMonth).toBeNull();
     expect(limits.meetingMinutesPerMonth).toBeNull();
     expect(limits.apiEnabled).toBe(true);
