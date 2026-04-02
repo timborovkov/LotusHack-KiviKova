@@ -60,7 +60,7 @@ export function CreateMeetingDialog({ onCreate }: CreateMeetingDialogProps) {
         title,
         joinLink,
         agenda || undefined,
-        silent || undefined,
+        voiceLimitReached || silent || undefined,
         noRecording || undefined
       );
       setTitle("");
