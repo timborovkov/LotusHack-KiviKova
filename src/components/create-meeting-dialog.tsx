@@ -133,7 +133,9 @@ export function CreateMeetingDialog({ onCreate }: CreateMeetingDialogProps) {
               type="checkbox"
               id="silent"
               checked={voiceLimitReached ? true : silent}
-              onChange={(e) => !voiceLimitReached && setSilent(e.target.checked)}
+              onChange={(e) =>
+                !voiceLimitReached && setSilent(e.target.checked)
+              }
               disabled={voiceLimitReached}
               className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300"
             />
