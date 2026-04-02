@@ -120,7 +120,10 @@ export async function POST(request: Request) {
         .set({ cachedTools: result.tools, toolsCachedAt: new Date() })
         .where(eq(mcpServers.id, serverId))
         .catch((e) =>
-          console.warn("[MCP] Failed to cache tools:", e instanceof Error ? e.message : e)
+          console.warn(
+            "[MCP] Failed to cache tools:",
+            e instanceof Error ? e.message : e
+          )
         );
     }
 
