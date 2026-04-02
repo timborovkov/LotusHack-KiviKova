@@ -81,15 +81,16 @@ export function IntegrationCard({
   };
 
   const getToolsForConnection = (conn: ConnectionInfo): ToolInfo[] | null => {
-    if (toolsById[conn.id]) return toolsById[conn.id];
-    if (conn.cachedTools) {
-      const disabledSet = new Set(conn.disabledTools ?? []);
-      return conn.cachedTools.map((t) => ({
-        ...t,
-        enabled: !disabledSet.has(t.name),
-      }));
-    }
-    return null;
+    // Use fetched tools for names/descriptions, but always derive enabled
+    // from the latest conn.disabledTools (from query cache) to stay in sync
+    const disabledSet = new Set(conn.disabledTools ?? []);
+    const baseTools = toolsById[conn.id] ?? conn.cachedTools;
+    if (!baseTools) return null;
+    return baseTools.map((t) => ({
+      name: t.name,
+      description: t.description,
+      enabled: !disabledSet.has(t.name),
+    }));
   };
 
   return (

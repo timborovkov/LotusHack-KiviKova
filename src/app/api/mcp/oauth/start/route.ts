@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 import { z } from "zod/v4";
+import { eq } from "drizzle-orm";
 import { auth } from "@modelcontextprotocol/sdk/client/auth.js";
 import { requireSessionUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { mcpServers } from "@/lib/db/schema";
 import { getIntegrations } from "@/lib/integrations/catalog";
 import { VernixOAuthProvider } from "@/lib/mcp/oauth-provider";
+import { requireLimits } from "@/lib/billing/enforce";
+import { canAddMcpServer } from "@/lib/billing/limits";
+import { getEnabledMcpServerCount } from "@/lib/billing/usage";
 
 const startSchema = z.object({
   integrationId: z.string().min(1),
@@ -57,6 +61,14 @@ export async function POST(request: Request) {
     integrationName = integration.name;
   }
 
+  // Billing: enforce MCP server connection limit
+  const { limits } = await requireLimits(user.id);
+  const enabledCount = await getEnabledMcpServerCount(user.id);
+  const mcpCheck = canAddMcpServer(limits, enabledCount);
+  if (!mcpCheck.allowed) {
+    return NextResponse.json({ error: mcpCheck.reason }, { status: 403 });
+  }
+
   // Always create a new MCP server record to support multiple connections
   // (e.g. two Slack workspaces for different teams)
   const catalogId =
@@ -86,6 +98,11 @@ export async function POST(request: Request) {
 
     // result === "REDIRECT" — provider.pendingAuthUrl has the authorization URL
     if (!provider.pendingAuthUrl) {
+      // Clean up orphaned record
+      await db
+        .delete(mcpServers)
+        .where(eq(mcpServers.id, serverId))
+        .catch(() => {});
       return NextResponse.json(
         { error: "OAuth flow failed: no authorization URL generated" },
         { status: 500 }
@@ -97,6 +114,11 @@ export async function POST(request: Request) {
       serverId,
     });
   } catch (error) {
+    // Clean up orphaned record on failure
+    await db
+      .delete(mcpServers)
+      .where(eq(mcpServers.id, serverId))
+      .catch(() => {});
     console.error("[OAuth Start] Failed:", error);
     const message =
       error instanceof Error ? error.message : "OAuth initialization failed";

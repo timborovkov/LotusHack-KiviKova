@@ -216,14 +216,40 @@ export function useMcpServers(opts?: {
       if (!res.ok) throw new Error("Failed to update tool settings");
       return res.json();
     },
-    onSuccess: () => {
+    onMutate: async ({ serverId, disabledTools }) => {
+      // Cancel outgoing refetches so they don't overwrite optimistic update
+      await queryClient.cancelQueries({ queryKey: queryKeys.mcpServers.all });
+      const previous = queryClient.getQueryData<McpServerInfo[]>(
+        queryKeys.mcpServers.all
+      );
+      // Optimistically update the cache to prevent stale reads on rapid toggles
+      queryClient.setQueryData<McpServerInfo[]>(
+        queryKeys.mcpServers.all,
+        (old) =>
+          old?.map((s) =>
+            s.id === serverId ? { ...s, disabledTools } : s
+          ) ?? []
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      // Roll back on failure
+      if (context?.previous) {
+        queryClient.setQueryData(queryKeys.mcpServers.all, context.previous);
+      }
+      toast.error("Failed to update tool settings");
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.mcpServers.all });
     },
-    onError: () => toast.error("Failed to update tool settings"),
   });
 
   const toggleTool = (serverId: string, toolName: string, enabled: boolean) => {
-    const server = servers.find((s) => s.id === serverId);
+    // Read from query cache to get the latest optimistic state
+    const cached = queryClient.getQueryData<McpServerInfo[]>(
+      queryKeys.mcpServers.all
+    );
+    const server = cached?.find((s) => s.id === serverId);
     const current = server?.disabledTools ?? [];
     const disabledTools = enabled
       ? current.filter((t) => t !== toolName)

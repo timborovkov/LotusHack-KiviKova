@@ -116,15 +116,16 @@ export function ConnectedServerCard({
   };
 
   const getDisplayTools = (): ToolInfo[] | null => {
-    if (tools) return tools;
-    if (server.cachedTools) {
-      const disabledSet = new Set(server.disabledTools ?? []);
-      return server.cachedTools.map((t) => ({
-        ...t,
-        enabled: !disabledSet.has(t.name),
-      }));
-    }
-    return null;
+    // Use fetched tools for names/descriptions, but always derive enabled
+    // from the latest server.disabledTools (from query cache) to stay in sync
+    const disabledSet = new Set(server.disabledTools ?? []);
+    const baseTols = tools ?? server.cachedTools;
+    if (!baseTols) return null;
+    return baseTols.map((t) => ({
+      name: t.name,
+      description: t.description,
+      enabled: !disabledSet.has(t.name),
+    }));
   };
 
   const displayTools = expanded ? getDisplayTools() : null;

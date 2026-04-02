@@ -108,9 +108,13 @@ export async function PATCH(
     updates.authPassword = authPassword || null;
   if (
     Array.isArray(disabledTools) &&
-    disabledTools.every((t) => typeof t === "string")
+    disabledTools.length <= 500 &&
+    disabledTools.every(
+      (t) => typeof t === "string" && t.length > 0 && t.length <= 200
+    )
   ) {
-    updates.disabledTools = disabledTools;
+    // Deduplicate
+    updates.disabledTools = [...new Set(disabledTools as string[])];
   }
 
   const [updated] = await db
