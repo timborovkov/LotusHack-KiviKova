@@ -170,17 +170,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           .onConflictDoNothing();
         user.id = existingUser.id;
 
-        // Persist OAuth avatar to DB if user doesn't have one yet
+        // Persist OAuth avatar and mark email verified if not already
         const oauthImage = getOAuthImage(oauthProfile);
-        if (oauthImage && !existingUser.image) {
+        const updates: Record<string, unknown> = { updatedAt: new Date() };
+        if (oauthImage && !existingUser.image) updates.image = oauthImage;
+        if (!existingUser.emailVerifiedAt) updates.emailVerifiedAt = new Date();
+        if (Object.keys(updates).length > 1) {
           await db
             .update(users)
-            .set({ image: oauthImage, updatedAt: new Date() })
+            .set(updates)
             .where(eq(users.id, existingUser.id));
         }
         user.image = existingUser.image ?? oauthImage;
         user.termsAcceptedAt = existingUser.termsAcceptedAt ?? null;
-        user.emailVerifiedAt = existingUser.emailVerifiedAt ?? null;
+        user.emailVerifiedAt =
+          existingUser.emailVerifiedAt ??
+          (updates.emailVerifiedAt as Date) ??
+          null;
 
         // Track last activity for inactive account detection (fire-and-forget)
         Promise.resolve(
@@ -195,6 +201,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       // New user — create account
       const image = getOAuthImage(oauthProfile);
+      const providerVerified = isEmailVerified(account.provider);
 
       const [newUser] = await db
         .insert(users)
@@ -203,6 +210,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           name: user.name ?? email.split("@")[0],
           passwordHash: null,
           image,
+          ...(providerVerified && { emailVerifiedAt: new Date() }),
         })
         .returning({ id: users.id });
 
@@ -218,6 +226,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       user.id = newUser.id;
       user.image = image;
       user.termsAcceptedAt = null; // new OAuth user, terms not yet accepted
+      user.emailVerifiedAt = providerVerified ? new Date() : null;
       return true;
     },
     async jwt({ token, user, trigger }) {
