@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
-import { and, eq, isNull, between } from "drizzle-orm";
+import { and, eq, isNull, between, or, lte } from "drizzle-orm";
 import { PLANS } from "@/lib/billing/constants";
 import { sendEmail } from "@/lib/email/send";
 import { getWinBackEmailHtml } from "@/lib/email/templates";
@@ -28,7 +28,10 @@ export async function runWinBack() {
       and(
         eq(users.plan, PLANS.FREE),
         between(users.churnedAt, min, max),
-        isNull(users.winBackEmailSentAt)
+        isNull(users.winBackEmailSentAt),
+        // Exclude users who re-subscribed (active trial or subscription)
+        or(isNull(users.trialEndsAt), lte(users.trialEndsAt, now)),
+        isNull(users.polarSubscriptionId)
       )
     );
 
