@@ -14,47 +14,48 @@ All visual decisions derive from `docs/design-system.md`. This section extracts 
 
 Source: OKLCH tokens from `src/app/globals.css`
 
-| Token              | OKLCH value              | Approx hex | Use in video                            |
-| ------------------ | ------------------------ | ---------- | --------------------------------------- |
-| `background`       | `oklch(0.145 0 0)`      | `#1a1a1a`  | Full-frame background, scene bg         |
-| `foreground`       | `oklch(0.985 0 0)`      | `#fafafa`  | Headlines, primary text                 |
-| `muted-foreground` | `oklch(0.708 0 0)`      | `#b0b0b0`  | Subtitles, secondary text               |
-| `card`             | `oklch(0.205 0 0)`      | `#2e2e2e`  | Screenshot frame/border tint            |
-| `ring` (accent)    | `oklch(0.65 0.18 290)`  | ~violet    | Highlight underlines, CTA glow, accents |
-| `accent`           | `oklch(0.25 0.04 290)`  | ~deep violet | Subtle background tints               |
-| `accent-foreground`| `oklch(0.85 0.12 290)`  | ~light violet | Accent text                          |
+| Token               | OKLCH value            | Approx hex    | Use in video                            |
+| ------------------- | ---------------------- | ------------- | --------------------------------------- |
+| `background`        | `oklch(0.145 0 0)`     | `#1a1a1a`     | Full-frame background, scene bg         |
+| `foreground`        | `oklch(0.985 0 0)`     | `#fafafa`     | Headlines, primary text                 |
+| `muted-foreground`  | `oklch(0.708 0 0)`     | `#b0b0b0`     | Subtitles, secondary text               |
+| `card`              | `oklch(0.205 0 0)`     | `#2e2e2e`     | Screenshot frame/border tint            |
+| `ring` (accent)     | `oklch(0.65 0.18 290)` | ~violet       | Highlight underlines, CTA glow, accents |
+| `accent`            | `oklch(0.25 0.04 290)` | ~deep violet  | Subtle background tints                 |
+| `accent-foreground` | `oklch(0.85 0.12 290)` | ~light violet | Accent text                             |
 
 Status colors (hardcoded, semantic):
+
 - Success/active: `green-600` text, `green-950` bg
 - Warning/processing: `yellow-600` text
 - Error/failed: `red-600` text
 
 ### Typography
 
-| Role             | Font       | CSS variable       | Video equivalent                |
-| ---------------- | ---------- | ------------------ | ------------------------------- |
-| Headlines & body | Geist Sans | `--font-geist-sans` | Use Geist Sans (Google Fonts)  |
-| Monospace        | Geist Mono | `--font-geist-mono` | Code snippets if any           |
+| Role             | Font       | CSS variable        | Video equivalent              |
+| ---------------- | ---------- | ------------------- | ----------------------------- |
+| Headlines & body | Geist Sans | `--font-geist-sans` | Use Geist Sans (Google Fonts) |
+| Monospace        | Geist Mono | `--font-geist-mono` | Code snippets if any          |
 
 Video type scale (adapted from the app's scale for screen legibility):
 
-| Use                | Size    | Weight | Notes                                |
-| ------------------ | ------- | ------ | ------------------------------------ |
-| Scene headline     | 56–64px | 700    | Main text per scene, `foreground`    |
-| Subtitle / tagline | 28–32px | 500    | Below headline, `muted-foreground`   |
-| CTA text           | 48px    | 700    | Final scene, `foreground` with glow  |
-| URL                | 32px    | 400    | `muted-foreground`                   |
+| Use                | Size    | Weight | Notes                               |
+| ------------------ | ------- | ------ | ----------------------------------- |
+| Scene headline     | 56–64px | 700    | Main text per scene, `foreground`   |
+| Subtitle / tagline | 28–32px | 500    | Below headline, `muted-foreground`  |
+| CTA text           | 48px    | 700    | Final scene, `foreground` with glow |
+| URL                | 32px    | 400    | `muted-foreground`                  |
 
 ### Brand Assets
 
 All in `public/brand/`. For the video (dark background):
 
-| Asset                                  | Use                             |
-| -------------------------------------- | ------------------------------- |
+| Asset                                  | Use                            |
+| -------------------------------------- | ------------------------------ |
 | `brand/combo/horizontal-dark-nobg.png` | Logo in intro & CTA scenes     |
-| `brand/icon/icon-dark-512.png`         | Standalone icon if needed       |
+| `brand/icon/icon-dark-512.png`         | Standalone icon if needed      |
 | `brand/wordmark/wordmark-dark.png`     | Wordmark alone (CTA scene)     |
-| `brand/og/og-with-subtitle.png`        | Reference for tone/composition  |
+| `brand/og/og-with-subtitle.png`        | Reference for tone/composition |
 
 ### Border Radius
 
@@ -64,9 +65,10 @@ From design system: `--radius: 0.625rem` (10px). For screenshots in video, use `
 
 From design system: easing is `cubic-bezier(0.25, 1, 0.5, 1)` (ease-out-quart). The brand principle: "purposeful and subtle — motion should enhance understanding, never distract."
 
-The video should feel like things *arrive*, not *bounce in*. Everything enters with confidence — appears where it belongs, no overshoot.
+The video should feel like things _arrive_, not _bounce in_. Everything enters with confidence — appears where it belongs, no overshoot.
 
 In Remotion:
+
 - Use `spring({ fps: 30, config: { damping: 200 } })` for all entrances — smooth deceleration, zero bounce
 - Text: fade in over 10 frames (~300ms)
 - Screenshots: slide up 20px + fade in over 12 frames (~400ms), slightly delayed after the text they illustrate
@@ -109,9 +111,11 @@ The music is not decoration — it sets the emotional arc.
 ### Scene 1 — Hook (0:00–0:06)
 
 **Voiceover:**
+
 > "Halfway through a standup, someone asks for the sprint status. Nobody has the tab open. The meeting stalls. Sound familiar?"
 
 **On-screen text:**
+
 > The answer is in another tab.
 
 **Visual:** `background` fill. Text in `foreground` color, Geist Sans 56px bold. Fades in line by line (staggered 400ms). Subtle radial gradient pulse behind text using `accent` color at low opacity.
@@ -125,9 +129,11 @@ _Why: Opens with a specific, recognizable moment — not an abstract statement. 
 ### Scene 2 — Product Intro (0:06–0:12)
 
 **Voiceover:**
+
 > "Vernix joins your video calls, connects to your tools, and answers questions with real data — live."
 
 **On-screen text:**
+
 > Meet Vernix
 
 **Visual:** `brand/combo/horizontal-dark-nobg.png` animates in (scale 0.8→1 + fade, ease-out-quart). Headline "Meet Vernix" in `foreground`, 64px bold. Subtitle fades in below in `muted-foreground`, 28px:
@@ -143,9 +149,11 @@ _Why: One sentence, three concrete things. No "AI assistant" label — show what
 ### Scene 3 — Zero Friction Setup (0:12–0:18)
 
 **Voiceover:**
+
 > "Paste a meeting link. That's the entire setup."
 
 **On-screen text:**
+
 > Paste a link. Done.
 
 **Visual:** Text left-aligned, screenshot slides in from right. Screenshot of the **Create Meeting dialog** with fields filled. 16px rounded corners, subtle `card`-colored drop shadow.
@@ -153,6 +161,7 @@ _Why: One sentence, three concrete things. No "AI assistant" label — show what
 _Why: Shorter = more confident. "That's the entire setup" is more emphatic than explaining what happens next._
 
 **Screenshot needed:**
+
 - [ ] `screenshot-create-meeting.png` — Create Meeting dialog with fields filled (title: "Q2 Planning Sync", link: a Zoom URL). Dark mode.
 
 ---
@@ -160,9 +169,11 @@ _Why: Shorter = more confident. "That's the entire setup" is more emphatic than 
 ### Scene 4 — Agent Joins (0:18–0:25)
 
 **Voiceover:**
+
 > "Vernix joins as a participant. Zoom, Meet, Teams, Webex. No plugins. No extensions."
 
 **On-screen text:**
+
 > No plugins. No extensions.
 
 **Visual:** Screenshot of **Vernix on an active Google Meet call** — showing the bot as a visible participant in the call grid. Below or beside it, the 4 platform logos animate in one by one (use `ring` accent underline on each as it appears).
@@ -170,6 +181,7 @@ _Why: Shorter = more confident. "That's the entire setup" is more emphatic than 
 _Why: Staccato rhythm mirrors the zero-friction message. "No plugins. No extensions." lands harder than "No plugins, no extensions." Showing the actual call (not just a dashboard card) makes it real._
 
 **Screenshots needed:**
+
 - [ ] `screenshot-active-call.png` — Vernix visible as a participant in a Google Meet call (the call grid, not the dashboard). Crop to show Vernix's tile alongside 1–2 other participants. No browser chrome.
 - [ ] `screenshot-active-meeting.png` — Meeting card in the dashboard showing "Active" status. Dark mode. (optional, use if the call screenshot needs context)
 - [ ] Platform logos: Zoom, Google Meet, Microsoft Teams, Webex (SVGs, animate in sequence)
@@ -179,9 +191,11 @@ _Why: Staccato rhythm mirrors the zero-friction message. "No plugins. No extensi
 ### Scene 5 — Live Transcription (0:25–0:31)
 
 **Voiceover:**
+
 > "Every word is transcribed in real time — with speaker names, so you always know who said what."
 
 **On-screen text:**
+
 > Who said what. Always.
 
 **Visual:** Screenshot of the **Transcript tab** — conversation between 2–3 speakers with timestamps. Optionally animate lines appearing one by one.
@@ -189,6 +203,7 @@ _Why: Staccato rhythm mirrors the zero-friction message. "No plugins. No extensi
 _Why: "So you always know who said what" is the benefit, not "with timestamps." The on-screen text captures the outcome, not the feature._
 
 **Screenshot needed:**
+
 - [ ] `screenshot-transcript.png` — Transcript tab with 6–8 lines between "Sarah Chen", "David Kim", and "Vernix". Dark mode. Timestamps visible.
 
 ---
@@ -196,6 +211,7 @@ _Why: "So you always know who said what" is the benefit, not "with timestamps." 
 ### Scene 6 — The Hero Moment: Live Answers (0:31–0:43)
 
 **Voiceover:**
+
 > "During the call, ask Vernix anything. It pulls the answer straight from your connected tools."
 >
 > _(brief pause)_
@@ -203,6 +219,7 @@ _Why: "So you always know who said what" is the benefit, not "with timestamps." 
 > "Sprint status from Linear. Customer history from your CRM. Deploy logs from GitHub. Nobody leaves the call."
 
 **On-screen text:**
+
 > "What's the status of the auth migration?"
 
 The question text uses `accent-foreground` color (light violet) to stand out as a quote.
@@ -212,6 +229,7 @@ The question text uses `accent-foreground` color (light violet) to stand out as 
 _Why: Removed "But here's where it gets interesting" — filler that delays the payoff. "Ask Vernix anything" is direct. "Nobody leaves the call" is the outcome, stated as a fact._
 
 **Screenshot needed:**
+
 - [ ] `screenshot-chat-answer.png` — Chat tab showing the question "What's the status of the auth migration?" and a specific answer referencing Linear data (e.g., "3 of 5 subtasks complete. Blocked by OAuth provider review. Assigned to David."). Dark mode.
 
 ---
@@ -219,9 +237,11 @@ _Why: Removed "But here's where it gets interesting" — filler that delays the 
 ### Scene 7 — Connect Your Tools (0:43–0:50)
 
 **Voiceover:**
+
 > "Connect Slack, Linear, GitHub, your CRM — dozens of integrations. Set it up once. It works in every call."
 
 **On-screen text:**
+
 > Connect once. Use everywhere.
 
 **Visual:** Screenshot of the **Integrations page** with connected services (green badges). Crossfade to the **Integration Cloud** visual.
@@ -229,6 +249,7 @@ _Why: Removed "But here's where it gets interesting" — filler that delays the 
 _Why: Removed "any tool that speaks MCP" — MCP is on the "words to avoid" list in the marketing context. "Dozens of integrations" is specific without being jargon. Shorter sentences._
 
 **Screenshots needed:**
+
 - [ ] `screenshot-integrations.png` — Integrations page with 3–4 connected (green badges) + available ones. Dark mode.
 - [ ] `screenshot-integration-cloud.png` — Integration cloud from the landing page. Dark mode.
 
@@ -237,18 +258,22 @@ _Why: Removed "any tool that speaks MCP" — MCP is on the "words to avoid" list
 ### Scene 8 — Summaries & Action Items (0:50–0:58)
 
 **Voiceover:**
+
 > "When the call ends, you get a summary and action items — assigned to the right people, ready to track."
 
 **On-screen text:**
+
 > Summaries and action items. Automatic.
 
 **Visual:** Quick cut or split view:
+
 1. **Overview tab** with a rendered meeting summary
 2. **Tasks tab** with action items, assignee badges (using `secondary` badge variant), checkboxes
 
 _Why: "When the call ends" is more concrete than "After the call." Removed "automatic" and "extracted" from VO — the visual proves it's automatic. Kept "Automatic" in on-screen text as a one-word punchline._
 
 **Screenshots needed:**
+
 - [ ] `screenshot-summary.png` — Overview tab with a 4–6 bullet summary. Dark mode.
 - [ ] `screenshot-tasks.png` — Tasks tab with 4–5 items, assignee badges ("Sarah", "David"), one checked off. Dark mode.
 
@@ -257,9 +282,11 @@ _Why: "When the call ends" is more concrete than "After the call." Removed "auto
 ### Scene 9 — Cross-Meeting Search (0:58–1:04)
 
 **Voiceover:**
+
 > "Search across every call you've ever had. By topic, by speaker, by meaning — not just keywords."
 
 **On-screen text:**
+
 > Search by meaning, not just keywords.
 
 **Visual:** Screenshot of the **dashboard with search active** and filtered results.
@@ -267,6 +294,7 @@ _Why: "When the call ends" is more concrete than "After the call." Removed "auto
 _Why: "Not just keywords" differentiates from competitors. The on-screen text captures the unique selling point instead of the generic "Search every call."_
 
 **Screenshot needed:**
+
 - [ ] `screenshot-search.png` — Dashboard with search query "pricing decision" and 2–3 matching meetings. Dark mode.
 
 ---
@@ -274,9 +302,11 @@ _Why: "Not just keywords" differentiates from competitors. The on-screen text ca
 ### Scene 10 — Knowledge Base (1:04–1:10)
 
 **Voiceover:**
+
 > "Upload product specs, onboarding guides, any docs your team needs — so Vernix has the context before the call starts."
 
 **On-screen text:**
+
 > Give it context before the call.
 
 **Visual:** Screenshot of the **Knowledge Base page** with uploaded documents showing green "ready" badges.
@@ -284,6 +314,7 @@ _Why: "Not just keywords" differentiates from competitors. The on-screen text ca
 _Why: Leads with concrete examples (product specs, onboarding guides) instead of the abstract "upload documents." "Before the call starts" creates a forward-looking benefit._
 
 **Screenshot needed:**
+
 - [ ] `screenshot-knowledge.png` — Knowledge page with 3–4 docs (PDF, DOCX, MD), green "ready" badges. Dark mode.
 
 ---
@@ -291,12 +322,14 @@ _Why: Leads with concrete examples (product specs, onboarding guides) instead of
 ### Scene 11 — CTA (1:10–1:18)
 
 **Voiceover:**
+
 > "Stop switching tabs. Start getting answers. Try Vernix free."
 
 **On-screen text (large, centered):**
+
 > Try Vernix free
 >
-> vernix.ai
+> vernix.app
 
 **Visual:** `brand/combo/horizontal-dark-nobg.png` centered above. "Try Vernix free" in `foreground`, 48px bold, with a subtle `ring`-colored glow behind it (box-shadow or radial gradient). URL in `muted-foreground`, 32px. Background gradient drift using `accent` at ~5% opacity. Music swells. Hold 5 seconds.
 
@@ -352,19 +385,19 @@ Stop switching tabs. Start getting answers. Try Vernix free.
 
 Prepare in dark mode at 1920x1080 or higher. Crop to the relevant UI — no browser chrome.
 
-| # | Filename | What to capture | Page/Route |
-|---|----------|----------------|------------|
-| 1 | `screenshot-create-meeting.png` | Create Meeting dialog, fields filled | `/dashboard` (open dialog) |
-| 2 | `screenshot-active-call.png` | Vernix as participant in a Google Meet call | Google Meet (live call) |
-| 2b | `screenshot-active-meeting.png` | Meeting card with "Active" badge (optional) | `/dashboard` |
-| 3 | `screenshot-transcript.png` | Transcript tab, 6–8 lines, multiple speakers | `/dashboard/call/[id]` → Transcript tab |
-| 4 | `screenshot-chat-answer.png` | Chat with question + data-rich AI response | `/dashboard/call/[id]` → Chat tab |
-| 5 | `screenshot-integrations.png` | Integrations page, 3–4 connected | `/dashboard/integrations` |
-| 6 | `screenshot-integration-cloud.png` | Integration cloud visual | `/` or `/features/integrations` |
-| 7 | `screenshot-summary.png` | Overview tab with markdown summary | `/dashboard/call/[id]` → Overview tab |
-| 8 | `screenshot-tasks.png` | Tasks tab with 4–5 items, assignees | `/dashboard/call/[id]` → Tasks tab |
-| 9 | `screenshot-search.png` | Dashboard with search active + results | `/dashboard` |
-| 10 | `screenshot-knowledge.png` | Knowledge page with 3–4 docs, ready status | `/dashboard/knowledge` |
+| #   | Filename                           | What to capture                              | Page/Route                              |
+| --- | ---------------------------------- | -------------------------------------------- | --------------------------------------- |
+| 1   | `screenshot-create-meeting.png`    | Create Meeting dialog, fields filled         | `/dashboard` (open dialog)              |
+| 2   | `screenshot-active-call.png`       | Vernix as participant in a Google Meet call  | Google Meet (live call)                 |
+| 2b  | `screenshot-active-meeting.png`    | Meeting card with "Active" badge (optional)  | `/dashboard`                            |
+| 3   | `screenshot-transcript.png`        | Transcript tab, 6–8 lines, multiple speakers | `/dashboard/call/[id]` → Transcript tab |
+| 4   | `screenshot-chat-answer.png`       | Chat with question + data-rich AI response   | `/dashboard/call/[id]` → Chat tab       |
+| 5   | `screenshot-integrations.png`      | Integrations page, 3–4 connected             | `/dashboard/integrations`               |
+| 6   | `screenshot-integration-cloud.png` | Integration cloud visual                     | `/` or `/features/integrations`         |
+| 7   | `screenshot-summary.png`           | Overview tab with markdown summary           | `/dashboard/call/[id]` → Overview tab   |
+| 8   | `screenshot-tasks.png`             | Tasks tab with 4–5 items, assignees          | `/dashboard/call/[id]` → Tasks tab      |
+| 9   | `screenshot-search.png`            | Dashboard with search active + results       | `/dashboard`                            |
+| 10  | `screenshot-knowledge.png`         | Knowledge page with 3–4 docs, ready status   | `/dashboard/knowledge`                  |
 
 ### Screenshot Tips
 
@@ -391,7 +424,7 @@ Scene 7:  "Connect once. Use everywhere."
 Scene 8:  "Summaries and action items. Automatic."
 Scene 9:  "Search by meaning, not just keywords."
 Scene 10: "Give it context before the call."
-Scene 11: "Try Vernix free" / "vernix.ai"
+Scene 11: "Try Vernix free" / "vernix.app"
 ```
 
 ---
@@ -440,7 +473,7 @@ import { fade } from "@remotion/transitions/fade";
     <SceneIntro />
   </TransitionSeries.Sequence>
   {/* ... */}
-</TransitionSeries>
+</TransitionSeries>;
 ```
 
 Note: transitions overlap adjacent scenes, so total duration = sum of scene durations minus sum of transition durations.
@@ -488,7 +521,7 @@ const { fontFamily } = loadFont("normal", {
 // Use in components:
 <div style={{ fontFamily, fontWeight: 700, fontSize: 56 }}>
   Your meetings are full of questions.
-</div>
+</div>;
 ```
 
 If Geist Sans isn't available in `@remotion/google-fonts`, use `@remotion/fonts` with local `.woff2` files in `public/fonts/`.
@@ -561,7 +594,7 @@ for (const scene of scenes) {
         model_id: "eleven_multilingual_v2",
         voice_settings: { stability: 0.5, similarity_boost: 0.75, style: 0.3 },
       }),
-    }
+    },
   );
   const buf = Buffer.from(await response.arrayBuffer());
   writeFileSync(`public/audio/voiceover/${scene.id}.mp3`, buf);
@@ -577,13 +610,13 @@ Define a shared constants file mapping design system tokens to values for inline
 ```tsx
 // src/theme.ts
 export const theme = {
-  background: "#1a1a1a",       // oklch(0.145 0 0)
-  foreground: "#fafafa",       // oklch(0.985 0 0)
-  mutedForeground: "#b0b0b0",  // oklch(0.708 0 0)
-  card: "#2e2e2e",             // oklch(0.205 0 0)
-  accent: "#7c3aed",           // ring — violet (approx)
+  background: "#1a1a1a", // oklch(0.145 0 0)
+  foreground: "#fafafa", // oklch(0.985 0 0)
+  mutedForeground: "#b0b0b0", // oklch(0.708 0 0)
+  card: "#2e2e2e", // oklch(0.205 0 0)
+  accent: "#7c3aed", // ring — violet (approx)
   accentForeground: "#c4b5fd", // accent-foreground — light violet (approx)
-  successText: "#16a34a",      // green-600
+  successText: "#16a34a", // green-600
 } as const;
 ```
 
