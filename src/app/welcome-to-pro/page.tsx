@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -18,6 +18,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { DISPLAY, LIMITS, PLANS } from "@/lib/billing/constants";
+import { trackPurchase } from "@/lib/analytics";
 
 const UNLOCKED_FEATURES = [
   {
@@ -55,6 +56,7 @@ const UNLOCKED_FEATURES = [
 export default function WelcomeToProPage() {
   const { billing, loading, error } = useBilling();
   const router = useRouter();
+  const purchaseTracked = useRef(false);
 
   // Allow access if Pro, trialing, or has a Polar subscription (webhook may not have synced yet)
   const isPro = billing?.plan === "pro";
@@ -64,6 +66,13 @@ export default function WelcomeToProPage() {
       router.replace("/dashboard");
     }
   }, [loading, billing, error, hasAccess, router]);
+
+  useEffect(() => {
+    if (!loading && hasAccess && billing && !purchaseTracked.current) {
+      purchaseTracked.current = true;
+      trackPurchase(billing.plan, billing.trialing ?? false);
+    }
+  }, [loading, hasAccess, billing]);
 
   if (!loading && (!billing || error || !hasAccess)) return null;
 

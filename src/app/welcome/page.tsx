@@ -127,6 +127,8 @@ export default function WelcomePage() {
               <button
                 type="button"
                 onClick={() => {
+                  trackBeginCheckout("annual");
+                  trackTrialStarted("annual");
                   window.location.href = getCheckoutUrl("annual");
                 }}
                 className="border-ring/50 bg-ring/5 hover:border-ring flex-1 rounded-lg border p-3 text-left transition-colors"
