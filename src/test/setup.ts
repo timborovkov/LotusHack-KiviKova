@@ -57,6 +57,7 @@ vi.mock("@/lib/billing/enforce", () => ({
   requireLimits: vi.fn().mockResolvedValue({
     limits: {
       meetingMinutesPerMonth: null,
+      voiceMeetingsPerMonth: null,
       documentsCount: 200,
       maxDocumentSizeMB: 25,
       docUploadsPerMonth: 50,
