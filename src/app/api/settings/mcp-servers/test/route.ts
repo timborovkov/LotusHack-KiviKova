@@ -119,7 +119,9 @@ export async function POST(request: Request) {
       db.update(mcpServers)
         .set({ cachedTools: result.tools, toolsCachedAt: new Date() })
         .where(eq(mcpServers.id, serverId))
-        .catch(() => {});
+        .catch((e) =>
+          console.warn("[MCP] Failed to cache tools:", e instanceof Error ? e.message : e)
+        );
     }
 
     return NextResponse.json({ success: true, ...result });
