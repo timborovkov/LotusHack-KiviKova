@@ -7,13 +7,22 @@ import { buildAuthHeaders, buildAuthUrl } from "@/lib/mcp/auth";
 import { VernixOAuthProvider } from "@/lib/mcp/oauth-provider";
 import { isSsrfUrl } from "@/lib/mcp/transport";
 import { probe } from "@/lib/mcp/probe";
+import { rateLimitByIp } from "@/lib/rate-limit";
 
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const rl = rateLimitByIp(request, "mcp-server-tools", {
+    interval: 60_000,
+    limit: 30,
+  });
+  if (!rl.success) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   const user = await requireSessionUser();
   if (user instanceof NextResponse) return user;
 
