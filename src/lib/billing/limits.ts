@@ -7,7 +7,6 @@ import { LIMITS, TRIAL_LIMITS, PLANS } from "./constants";
 
 export interface EffectiveLimits {
   meetingMinutesPerMonth: number | null;
-  voiceEnabled: boolean;
   voiceMeetingsPerMonth: number | null;
   documentsCount: number;
   maxDocumentSizeMB: number;
