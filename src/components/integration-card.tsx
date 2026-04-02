@@ -68,7 +68,8 @@ export function IntegrationCard({
   const [loadingTools, setLoadingTools] = useState<string | null>(null);
 
   const handleFetchTools = async (serverId: string) => {
-    if (!onFetchTools || toolsById[serverId] || loadingTools === serverId) return;
+    if (!onFetchTools || toolsById[serverId] || loadingTools === serverId)
+      return;
     setLoadingTools(serverId);
     try {
       const result = await onFetchTools(serverId);

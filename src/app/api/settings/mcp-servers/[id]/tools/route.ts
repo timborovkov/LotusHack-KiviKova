@@ -78,7 +78,10 @@ export async function GET(
   });
 
   try {
-    const result = await Promise.race([probe(url, headers, authProvider), timeout]);
+    const result = await Promise.race([
+      probe(url, headers, authProvider),
+      timeout,
+    ]);
     clearTimeout(timeoutId!);
 
     // Update cache
