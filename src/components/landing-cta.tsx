@@ -9,8 +9,9 @@ interface LandingCtaProps {
 
 export function LandingCta({ location, children }: LandingCtaProps) {
   return (
-    <span onClick={() => trackCtaClicked(location)} role="presentation">
+     
+    <div onClick={() => trackCtaClicked(location)} className="contents">
       {children}
-    </span>
+    </div>
   );
 }
