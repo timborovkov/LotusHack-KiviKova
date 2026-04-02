@@ -249,7 +249,8 @@ export function useMcpServers(opts?: {
       queryKeys.mcpServers.all
     );
     const server = cached?.find((s) => s.id === serverId);
-    const current = server?.disabledTools ?? [];
+    if (!server) return; // Cache not loaded yet
+    const current = server.disabledTools ?? [];
     const disabledTools = enabled
       ? current.filter((t) => t !== toolName)
       : [...current, toolName];

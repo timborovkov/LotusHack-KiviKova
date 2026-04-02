@@ -103,7 +103,7 @@ export function ConnectedServerCard({
   };
 
   const handleLoadTools = async () => {
-    if (!onFetchTools || tools) return;
+    if (!onFetchTools || tools || loadingTools) return;
     setLoadingTools(true);
     try {
       const result = await onFetchTools(server.id);

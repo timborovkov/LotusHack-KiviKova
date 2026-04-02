@@ -83,10 +83,7 @@ describe("PATCH /api/settings/mcp-servers/[id]", () => {
     );
   });
 
-  it("ignores disabledTools with non-string elements", async () => {
-    const server = fakeMcpServer();
-    mockDb.returning.mockResolvedValueOnce([server]);
-
+  it("returns 400 for disabledTools with non-string elements", async () => {
     const req = createJsonRequest(
       "http://localhost/api/settings/mcp-servers/abc",
       {
@@ -95,21 +92,15 @@ describe("PATCH /api/settings/mcp-servers/[id]", () => {
       }
     );
 
-    const { status } = await parseJsonResponse(
+    const { status, data } = await parseJsonResponse(
       await PATCH(req, { params: makeParams() })
     );
 
-    expect(status).toBe(200);
-    // disabledTools should NOT be in the update because validation failed
-    expect(mockDb.set).toHaveBeenCalledWith(
-      expect.not.objectContaining({ disabledTools: expect.anything() })
-    );
+    expect(status).toBe(400);
+    expect(data.error).toContain("Invalid disabledTools");
   });
 
-  it("ignores disabledTools with empty strings", async () => {
-    const server = fakeMcpServer();
-    mockDb.returning.mockResolvedValueOnce([server]);
-
+  it("returns 400 for disabledTools with empty strings", async () => {
     const req = createJsonRequest(
       "http://localhost/api/settings/mcp-servers/abc",
       {
@@ -118,20 +109,15 @@ describe("PATCH /api/settings/mcp-servers/[id]", () => {
       }
     );
 
-    const { status } = await parseJsonResponse(
+    const { status, data } = await parseJsonResponse(
       await PATCH(req, { params: makeParams() })
     );
 
-    expect(status).toBe(200);
-    expect(mockDb.set).toHaveBeenCalledWith(
-      expect.not.objectContaining({ disabledTools: expect.anything() })
-    );
+    expect(status).toBe(400);
+    expect(data.error).toContain("Invalid disabledTools");
   });
 
-  it("ignores disabledTools exceeding max array length", async () => {
-    const server = fakeMcpServer();
-    mockDb.returning.mockResolvedValueOnce([server]);
-
+  it("returns 400 for disabledTools exceeding max array length", async () => {
     const hugeArray = Array.from({ length: 501 }, (_, i) => `tool_${i}`);
     const req = createJsonRequest(
       "http://localhost/api/settings/mcp-servers/abc",
@@ -141,20 +127,15 @@ describe("PATCH /api/settings/mcp-servers/[id]", () => {
       }
     );
 
-    const { status } = await parseJsonResponse(
+    const { status, data } = await parseJsonResponse(
       await PATCH(req, { params: makeParams() })
     );
 
-    expect(status).toBe(200);
-    expect(mockDb.set).toHaveBeenCalledWith(
-      expect.not.objectContaining({ disabledTools: expect.anything() })
-    );
+    expect(status).toBe(400);
+    expect(data.error).toContain("Invalid disabledTools");
   });
 
-  it("ignores disabledTools with strings exceeding max length", async () => {
-    const server = fakeMcpServer();
-    mockDb.returning.mockResolvedValueOnce([server]);
-
+  it("returns 400 for disabledTools with strings exceeding max length", async () => {
     const longString = "a".repeat(201);
     const req = createJsonRequest(
       "http://localhost/api/settings/mcp-servers/abc",
@@ -164,14 +145,12 @@ describe("PATCH /api/settings/mcp-servers/[id]", () => {
       }
     );
 
-    const { status } = await parseJsonResponse(
+    const { status, data } = await parseJsonResponse(
       await PATCH(req, { params: makeParams() })
     );
 
-    expect(status).toBe(200);
-    expect(mockDb.set).toHaveBeenCalledWith(
-      expect.not.objectContaining({ disabledTools: expect.anything() })
-    );
+    expect(status).toBe(400);
+    expect(data.error).toContain("Invalid disabledTools");
   });
 
   it("returns 404 when server not found", async () => {

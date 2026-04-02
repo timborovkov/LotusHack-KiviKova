@@ -106,14 +106,21 @@ export async function PATCH(
     updates.authUsername = authUsername || null;
   if (typeof authPassword === "string")
     updates.authPassword = authPassword || null;
-  if (
-    Array.isArray(disabledTools) &&
-    disabledTools.length <= 500 &&
-    disabledTools.every(
-      (t) => typeof t === "string" && t.length > 0 && t.length <= 200
-    )
-  ) {
-    // Deduplicate
+  if (Array.isArray(disabledTools)) {
+    if (
+      disabledTools.length > 500 ||
+      !disabledTools.every(
+        (t) => typeof t === "string" && t.length > 0 && t.length <= 200
+      )
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Invalid disabledTools: must be an array of non-empty strings (max 500 items, max 200 chars each)",
+        },
+        { status: 400 }
+      );
+    }
     updates.disabledTools = [...new Set(disabledTools as string[])];
   }
 

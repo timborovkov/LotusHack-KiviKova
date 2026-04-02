@@ -69,13 +69,17 @@ export async function GET(
       ? new VernixOAuthProvider(user.id, server.id, server.url)
       : undefined;
 
+  let timeoutId: ReturnType<typeof setTimeout>;
+  const timeout = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(
+      () => reject(new Error("Connection timed out")),
+      10_000
+    );
+  });
+
   try {
-    const result = await Promise.race([
-      probe(url, headers, authProvider),
-      new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("Connection timed out")), 10_000)
-      ),
-    ]);
+    const result = await Promise.race([probe(url, headers, authProvider), timeout]);
+    clearTimeout(timeoutId!);
 
     // Update cache
     const now = new Date();
@@ -97,6 +101,7 @@ export async function GET(
       cachedAt: now,
     });
   } catch {
+    clearTimeout(timeoutId!);
     // If probe fails but we have stale cache, return it
     if (server.cachedTools) {
       return NextResponse.json({
