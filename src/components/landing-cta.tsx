@@ -9,7 +9,6 @@ interface LandingCtaProps {
 
 export function LandingCta({ location, children }: LandingCtaProps) {
   return (
-     
     <div onClick={() => trackCtaClicked(location)} className="contents">
       {children}
     </div>
