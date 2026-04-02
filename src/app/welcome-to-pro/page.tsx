@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -56,7 +56,6 @@ const UNLOCKED_FEATURES = [
 export default function WelcomeToProPage() {
   const { billing, loading, error } = useBilling();
   const router = useRouter();
-  const purchaseTracked = useRef(false);
 
   // Allow access if Pro, trialing, or has a Polar subscription (webhook may not have synced yet)
   const isPro = billing?.plan === "pro";
@@ -68,8 +67,9 @@ export default function WelcomeToProPage() {
   }, [loading, billing, error, hasAccess, router]);
 
   useEffect(() => {
-    if (!loading && hasAccess && billing && !purchaseTracked.current) {
-      purchaseTracked.current = true;
+    const key = "vernix_purchase_tracked";
+    if (!loading && hasAccess && billing && !sessionStorage.getItem(key)) {
+      sessionStorage.setItem(key, "1");
       trackPurchase(billing.plan, billing.trialing ?? false);
     }
   }, [loading, hasAccess, billing]);
