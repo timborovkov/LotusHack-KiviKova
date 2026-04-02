@@ -62,11 +62,12 @@ Railway is shared infrastructure (Next.js + Postgres + Qdrant + Minio). Cost is 
 
 ### Free (permanent)
 
-- Silent meeting agent (no voice)
+- Voice agent (1 meeting/month) + silent agent
 - Summaries, tasks, RAG chat
 - Knowledge base uploads
-- No API/MCP access
-- **Cost to us:** up to ~$0.36/mo per active user (0.5 hr × $0.71), plus ~$0.20 if they max out RAG chat (no Whisper cost — free tier has no voice)
+- 1 tool integration (MCP server connection)
+- No API access
+- **Cost to us:** up to ~$0.75/mo per active user (30 min voice × $1.50/hr), plus ~$0.20 if they max out RAG chat
 
 ### Free Trial (14 days, on top of Free)
 
@@ -98,23 +99,24 @@ Credits are consumed at these rates. Once exhausted, the same rates apply as met
 
 ### Per-Plan Limits
 
-| Limit                           | Free          | Free Trial (14d)               | Pro                                                             |
-| ------------------------------- | ------------- | ------------------------------ | --------------------------------------------------------------- |
-| **Meeting minutes/month**       | 30 silent     | 90 total (voice+silent shared) | By credits (~10 hrs voice at €3/hr, ~20 hrs silent at €1.50/hr) |
-| **Voice mode**                  | No            | Yes                            | Yes                                                             |
-| **Knowledge base documents**    | 5             | 200                            | 200                                                             |
-| **Max document size**           | 10 MB         | 25 MB                          | 25 MB                                                           |
-| **Doc uploads/month**           | 5             | 50                             | 50                                                              |
-| **Total storage**               | 50 MB         | 500 MB                         | 500 MB                                                          |
-| **Max chunks per document**     | 500           | 500                            | 500                                                             |
-| **RAG chat queries/day**        | 20            | 200                            | 200                                                             |
-| **Meeting-scoped documents**    | 1 per meeting | 10 per meeting                 | 10 per meeting                                                  |
-| **Concurrent active meetings**  | 1             | 5                              | 5                                                               |
-| **API requests/day**            | No            | 1,000                          | 1,000                                                           |
-| **MCP server connections**      | No            | Unlimited                      | Unlimited                                                       |
-| **MCP client connections**      | No            | Unlimited                      | Unlimited                                                       |
-| **Monthly spending cap**        | N/A           | N/A                            | Optional                                                        |
-| **Meetings/month (anti-abuse)** | 5             | 500                            | 500                                                             |
+| Limit                           | Free              | Free Trial (14d)               | Pro                                                             |
+| ------------------------------- | ----------------- | ------------------------------ | --------------------------------------------------------------- |
+| **Meeting minutes/month**       | 30 (voice+silent) | 90 total (voice+silent shared) | By credits (~10 hrs voice at €3/hr, ~20 hrs silent at €1.50/hr) |
+| **Voice meetings/month**        | 1                 | Unlimited                      | Unlimited                                                       |
+| **Voice mode**                  | Yes (1/month)     | Yes                            | Yes                                                             |
+| **Knowledge base documents**    | 5                 | 200                            | 200                                                             |
+| **Max document size**           | 10 MB             | 25 MB                          | 25 MB                                                           |
+| **Doc uploads/month**           | 5                 | 50                             | 50                                                              |
+| **Total storage**               | 50 MB             | 500 MB                         | 500 MB                                                          |
+| **Max chunks per document**     | 500               | 500                            | 500                                                             |
+| **RAG chat queries/day**        | 20                | 200                            | 200                                                             |
+| **Meeting-scoped documents**    | 1 per meeting     | 10 per meeting                 | 10 per meeting                                                  |
+| **Concurrent active meetings**  | 1                 | 5                              | 5                                                               |
+| **API requests/day**            | No                | 1,000                          | 1,000                                                           |
+| **MCP server connections**      | 1                 | Unlimited                      | Unlimited                                                       |
+| **MCP client connections**      | No                | Unlimited                      | Unlimited                                                       |
+| **Monthly spending cap**        | N/A               | N/A                            | Optional                                                        |
+| **Meetings/month (anti-abuse)** | 5                 | 500                            | 500                                                             |
 
 ### Universal Limits
 
@@ -187,7 +189,7 @@ Simulated monthly snapshot at 1,000 registered users. 80% free (including triali
 | Segment              | Users     | Voice/mo | Silent/mo | Cost/user | Usage € | Credit | Overage |
 | -------------------- | --------- | -------- | --------- | --------- | ------- | ------ | ------- |
 | **Free (inactive)**  | 480       | —        | —         | $0        | —       | —      | —       |
-| **Free (active)**    | 270       | 0 hr     | 0.3 hr    | $0.21     | —       | —      | —       |
+| **Free (active)**    | 270       | 0.1 hr   | 0.3 hr    | $0.36     | —       | —      | —       |
 | **Free trial**       | 50        | 0.5 hr   | 0.5 hr    | $1.11     | —       | —      | —       |
 | **Pro (light)**      | 90        | 1 hr     | 3 hr      | $3.73     | €7.50   | €30    | €0      |
 | **Pro (typical)**    | 70        | 3 hr     | 10 hr     | $11.70    | €24.00  | €30    | €0      |
@@ -195,7 +197,7 @@ Simulated monthly snapshot at 1,000 registered users. 80% free (including triali
 | **Pro (very heavy)** | 10        | 25 hr    | 50 hr     | $73.10    | €150.00 | €30    | €120    |
 | **Total**            | **1,000** |          |           |           |         |        |         |
 
-_800 free (480 inactive + 270 active + 50 trial), 200 Pro. Voice at $1.50/hr (incl. gpt-4o-mini-transcribe wake-detection), silent at $0.71/hr. Per-user costs exclude shared infra (separate line item). Trial users get full Pro features for 14 days (including integrations, API, MCP) — cost but no revenue. Light and typical Pro users stay within €30 credit._
+_800 free (480 inactive + 270 active + 50 trial), 200 Pro. Voice at $1.50/hr (incl. gpt-4o-mini-transcribe wake-detection), silent at $0.71/hr. Per-user costs exclude shared infra (separate line item). Free active users assumed to use ~6 min voice (1 meeting) + ~18 min silent. Trial users get full Pro features for 14 days (including integrations, API, MCP) — cost but no revenue. Light and typical Pro users stay within €30 credit._
 
 ### Revenue
 
@@ -209,17 +211,17 @@ _800 free (480 inactive + 270 active + 50 trial), 200 Pro. Voice at $1.50/hr (in
 
 | Line item          | Calculation         | Amount     |
 | ------------------ | ------------------- | ---------- |
-| Free active        | 270 × $0.21         | $57        |
+| Free active        | 270 × $0.36         | $97        |
 | Free trial         | 50 × $1.11          | $56        |
 | Pro light          | 90 × $3.73          | $336       |
 | Pro typical        | 70 × $11.70         | $819       |
 | Pro heavy          | 30 × $29.85         | $896       |
 | Pro very heavy     | 10 × $73.10         | $731       |
-| **Subtotal usage** |                     | **$2,895** |
+| **Subtotal usage** |                     | **$2,935** |
 | Polar on base      | 200 × $1.56         | $312       |
 | Polar on overage   | 30×$1.66 + 10×$5.20 | $102       |
 | Infrastructure     |                     | $120       |
-| **Total cost**     |                     | **$3,429** |
+| **Total cost**     |                     | **$3,469** |
 
 ### Summary
 
@@ -227,18 +229,19 @@ _800 free (480 inactive + 270 active + 50 trial), 200 Pro. Voice at $1.50/hr (in
 | ----------------- | ---------------------- |
 | **Gross revenue** | **€7,945**             |
 | **Total cost**    | **$3,429**             |
-| **Net margin**    | **$4,516**             |
-| **Margin %**      | **56.8%**              |
+| **Net margin**    | **$4,476**             |
+| **Margin %**      | **56.3%**              |
 | Revenue per user  | €7.95                  |
-| Cost per user     | $3.43                  |
-| Free user drag    | $113 (1.4% of revenue) |
+| Cost per user     | $3.47                  |
+| Free user drag    | $153 (1.9% of revenue) |
 
 ### Takeaways
 
 - Single plan simplifies the funnel: Free → Trial → Pro. No tier comparison needed.
 - €30 credit covers light and typical users — predictable €29/mo bill for 80% of paid users.
 - Heavy users generate overage at ~48% margin. Very heavy users are the most profitable segment.
-- 56.8% overall margin with conservative assumptions. gpt-4o-mini-transcribe wake-detection adds ~$0.10/hr to voice cost but cuts response latency from ~4s to ~500ms.
+- 56.3% overall margin with conservative assumptions. gpt-4o-mini-transcribe wake-detection adds ~$0.10/hr to voice cost but cuts response latency from ~4s to ~500ms.
+- Free users with 1 voice meeting/month and 1 integration get a taste of Pro, driving conversion.
 
 ---
 
@@ -246,7 +249,7 @@ _800 free (480 inactive + 270 active + 50 trial), 200 Pro. Voice at $1.50/hr (in
 
 1. **Always profitable** — Usage-based billing means costs scale with revenue.
 2. **Credits don't roll over** — Base fee is always recurring revenue.
-3. **Free tier is silent-only** — Voice requires Pro.
+3. **Free tier voice is capped** — 1 voice meeting/month, 30 min total.
 4. **Spending alerts** — Notify at 80% and 100% credit usage.
 5. **Optional spending caps** — Current meeting always finishes; cap prevents new meetings from starting until next cycle or cap is raised.
 6. **Fair use** — Disproportionate load triggers Enterprise conversation.
@@ -274,11 +277,10 @@ All customer-facing prices are in euros. Polar handles currency conversion at ch
 - Credit balance and overage calculation logic
 - Spending alerts (80%, 100% of credits)
 - Optional per-user spending caps
-- Free tier enforcement (30 silent min/mo, no voice, no API/MCP)
+- Free tier enforcement (30 min/mo, 1 voice meeting/mo, 1 MCP connection, no API)
 - Trial activation (14 days) and expiry logic
 - Trial abuse detection (IP rate limiting, disposable email blocking)
 - Dashboard usage meter UI
 - API rate limiting per API key (1,000 req/day)
-- MCP connection limits enforcement
 - **Downgrade enforcement** — When users cancel Pro → Free: read-only access to excess documents for 30 days, block new uploads until under cap, show re-subscribe prompt
 - **Account garbage collection** — Periodic cleanup: archive Qdrant collections and S3 objects for users inactive 90+ days, delete after 180 days with prior email warning

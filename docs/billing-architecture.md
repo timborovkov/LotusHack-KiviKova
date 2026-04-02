@@ -169,6 +169,8 @@ After recording locally, `syncUsageToPolar()` sends a single `meeting_usage` eve
 - `getUsageSummary(userId, plan, periodStart, periodEnd)` — aggregate all usage types for a billing period
 - `getDailyCount(userId, type)` — count today's RAG queries or API requests
 - `getMonthlyMeetingCount(userId)` — anti-abuse meeting count
+- `getMonthlyVoiceMeetingCount(userId)` — voice meeting count for free plan limit
+- `getEnabledMcpServerCount(userId)` — enabled MCP server count for integration limit
 
 ---
 
@@ -180,18 +182,19 @@ After recording locally, `syncUsageToPolar()` sends a single `meeting_usage` eve
 getEffectiveLimits(plan, trialEndsAt) → EffectiveLimits
 ```
 
-- **Free plan, no trial:** `LIMITS.free` (30 min silent, no voice, 5 docs, etc.)
+- **Free plan, no trial:** `LIMITS.free` (30 min total, 1 voice meeting/mo, 1 MCP connection, 5 docs, etc.)
 - **Free plan, active trial:** `TRIAL_LIMITS` (full Pro features, capped at 90 minutes)
 - **Pro plan:** `LIMITS.pro` (unlimited minutes via credits, 200 docs, API/MCP)
 
 ### Check Functions
 
-| Function              | What it checks                                              |
-| --------------------- | ----------------------------------------------------------- |
-| `canStartMeeting()`   | Voice enabled, concurrent meetings, monthly cap, minute cap |
-| `canUploadDocument()` | Doc count, monthly uploads, file size, storage cap          |
-| `canMakeRagQuery()`   | Daily RAG query limit                                       |
-| `canMakeApiRequest()` | API enabled, daily request limit                            |
+| Function              | What it checks                                                    |
+| --------------------- | ----------------------------------------------------------------- |
+| `canStartMeeting()`   | Voice meeting count, concurrent meetings, monthly cap, minute cap |
+| `canUploadDocument()` | Doc count, monthly uploads, file size, storage cap                |
+| `canMakeRagQuery()`   | Daily RAG query limit                                             |
+| `canMakeApiRequest()` | API enabled, daily request limit                                  |
+| `canAddMcpServer()`   | MCP enabled, server connection count                              |
 
 Each returns `{ allowed: boolean, reason?: string }`.
 
@@ -200,10 +203,11 @@ Each returns `{ allowed: boolean, reason?: string }`.
 Enforcement should be added at the API route level:
 
 1. **Meeting creation** (`POST /api/meetings`) — check `canStartMeeting()`
-2. **Bot join** (`POST /api/agent/join`) — check voice enabled + concurrent meetings
+2. **Bot join** (`POST /api/agent/join`) — check voice meeting count + concurrent meetings
 3. **Knowledge upload** (`POST /api/knowledge`) — check `canUploadDocument()`
 4. **RAG chat** (`POST /api/agent/chat`, `POST /api/agent/respond`) — check `canMakeRagQuery()`
 5. **MCP endpoint** (`/api/mcp`) — check `canMakeApiRequest()`
+6. **MCP server creation** (`POST /api/settings/mcp-servers`) — check `canAddMcpServer()`
 
 > **Note:** Enforcement is not yet wired into these routes. The limit-checking functions exist in `src/lib/billing/limits.ts` and should be called at the start of each route handler.
 
