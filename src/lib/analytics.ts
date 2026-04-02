@@ -88,10 +88,6 @@ export function trackPurchase(plan: string, isTrialing: boolean) {
 // Custom conversion events
 // ---------------------------------------------------------------------------
 
-export function trackTrialStarted(interval: "monthly" | "annual") {
-  trackEvent("trial_started", { interval });
-}
-
 export function trackMeetingCreated(silent: boolean) {
   trackEvent("meeting_created", { silent });
 }
