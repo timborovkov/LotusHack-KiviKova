@@ -110,8 +110,16 @@ export async function PATCH(request: Request) {
   if (timezone !== undefined) updates.timezone = timezone;
   if (phone !== undefined) updates.phone = phone;
   if (company !== undefined) updates.company = company;
-  if (emailPreferences !== undefined)
-    updates.emailPreferences = emailPreferences;
+  if (emailPreferences !== undefined) {
+    // Merge with current DB state to avoid overwriting opt-outs from unsubscribe links
+    const [current] = await db
+      .select({ emailPreferences: users.emailPreferences })
+      .from(users)
+      .where(eq(users.id, userOrRes.id));
+    const existing =
+      (current?.emailPreferences as Record<string, unknown>) ?? {};
+    updates.emailPreferences = { ...existing, ...emailPreferences };
+  }
 
   const [updated] = await db
     .update(users)
