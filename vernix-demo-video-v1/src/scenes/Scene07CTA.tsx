@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  Img,
-  staticFile,
-  useCurrentFrame,
-  useVideoConfig,
-} from "remotion";
+import { Img, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import type { SceneProps } from "../types";
 import { SceneContainer } from "../components/SceneContainer";
 import { AnimatedText } from "../components/AnimatedText";
