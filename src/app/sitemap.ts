@@ -5,7 +5,7 @@ import { getIntegrations } from "@/lib/integrations/catalog";
 
 const BASE_URL = (
   process.env.NEXT_PUBLIC_APP_URL ?? "https://vernix.app"
-).replace(/^http:\/\//, "https://");
+).replace(/^http:\/\/(?!localhost)/, "https://");
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const posts = await getAllPosts();
