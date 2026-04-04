@@ -111,12 +111,9 @@ describe("flushTelemetry", () => {
       wakeDetectCalls: 5,
     });
 
-    // Should persist with voiceTelemetry and without _telemetryAccumulator
+    // Should persist atomically via SQL (sets voiceTelemetry, removes accumulator)
     expect(mockDb.update).toHaveBeenCalled();
-    const setCall = mockDb.set.mock.calls[0][0];
-    expect(setCall.metadata.voiceTelemetry).toEqual(result);
-    expect(setCall.metadata._telemetryAccumulator).toBeUndefined();
-    expect(setCall.metadata.otherField).toBe("keep");
+    expect(mockDb.set).toHaveBeenCalled();
   });
 
   it("returns null when activationCount and wakeDetectCalls are both 0", async () => {
