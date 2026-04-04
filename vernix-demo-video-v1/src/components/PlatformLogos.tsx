@@ -120,7 +120,8 @@ export const PlatformLogos: React.FC<{
         const opacity = interpolate(s, [0, 1], [0, 1]);
         const entryY = interpolate(s, [0, 1], [10, 0]);
         // Gentle float after entrance
-        const floatY = Math.sin((i * 0.8 + frame * 0.05) % (Math.PI * 2)) * 2 * s;
+        const floatY =
+          Math.sin((i * 0.8 + frame * 0.05) % (Math.PI * 2)) * 2 * s;
         const translateY = entryY + floatY;
 
         return (
