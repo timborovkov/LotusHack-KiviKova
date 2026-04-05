@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { meetings } from "@/lib/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { rateLimit, resetRateLimitKey } from "@/lib/rate-limit";
 import { recordActivation } from "@/lib/agent/telemetry";
 
@@ -133,7 +133,11 @@ async function flushVoiceBuffer(
     await db
       .update(meetings)
       .set({
-        metadata: { ...metadata, voiceActivation: activation },
+        metadata: sql`jsonb_set(
+          COALESCE(${meetings.metadata}, '{}'::jsonb),
+          '{voiceActivation}',
+          ${JSON.stringify(activation)}::jsonb
+        )`,
         updatedAt: new Date(),
       })
       .where(and(eq(meetings.id, meetingId), eq(meetings.userId, userId)));
