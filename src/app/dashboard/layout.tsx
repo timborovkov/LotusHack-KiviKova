@@ -6,7 +6,7 @@ import { EmailVerificationBanner } from "@/components/email-verification-banner"
 
 export const metadata: Metadata = {
   title: {
-    default: "Dashboard",
+    default: "Dashboard — Vernix",
     template: "%s — Vernix",
   },
 };
